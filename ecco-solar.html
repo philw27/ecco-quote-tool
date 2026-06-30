@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Ecco — Solar Panel Quote</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --navy:#0b1e38; --navy2:#162d4e;
+  --blue:#0088bb; --blue-l:#e0f4fb;
+  --slate:#4a5568; --muted:#8896a6;
+  --line:#dde4ec; --bg:#eef1f6; --white:#ffffff;
+  --sun:#d97706; --sun-l:#fef3c7; --sun-bg:#fffbeb;
+  --green:#16a34a; --green-l:#dcfce7;
+  --green2:#2da771; --green2-l:#e4f5ed;
+}
+html { background-color:#eef1f6; height:100%; -webkit-text-size-adjust:100%; }
+body { font-family:'DM Sans',sans-serif; color:var(--navy); -webkit-font-smoothing:antialiased; background-color:#eef1f6; min-height:100%; min-height:100dvh; position:relative; }
+body::before { content:''; position:fixed; inset:0; background:#eef1f6; z-index:-1; }
+
+#prog { position:fixed; top:0; left:0; z-index:400; height:3px; background:var(--sun); transition:width .3s ease; width:0%; }
+
+.hdr { position:fixed; top:3px; left:0; right:0; z-index:300; background:var(--navy); height:52px; display:flex; align-items:center; padding:0 16px; gap:10px; }
+.hdr-back { width:34px; height:34px; border-radius:50%; background:rgba(255,255,255,.15); border:none; cursor:pointer; flex-shrink:0; display:none; align-items:center; justify-content:center; -webkit-tap-highlight-color:transparent; }
+.hdr-back.show { display:flex; }
+.hdr-back svg { width:16px; height:16px; stroke:white; fill:none; stroke-width:2.5; stroke-linecap:round; }
+.hdr-logo { font-family:'Syne',sans-serif; font-weight:800; font-size:1.15rem; letter-spacing:-.04em; color:white; line-height:1; flex-shrink:0; }
+.hdr-logo span { color:var(--blue); }
+.hdr-info { flex:1; display:flex; flex-direction:column; }
+.hdr-step { font-size:10px; color:rgba(255,255,255,.6); font-weight:500; }
+.hdr-name { font-size:13px; color:white; font-weight:700; line-height:1.2; }
+.hdr-help { width:30px; height:30px; border-radius:50%; border:1.5px solid rgba(255,255,255,.35); display:flex; align-items:center; justify-content:center; color:white; font-size:13px; font-weight:700; text-decoration:none; flex-shrink:0; }
+
+.page { padding-top:55px; background-color:#eef1f6; min-height:100vh; }
+.scr { display:none; padding:16px 16px 40px; }
+.scr.on { display:block; animation:up .2s ease both; }
+@keyframes up { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+
+/* Question card */
+.qcard { background:var(--white); border-radius:16px; padding:28px 20px 24px; }
+.qtitle { font-family:'DM Sans',sans-serif; font-weight:700; font-size:1.3rem; line-height:1.25; letter-spacing:-.02em; color:var(--navy); text-align:center; margin-bottom:6px; }
+.qtitle .hl { color:var(--sun); }
+.qsub { font-size:13px; color:var(--muted); text-align:center; margin-bottom:20px; line-height:1.5; }
+.qsub.note { font-style:italic; color:var(--slate); }
+.qhelper { display:flex; align-items:center; gap:6px; background:var(--bg); border-radius:20px; padding:7px 14px; width:fit-content; margin:0 auto 20px; cursor:pointer; font-size:12px; color:var(--slate); font-weight:500; }
+.qhelper svg { width:14px; height:14px; flex-shrink:0; stroke:var(--muted); fill:none; stroke-width:1.5; }
+
+.opts { display:flex; flex-direction:column; gap:10px; }
+.opt { display:flex; align-items:center; gap:14px; border:1.5px solid var(--line); border-radius:12px; background:var(--white); padding:15px 14px; cursor:pointer; -webkit-tap-highlight-color:transparent; transition:border-color .1s,background .1s; min-height:62px; }
+.opt:active { background:var(--sun-l); border-color:var(--sun); }
+.oico { width:48px; flex-shrink:0; display:flex; align-items:center; justify-content:center; }
+.oico svg { display:block; }
+.otext { flex:1; min-width:0; }
+.oname { font-family:'DM Sans',sans-serif; font-weight:600; font-size:.95rem; color:var(--navy); line-height:1.3; }
+.odesc { font-size:12px; color:var(--muted); margin-top:2px; line-height:1.4; }
+.odiv { width:1px; height:36px; background:var(--line); flex-shrink:0; }
+.oinfo { width:26px; height:26px; border-radius:50%; border:1px solid var(--line); display:flex; align-items:center; justify-content:center; font-size:12px; color:var(--muted); flex-shrink:0; font-weight:600; }
+
+/* Postcode */
+.pc-row { display:flex; border:2px solid var(--sun); border-radius:40px; overflow:hidden; background:white; margin-top:4px; }
+.pc-input { flex:1; border:none; outline:none; padding:14px 18px; font-family:'DM Sans',sans-serif; font-size:16px; color:var(--navy); background:transparent; }
+.pc-input::placeholder { color:var(--muted); }
+.pc-go { background:var(--sun); color:white; border:none; padding:14px 20px; font-family:'DM Sans',sans-serif; font-size:14px; font-weight:600; cursor:pointer; white-space:nowrap; }
+
+/* Results */
+.results-page { padding:16px 16px 100px; }
+
+.filter-bar { background:var(--white); border-radius:10px; padding:11px 14px; margin-bottom:16px; display:flex; align-items:center; gap:8px; border:1px solid var(--line); }
+.filter-bar svg { width:15px; height:15px; stroke:var(--muted); fill:none; stroke-width:1.5; flex-shrink:0; }
+.filter-txt { font-size:12px; color:var(--slate); flex:1; }
+.filter-edit { font-size:12px; color:var(--blue); font-weight:600; cursor:pointer; }
+
+/* Address bar */
+.address-bar { background:var(--sun-l); border:1px solid #fde68a; border-radius:10px; padding:11px 14px; margin-bottom:16px; display:flex; align-items:center; gap:8px; }
+.address-bar svg { width:15px; height:15px; stroke:var(--sun); fill:none; stroke-width:1.5; flex-shrink:0; }
+.address-bar-txt { font-size:12px; color:var(--navy); flex:1; font-weight:500; }
+.address-bar-change { font-size:12px; color:var(--sun); font-weight:600; cursor:pointer; }
+
+/* Panels configurator */
+.panels-section { background:var(--white); border-radius:16px; overflow:hidden; margin-bottom:16px; }
+.panels-hdr { padding:18px 18px 0; }
+.panels-hdr h2 { font-family:'DM Sans',sans-serif; font-weight:700; font-size:1.1rem; color:var(--navy); margin-bottom:8px; }
+.panels-hdr p { font-size:13px; color:var(--slate); line-height:1.6; margin-bottom:16px; }
+.panels-label { font-weight:700; font-size:.85rem; color:var(--navy); margin-bottom:10px; padding:0 18px; }
+
+.panel-option { display:flex; align-items:flex-start; gap:12px; padding:14px 18px; border-top:1px solid var(--line); cursor:pointer; -webkit-tap-highlight-color:transparent; transition:background .1s; }
+.panel-option.selected { background:var(--sun-l); }
+.panel-radio { width:20px; height:20px; border-radius:50%; border:2px solid var(--line); flex-shrink:0; margin-top:2px; display:flex; align-items:center; justify-content:center; transition:border-color .1s; }
+.panel-option.selected .panel-radio { border-color:var(--sun); }
+.panel-radio::after { content:''; width:10px; height:10px; border-radius:50%; background:var(--sun); display:none; }
+.panel-option.selected .panel-radio::after { display:block; }
+.panel-info { flex:1; min-width:0; }
+.panel-name { font-weight:700; font-size:.95rem; color:var(--navy); display:flex; align-items:center; gap:8px; }
+.panel-rec { background:var(--sun-l); color:var(--sun); font-size:10px; font-weight:700; padding:3px 8px; border-radius:12px; }
+.panel-kwp { font-size:12px; color:var(--muted); margin-top:2px; }
+.panel-savings { background:var(--blue-l); border-radius:8px; padding:8px 12px; margin-top:8px; display:flex; align-items:center; gap:8px; }
+.panel-savings svg { width:14px; height:14px; stroke:var(--blue); fill:none; stroke-width:1.5; flex-shrink:0; }
+.panel-savings-txt { font-size:12px; color:var(--blue); font-weight:500; flex:1; }
+.panel-savings-val { font-size:12px; font-weight:700; color:var(--blue); }
+
+/* Product card */
+.pcard { background:var(--white); border-radius:16px; overflow:hidden; margin-bottom:20px; border:2px solid var(--line); }
+.pcard.featured { border-color:var(--sun); }
+.pcard-banner { background:var(--sun); color:white; font-size:11px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; text-align:center; padding:8px 16px; }
+.pcard-img { background:var(--sun-bg); padding:24px; display:flex; align-items:center; justify-content:center; min-height:160px; }
+.pcard-body { padding:18px 18px 0; }
+.pcard-name { font-family:'DM Sans',sans-serif; font-weight:700; font-size:1.05rem; color:var(--navy); line-height:1.35; margin-bottom:8px; }
+.pcard-tagline { background:var(--bg); border-radius:10px; padding:14px; margin-bottom:14px; }
+.pcard-tagline h4 { font-weight:700; font-size:.9rem; color:var(--navy); margin-bottom:4px; }
+.pcard-tagline p { font-size:13px; color:var(--slate); line-height:1.5; }
+.pcard-tagline a { color:var(--sun); font-size:13px; font-weight:600; text-decoration:underline; cursor:pointer; display:inline-block; margin-top:8px; }
+
+.inc-item { display:flex; align-items:center; justify-content:space-between; padding:12px 0; border-bottom:1px solid var(--line); cursor:pointer; }
+.inc-item:last-child { border-bottom:none; }
+.inc-left { display:flex; align-items:center; gap:10px; }
+.inc-check { width:22px; height:22px; border-radius:50%; border:2px solid var(--sun); flex-shrink:0; display:flex; align-items:center; justify-content:center; }
+.inc-check svg { width:12px; height:12px; stroke:var(--sun); fill:none; stroke-width:2.5; stroke-linecap:round; stroke-linejoin:round; }
+.inc-name { font-size:13px; font-weight:600; color:var(--navy); }
+.inc-chevron { width:16px; height:16px; stroke:var(--muted); fill:none; stroke-width:1.5; flex-shrink:0; }
+.included-title { font-weight:700; font-size:.9rem; color:var(--navy); margin-bottom:10px; }
+
+/* Savings comparison */
+.savings-section { background:var(--blue-l); border-radius:12px; padding:16px; margin-bottom:16px; }
+.savings-title { font-weight:700; font-size:.95rem; color:var(--navy); margin-bottom:4px; }
+.savings-sub { font-size:12px; color:var(--slate); margin-bottom:16px; }
+.savings-compare { display:flex; gap:16px; }
+.sav-box { flex:1; text-align:center; }
+.sav-box svg { width:28px; height:28px; stroke:var(--blue); fill:none; stroke-width:1.5; margin-bottom:8px; }
+.sav-val { font-family:'DM Sans',sans-serif; font-weight:700; font-size:1.3rem; color:var(--navy); }
+.sav-lbl { font-size:11px; color:var(--muted); margin-top:2px; }
+.sav-divider { width:1px; background:var(--line); }
+
+/* Price */
+.price-section { border-top:1px solid var(--line); padding:16px 18px 18px; }
+.price-lbl { font-size:12px; color:var(--muted); text-align:center; margin-bottom:12px; }
+.price-boxes { display:flex; gap:10px; margin-bottom:14px; }
+.pbox { flex:1; background:var(--bg); border-radius:10px; padding:12px 14px; }
+.pbox-lbl { font-size:11px; color:var(--muted); margin-bottom:4px; }
+.pbox-val { font-family:'DM Sans',sans-serif; font-weight:700; font-size:1.2rem; color:var(--navy); }
+.vat-note { font-size:11px; color:var(--muted); text-align:center; margin-bottom:10px; }
+.finance-link { font-size:13px; color:var(--sun); text-align:center; display:block; text-decoration:underline; cursor:pointer; margin-bottom:14px; }
+.proposal-btn { display:block; width:100%; background:var(--green); color:white; font-family:'DM Sans',sans-serif; font-size:15px; font-weight:600; border:none; border-radius:10px; padding:16px; cursor:pointer; -webkit-tap-highlight-color:transparent; }
+
+/* What happens next */
+.next-section { background:var(--white); border-radius:12px; padding:16px; margin-bottom:16px; }
+.next-title { font-weight:700; font-size:.95rem; color:var(--navy); margin-bottom:16px; }
+.next-steps { display:flex; flex-direction:column; gap:0; }
+.next-step { display:flex; gap:12px; align-items:flex-start; padding-bottom:16px; position:relative; }
+.next-step:last-child { padding-bottom:0; }
+.next-dot { width:22px; height:22px; border-radius:50%; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:10px; font-weight:700; }
+.next-dot.active { background:var(--green); color:white; }
+.next-dot.pending { border:2px solid var(--line); color:var(--muted); }
+.next-step-line { position:absolute; left:10px; top:22px; bottom:0; width:2px; background:var(--line); }
+.next-step:last-child .next-step-line { display:none; }
+.next-step-text h4 { font-size:13px; font-weight:600; color:var(--navy); }
+.next-step-text p { font-size:12px; color:var(--muted); margin-top:2px; line-height:1.5; }
+.get-proposal-btn { display:block; width:100%; background:var(--green); color:white; font-family:'DM Sans',sans-serif; font-size:15px; font-weight:600; border:none; border-radius:10px; padding:16px; cursor:pointer; margin-top:16px; -webkit-tap-highlight-color:transparent; }
+.callback-btn { display:block; width:100%; background:transparent; color:var(--green); font-family:'DM Sans',sans-serif; font-size:15px; font-weight:600; border:1.5px solid var(--green); border-radius:10px; padding:16px; cursor:pointer; margin-top:10px; -webkit-tap-highlight-color:transparent; }
+
+/* FAQs */
+.faq-section { background:var(--white); border-radius:12px; padding:16px; margin-bottom:16px; }
+.faq-title { font-weight:700; font-size:.95rem; color:var(--navy); margin-bottom:14px; }
+.faq-item { padding:12px 0; border-bottom:1px solid var(--line); cursor:pointer; }
+.faq-item:last-child { border-bottom:none; }
+.faq-q { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+.faq-q span { font-size:14px; font-weight:600; color:var(--navy); line-height:1.4; flex:1; }
+.faq-q svg { width:18px; height:18px; stroke:var(--sun); fill:none; stroke-width:2; flex-shrink:0; transition:transform .2s; }
+.faq-item.open .faq-q svg { transform:rotate(45deg); }
+.faq-a { font-size:13px; color:var(--slate); line-height:1.6; margin-top:10px; display:none; }
+.faq-item.open .faq-a { display:block; }
+
+/* Fixed bottom bar */
+.bottom-bar { position:fixed; bottom:0; left:0; right:0; z-index:200; background:white; border-top:1px solid var(--line); padding:12px 16px; padding-bottom:max(12px,env(safe-area-inset-bottom)); display:none; }
+.bottom-bar-inner { display:flex; align-items:center; justify-content:space-between; gap:14px; max-width:500px; margin:0 auto; }
+.bottom-price { display:flex; flex-direction:column; }
+.bottom-price-val { font-family:'DM Sans',sans-serif; font-weight:700; font-size:1.1rem; color:var(--navy); }
+.bottom-price-mo { font-size:11px; color:var(--slate); }
+.bottom-proposal { background:var(--green); color:white; font-family:'DM Sans',sans-serif; font-size:14px; font-weight:600; border:none; border-radius:10px; padding:14px 20px; cursor:pointer; white-space:nowrap; }
+
+/* Details */
+.fcard { background:var(--white); border-radius:16px; padding:20px 18px; margin-bottom:14px; }
+.fcard h3 { font-family:'DM Sans',sans-serif; font-weight:700; font-size:.95rem; color:var(--navy); margin-bottom:16px; }
+.ff { display:flex; flex-direction:column; gap:5px; margin-bottom:12px; }
+.ff label { font-size:12px; font-weight:600; color:var(--slate); }
+.ff input { border:1.5px solid var(--line); border-radius:8px; padding:13px 14px; font-family:'DM Sans',sans-serif; font-size:15px; color:var(--navy); outline:none; width:100%; background:white; transition:border-color .12s; }
+.ff input:focus { border-color:var(--blue); }
+.ff input::placeholder { color:var(--muted); }
+.ff-2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+
+.cta-bar { position:fixed; bottom:0; left:0; right:0; z-index:200; background:white; border-top:1px solid var(--line); padding:12px 16px; display:none; align-items:center; gap:14px; }
+.cta-lhs { display:flex; flex-direction:column; flex-shrink:0; }
+.cta-from { font-size:11px; color:var(--muted); }
+.cta-amount { font-family:'DM Sans',sans-serif; font-weight:700; font-size:1.05rem; color:var(--navy); }
+.cta-btn { flex:1; background:var(--green); color:white; font-family:'DM Sans',sans-serif; font-size:15px; font-weight:600; border:none; border-radius:10px; padding:14px 20px; cursor:pointer; }
+
+/* Success */
+.success-card { background:var(--white); border-radius:16px; padding:36px 20px; text-align:center; margin-bottom:16px; }
+.suc-icon { width:68px; height:68px; border-radius:50%; background:var(--green2-l); margin:0 auto 18px; display:flex; align-items:center; justify-content:center; }
+.suc-icon svg { width:32px; height:32px; stroke:var(--green2); fill:none; stroke-width:2.5; stroke-linecap:round; stroke-linejoin:round; }
+.success-card h2 { font-family:'DM Sans',sans-serif; font-weight:700; font-size:1.35rem; color:var(--navy); margin-bottom:8px; }
+.success-card p { font-size:14px; color:var(--slate); line-height:1.6; margin-bottom:20px; }
+.suc-table { background:var(--bg); border-radius:10px; padding:14px; text-align:left; }
+.suc-row { display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--line); font-size:13px; }
+.suc-row:last-child { border-bottom:none; }
+.suc-l { color:var(--muted); }
+.suc-v { font-weight:600; color:var(--navy); text-align:right; }
+
+.eng { background:var(--navy); border-radius:16px; padding:20px 18px; margin-bottom:16px; }
+.eng-title { font-family:'DM Sans',sans-serif; font-weight:700; font-size:.9rem; color:white; display:flex; align-items:center; gap:8px; margin-bottom:16px; }
+.eng-title svg { width:18px; height:18px; fill:none; stroke:#34d399; stroke-width:1.5; flex-shrink:0; }
+.eng-steps { display:flex; flex-direction:column; gap:14px; }
+.estep { display:flex; gap:12px; align-items:flex-start; }
+.estep-dot { width:22px; height:22px; border-radius:50%; flex-shrink:0; background:rgba(0,136,187,.3); color:#4dd8f5; font-size:10px; font-weight:800; display:flex; align-items:center; justify-content:center; margin-top:1px; }
+.estep h4 { font-size:13px; font-weight:600; color:white; margin-bottom:2px; }
+.estep p { font-size:12px; color:rgba(255,255,255,.55); line-height:1.5; }
+</style>
+</head>
+<body>
+
+<div id="prog"></div>
+
+<header class="hdr">
+  <button class="hdr-back" id="hdr-back" onclick="goBack()">
+    <svg viewBox="0 0 16 16"><path d="M10 12L6 8l4-4"/></svg>
+  </button>
+  <a href="ecco.html" class="hdr-logo" style="text-decoration:none;">Ecco<span>.</span></a>
+  <div class="hdr-info">
+    <span class="hdr-step" id="hdr-step">Step 1 of 4</span>
+    <span class="hdr-name" id="hdr-name">Your home</span>
+  </div>
+  <a href="#" class="hdr-help">?</a>
+</header>
+
+<div class="page">
+
+<!-- S1: Owner -->
+<div class="scr on" id="s1">
+<div class="qcard">
+  <h1 class="qtitle">Are you a <span class="hl">homeowner</span> or a <span class="hl">landlord</span>?</h1>
+  <div class="opts" style="margin-top:20px;">
+    <div class="opt" onclick="go(2)">
+      <div class="oico"><svg width="44" height="42" viewBox="0 0 44 42" fill="none" stroke="#0b1e38" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20L22 4l18 16v18a2 2 0 01-2 2H6a2 2 0 01-2-2V20z"/><path d="M14 40V26h16v14"/><rect x="18" y="12" width="8" height="7" rx=".8"/></svg></div>
+      <div class="otext"><div class="oname">Homeowner</div></div>
+    </div>
+    <div class="opt" onclick="go(2)">
+      <div class="oico"><svg width="44" height="42" viewBox="0 0 44 42" fill="none" stroke="#0b1e38" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M2 22L13 10l11 12v18H2V22z"/><path d="M13 40V30h8v10"/><path d="M24 22l11-12 7 8v22H24V22z"/><path d="M28 40V30h8v10"/></svg></div>
+      <div class="otext"><div class="oname">Landlord</div></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- S2: Property type -->
+<div class="scr" id="s2">
+<div class="qcard">
+  <h1 class="qtitle">Which best describes <span class="hl">your home</span>?</h1>
+  <div class="opts" style="margin-top:20px;">
+    <div class="opt" onclick="go(3)">
+      <div class="oico"><svg width="44" height="40" viewBox="0 0 44 40" fill="none" stroke="#0b1e38" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20L22 4l18 16v18a1 1 0 01-1 1H5a1 1 0 01-1-1V20z"/><path d="M14 39V28h16v11"/><rect x="18" y="13" width="8" height="7" rx=".5"/></svg></div>
+      <div class="otext"><div class="oname">Detached</div></div><div class="odiv"></div><div class="oinfo">i</div>
+    </div>
+    <div class="opt" onclick="go(3)">
+      <div class="oico"><svg width="44" height="40" viewBox="0 0 44 40" fill="none" stroke="#0b1e38" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M2 22L14 8l12 14v16H2V22z"/><path d="M14 38V28h8v10"/><path d="M26 22l10-14 6 10v20H26V22z"/><path d="M30 38V28h7v10"/></svg></div>
+      <div class="otext"><div class="oname">Semi-Detached</div></div><div class="odiv"></div><div class="oinfo">i</div>
+    </div>
+    <div class="opt" onclick="go(3)">
+      <div class="oico"><svg width="44" height="40" viewBox="0 0 44 40" fill="none" stroke="#0b1e38" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M2 24L10 12h24l8 12v16H2V24z"/><line x1="18" y1="12" x2="18" y2="40"/><line x1="28" y1="12" x2="28" y2="40"/></svg></div>
+      <div class="otext"><div class="oname">Terraced</div></div><div class="odiv"></div><div class="oinfo">i</div>
+    </div>
+    <div class="opt" onclick="go(3)">
+      <div class="oico"><svg width="44" height="40" viewBox="0 0 44 40" fill="none" stroke="#0b1e38" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M2 24L22 8l20 16v12a2 2 0 01-2 2H4a2 2 0 01-2-2V24z"/></svg></div>
+      <div class="otext"><div class="oname">Bungalow</div></div><div class="odiv"></div><div class="oinfo">i</div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- S3: Roof type -->
+<div class="scr" id="s3">
+<div class="qcard">
+  <h1 class="qtitle">What type of <span class="hl">roof</span> do you have?</h1>
+  <div class="opts" style="margin-top:20px;">
+    <div class="opt" onclick="go(4)">
+      <div class="oico">
+        <svg width="46" height="40" viewBox="0 0 46 40" fill="none" stroke="#0b1e38" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 22L23 4l19 18v14H4V22z"/>
+          <line x1="4" y1="22" x2="42" y2="22" opacity=".3"/>
+          <line x1="36" y1="10" x2="36" y2="6"/><rect x="33" y="4" width="6" height="4" rx=".5"/>
+        </svg>
+      </div>
+      <div class="otext"><div class="oname">Pitched — tiles or slate</div><div class="odesc">Most common — works great for solar</div></div>
+      <div class="odiv"></div><div class="oinfo">i</div>
+    </div>
+    <div class="opt" onclick="go(4)">
+      <div class="oico">
+        <svg width="46" height="40" viewBox="0 0 46 40" fill="none" stroke="#0b1e38" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="4" y="12" width="38" height="24" rx="2"/>
+          <line x1="4" y1="12" x2="42" y2="12"/>
+          <line x1="4" y1="22" x2="42" y2="22" opacity=".3"/>
+        </svg>
+      </div>
+      <div class="otext"><div class="oname">Flat roof</div><div class="odesc">EPDM, felt or fibreglass — panels angled to optimise</div></div>
+      <div class="odiv"></div><div class="oinfo">i</div>
+    </div>
+    <div class="opt" onclick="go(4)">
+      <div class="oico">
+        <svg width="46" height="40" viewBox="0 0 46 40" fill="none" stroke="#0b1e38" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 36L23 6l19 30H4z"/>
+          <line x1="4" y1="36" x2="42" y2="36"/>
+        </svg>
+      </div>
+      <div class="otext"><div class="oname">Pitched — metal standing seam</div></div>
+      <div class="odiv"></div><div class="oinfo">i</div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- S4: Roof direction -->
+<div class="scr" id="s4">
+<div class="qcard">
+  <h1 class="qtitle">Which direction does your <span class="hl">roof face</span>?</h1>
+  <p class="qsub">South-facing gets the most sunshine. East or west still works well.</p>
+  <div class="opts">
+    <div class="opt" onclick="go(5)">
+      <div class="oico">
+        <svg width="40" height="40" viewBox="0 0 40 40" fill="none" stroke="#0b1e38" stroke-width="1.3" stroke-linecap="round">
+          <circle cx="20" cy="20" r="16"/><line x1="20" y1="4" x2="20" y2="8"/><line x1="20" y1="32" x2="20" y2="36"/><line x1="4" y1="20" x2="8" y2="20"/><line x1="32" y1="20" x2="36" y2="20"/>
+          <text x="16.5" y="24" font-size="10" font-family="sans-serif" font-weight="700" fill="#d97706">S</text>
+        </svg>
+      </div>
+      <div class="otext"><div class="oname">South</div><div class="odesc">Maximum generation — ideal</div></div>
+    </div>
+    <div class="opt" onclick="go(5)">
+      <div class="oico"><svg width="40" height="40" viewBox="0 0 40 40" fill="none" stroke="#0b1e38" stroke-width="1.3" stroke-linecap="round"><circle cx="20" cy="20" r="16"/><text x="12" y="24" font-size="9" font-family="sans-serif" font-weight="700" fill="#d97706">SE</text></svg></div>
+      <div class="otext"><div class="oname">South-East</div><div class="odesc">Very good generation</div></div>
+    </div>
+    <div class="opt" onclick="go(5)">
+      <div class="oico"><svg width="40" height="40" viewBox="0 0 40 40" fill="none" stroke="#0b1e38" stroke-width="1.3" stroke-linecap="round"><circle cx="20" cy="20" r="16"/><text x="12" y="24" font-size="9" font-family="sans-serif" font-weight="700" fill="#d97706">SW</text></svg></div>
+      <div class="otext"><div class="oname">South-West</div><div class="odesc">Very good generation</div></div>
+    </div>
+    <div class="opt" onclick="go(5)">
+      <div class="oico"><svg width="40" height="40" viewBox="0 0 40 40" fill="none" stroke="#0b1e38" stroke-width="1.3" stroke-linecap="round"><circle cx="20" cy="20" r="16"/><text x="17" y="24" font-size="10" font-family="sans-serif" font-weight="700" fill="#0b1e38">E</text></svg></div>
+      <div class="otext"><div class="oname">East</div><div class="odesc">Good morning generation</div></div>
+    </div>
+    <div class="opt" onclick="go(5)">
+      <div class="oico"><svg width="40" height="40" viewBox="0 0 40 40" fill="none" stroke="#0b1e38" stroke-width="1.3" stroke-linecap="round"><circle cx="20" cy="20" r="16"/><text x="16" y="24" font-size="10" font-family="sans-serif" font-weight="700" fill="#0b1e38">W</text></svg></div>
+      <div class="otext"><div class="oname">West</div><div class="odesc">Good afternoon generation</div></div>
+    </div>
+    <div class="opt" onclick="go(5)">
+      <div class="oico"><svg width="40" height="40" viewBox="0 0 40 40" fill="none" stroke="#0b1e38" stroke-width="1.3" stroke-linecap="round"><circle cx="20" cy="20" r="16"/><text x="17" y="24" font-size="10" font-family="sans-serif" font-weight="700" fill="#0b1e38">N</text></svg></div>
+      <div class="otext"><div class="oname">North</div><div class="odesc">We can still help — we'll advise</div></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- S5: Shading -->
+<div class="scr" id="s5">
+<div class="qcard">
+  <h1 class="qtitle">Is your roof affected by any <span class="hl">shading</span>?</h1>
+  <p class="qsub note">This won't change your from price but helps us design the right system.</p>
+  <div class="opts">
+    <div class="opt" onclick="go(6)">
+      <div class="oico">
+        <svg width="40" height="40" viewBox="0 0 40 40" fill="none" stroke="#0b1e38" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="20" cy="16" r="8"/>
+          <path d="M14 32c0-4 3-7 6-7s6 3 6 7"/>
+          <path d="M8 16H4M36 16h-4M20 4V2M20 30v2"/>
+        </svg>
+      </div>
+      <div class="otext"><div class="oname">No shading</div><div class="odesc">Full sun on the roof all day</div></div>
+    </div>
+    <div class="opt" onclick="go(6)">
+      <div class="otext"><div class="oname">Some shading</div><div class="odesc">Trees, chimney or neighbouring building casts some shadow</div></div>
+    </div>
+    <div class="opt" onclick="go(6)">
+      <div class="otext"><div class="oname">Significant shading</div><div class="odesc">Most of the roof is shaded for long periods</div></div>
+    </div>
+    <div class="opt" onclick="go(6)">
+      <div class="otext"><div class="oname">I'm not sure</div></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- S6: Listed building -->
+<div class="scr" id="s6">
+<div class="qcard">
+  <h1 class="qtitle">Is your home a <span class="hl">listed building</span> or in a <span class="hl">conservation area</span>?</h1>
+  <div class="qhelper"><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="7"/><path d="M8 7v4M8 5v.5"/></svg>Why does this matter?</div>
+  <div class="opts">
+    <div class="opt" onclick="go(7)"><div class="otext"><div class="oname">No</div><div class="odesc">Standard permitted development applies</div></div></div>
+    <div class="opt" onclick="go(7)"><div class="otext"><div class="oname">Yes — listed building</div><div class="odesc">We'll advise on the appropriate route</div></div></div>
+    <div class="opt" onclick="go(7)"><div class="otext"><div class="oname">Yes — conservation area</div><div class="odesc">Panels may need to face away from the street</div></div></div>
+    <div class="opt" onclick="go(7)"><div class="otext"><div class="oname">I'm not sure</div></div></div>
+  </div>
+</div>
+</div>
+
+<!-- S7: Electricity bill -->
+<div class="scr" id="s7">
+<div class="qcard">
+  <h1 class="qtitle">What's your approximate <span class="hl">monthly electricity bill</span>?</h1>
+  <p class="qsub note">This won't change your from price — it helps us show your estimated savings.</p>
+  <div class="opts">
+    <div class="opt" onclick="go(8)"><div class="otext"><div class="oname">Under £60/month</div></div></div>
+    <div class="opt" onclick="go(8)"><div class="otext"><div class="oname">£60–£100/month</div></div></div>
+    <div class="opt" onclick="go(8)"><div class="otext"><div class="oname">£100–£150/month</div></div></div>
+    <div class="opt" onclick="go(8)"><div class="otext"><div class="oname">Over £150/month</div></div></div>
+    <div class="opt" onclick="go(8)"><div class="otext"><div class="oname">I don't know</div></div></div>
+  </div>
+</div>
+</div>
+
+<!-- S8: Work from home -->
+<div class="scr" id="s8">
+<div class="qcard">
+  <h1 class="qtitle">Do you <span class="hl">work from home</span>?</h1>
+  <p class="qsub">If you use electricity during the day, solar will save you more.</p>
+  <div class="opts" style="margin-top:20px;">
+    <div class="opt" onclick="go(9)"><div class="otext"><div class="oname">Yes — most days</div></div></div>
+    <div class="opt" onclick="go(9)"><div class="otext"><div class="oname">Sometimes</div></div></div>
+    <div class="opt" onclick="go(9)"><div class="otext"><div class="oname">No</div></div></div>
+  </div>
+</div>
+</div>
+
+<!-- S9: Battery -->
+<div class="scr" id="s9">
+<div class="qcard">
+  <h1 class="qtitle">Would you like to add a <span class="hl">battery</span>?</h1>
+  <p class="qsub">A battery stores unused solar energy for evenings and cloudy days — maximising your savings.</p>
+  <div class="opts">
+    <div class="opt" onclick="go(10)">
+      <div class="oico">
+        <svg width="36" height="44" viewBox="0 0 36 44" fill="none" stroke="#0b1e38" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="6" y="10" width="24" height="32" rx="3"/>
+          <rect x="13" y="6" width="10" height="6" rx="1"/>
+          <line x1="18" y1="20" x2="18" y2="30"/><line x1="13" y1="25" x2="23" y2="25"/>
+        </svg>
+      </div>
+      <div class="otext"><div class="oname">Yes — include a battery</div><div class="odesc">Store energy for evenings and bad weather</div></div>
+    </div>
+    <div class="opt" onclick="go(10)">
+      <div class="otext"><div class="oname">No — panels only for now</div><div class="odesc">You can always add a battery later</div></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- S10: Postcode -->
+<div class="scr" id="s10">
+<div class="qcard">
+  <h1 class="qtitle">Finally, please enter the <span class="hl">postcode</span> of the property</h1>
+  <p class="qsub">We use this to calculate your roof's solar potential and check installer availability in your area.</p>
+  <div class="pc-row">
+    <input class="pc-input" type="text" placeholder="Enter postcode" autocomplete="postal-code">
+    <button class="pc-go" onclick="go(11)">Show results</button>
+  </div>
+</div>
+</div>
+
+<!-- S11: Results -->
+<div class="scr" id="s11">
+<div class="results-page">
+
+  <div class="address-bar">
+    <svg viewBox="0 0 16 16"><path d="M8 2C5.8 2 4 3.8 4 6c0 3.3 4 8 4 8s4-4.7 4-8c0-2.2-1.8-4-4-4zm0 5.5a1.5 1.5 0 110-3 1.5 1.5 0 010 3z"/></svg>
+    <span class="address-bar-txt">65 Rupert Road, Liverpool, L36 9TB</span>
+    <span class="address-bar-change">Change</span>
+  </div>
+
+  <div class="filter-bar">
+    <svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="7"/><path d="M8 7v4M8 5v.5"/></svg>
+    <span class="filter-txt">Semi-detached · South-facing · Pitched tiles · Battery included</span>
+    <span class="filter-edit">Edit</span>
+  </div>
+
+  <!-- Panel configurator -->
+  <div class="panels-section">
+    <div class="panels-hdr">
+      <h2>Panels</h2>
+      <p><strong>We recommend 10 panels</strong> for your roof based on your home type to help cover your usage. You can adjust this to suit your budget.</p>
+    </div>
+    <div class="panels-label">Number of panels</div>
+
+    <div class="panel-option selected" onclick="selectPanels(this, 10, '4.75kW system', 72)">
+      <div class="panel-radio"></div>
+      <div class="panel-info">
+        <div class="panel-name">10 panels <span class="panel-rec">Recommended</span></div>
+        <div class="panel-kwp">4.75kW system</div>
+        <div class="panel-savings">
+          <svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6"/><path d="M8 5v3l2 2"/></svg>
+          <span class="panel-savings-txt">Electricity bill savings*</span>
+          <span class="panel-savings-val">£72/mo</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel-option" onclick="selectPanels(this, 0, '', 0)">
+      <div class="panel-radio"></div>
+      <div class="panel-info">
+        <div class="panel-name">Choose</div>
+        <div class="panel-kwp">Between 4 and 20 panels</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Battery section -->
+  <div class="panels-section" style="margin-bottom:16px;">
+    <div class="panels-hdr">
+      <h2>Battery</h2>
+      <p>We recommend at least a 5.3kWh battery to get the most from your solar panels. Choose the size that suits you.</p>
+    </div>
+    <div class="panels-label">Choose size</div>
+    <div class="panel-option selected" onclick="selectBattery(this,'5–8kWh','Small capacity')">
+      <div class="panel-radio"></div>
+      <div class="panel-info">
+        <div class="panel-name">5–8 kWh <span class="panel-rec">Recommended</span></div>
+        <div class="panel-kwp">Small capacity</div>
+      </div>
+    </div>
+    <div class="panel-option" onclick="selectBattery(this,'9–12kWh','Medium capacity')">
+      <div class="panel-radio"></div>
+      <div class="panel-info">
+        <div class="panel-name">9–12 kWh</div>
+        <div class="panel-kwp">Medium capacity</div>
+      </div>
+    </div>
+    <div class="panel-option" onclick="selectBattery(this,'13+kWh','Large capacity')">
+      <div class="panel-radio"></div>
+      <div class="panel-info">
+        <div class="panel-name">13+ kWh</div>
+        <div class="panel-kwp">Large capacity</div>
+      </div>
+    </div>
+    <div class="panel-option" onclick="selectBattery(this,'none','')">
+      <div class="panel-radio"></div>
+      <div class="panel-info">
+        <div class="panel-name">Panel only installation</div>
+        <div class="panel-kwp">No battery selected</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Battery where -->
+  <div class="panels-section" style="margin-bottom:16px;">
+    <div class="panels-hdr">
+      <h2>Where would you like the battery installed?</h2>
+    </div>
+    <div class="panel-option selected" onclick="selectBatteryLoc(this)">
+      <div class="panel-radio"></div>
+      <div class="panel-info"><div class="panel-name">Outside</div><div class="panel-kwp">On an external wall</div></div>
+    </div>
+    <div class="panel-option" onclick="selectBatteryLoc(this)">
+      <div class="panel-radio"></div>
+      <div class="panel-info"><div class="panel-name">Inside</div><div class="panel-kwp">e.g. garage or utility room</div></div>
+    </div>
+    <div class="panel-option" onclick="selectBatteryLoc(this)">
+      <div class="panel-radio"></div>
+      <div class="panel-info"><div class="panel-name">I don't know</div><div class="panel-kwp">We'll make a recommendation</div></div>
+    </div>
+  </div>
+
+  <!-- Savings comparison -->
+  <div class="savings-section">
+    <div class="savings-title">Estimated savings</div>
+    <div class="savings-sub">This system could save you up to <strong>£72 a month</strong> on your electricity bill. We'll provide more accurate estimates in your full proposal.</div>
+    <div class="savings-compare">
+      <div class="sav-box">
+        <svg viewBox="0 0 28 28"><circle cx="14" cy="14" r="12"/><path d="M14 8v6l3 3"/></svg>
+        <div class="sav-val">£72/mo</div>
+        <div class="sav-lbl">Monthly savings**</div>
+      </div>
+      <div class="sav-divider"></div>
+      <div class="sav-box">
+        <svg viewBox="0 0 28 28"><rect x="4" y="8" width="20" height="14" rx="2"/><path d="M10 8V6M18 8V6"/></svg>
+        <div class="sav-val">£40/mo</div>
+        <div class="sav-lbl">Monthly cost from*</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- What's included -->
+  <div class="pcard featured">
+    <div class="pcard-banner">⭐ Most popular system</div>
+    <div class="pcard-img">
+      <!-- Solar panel SVG -->
+      <svg width="200" height="130" viewBox="0 0 200 130" fill="none">
+        <rect x="5" y="5" width="190" height="120" rx="5" fill="#1e3a5f" stroke="#162d4e" stroke-width="1"/>
+        <line x1="43" y1="5" x2="43" y2="125" stroke="#0088bb" stroke-width=".8" opacity=".5"/>
+        <line x1="81" y1="5" x2="81" y2="125" stroke="#0088bb" stroke-width=".8" opacity=".5"/>
+        <line x1="119" y1="5" x2="119" y2="125" stroke="#0088bb" stroke-width=".8" opacity=".5"/>
+        <line x1="157" y1="5" x2="157" y2="125" stroke="#0088bb" stroke-width=".8" opacity=".5"/>
+        <line x1="5" y1="45" x2="195" y2="45" stroke="#0088bb" stroke-width=".8" opacity=".5"/>
+        <line x1="5" y1="85" x2="195" y2="85" stroke="#0088bb" stroke-width=".8" opacity=".5"/>
+        <rect x="6" y="6" width="36" height="38" rx="2" fill="#0088bb" opacity=".12"/>
+        <rect x="82" y="46" width="36" height="38" rx="2" fill="#0088bb" opacity=".12"/>
+        <rect x="158" y="6" width="36" height="38" rx="2" fill="#0088bb" opacity=".12"/>
+        <rect x="6" y="86" width="36" height="38" rx="2" fill="#0088bb" opacity=".12"/>
+        <rect x="158" y="86" width="36" height="38" rx="2" fill="#0088bb" opacity=".12"/>
+        <!-- Sun -->
+        <circle cx="170" cy="22" r="12" fill="#f59e0b" opacity=".25"/>
+        <circle cx="170" cy="22" r="6" fill="#f59e0b" opacity=".35"/>
+        <rect x="5" y="5" width="190" height="120" rx="5" fill="none" stroke="#4a90d9" stroke-width="2"/>
+      </svg>
+    </div>
+    <div class="pcard-body">
+      <div class="pcard-name">10× AIKO NEOSTAR 3S Bi-Facial 475W Panels + 5.3kWh Sunsynk Battery</div>
+      <div class="pcard-tagline">
+        <h4>Award-winning bi-facial panels with scalable battery storage</h4>
+        <p>AIKO is the world's leading PV-cell manufacturer. These sleek all-black panels deliver top performance. Sunsynk W5.3 battery included.</p>
+        <a>See what's included ›</a>
+      </div>
+
+      <div class="included-title">Included...</div>
+      <div class="inc-item"><div class="inc-left"><div class="inc-check"><svg viewBox="0 0 12 12"><path d="M2 6l3 3 5-5"/></svg></div><span class="inc-name">10× AIKO NEOSTAR 475W panels — 25yr warranty</span></div><svg class="inc-chevron" viewBox="0 0 16 16"><path d="M6 4l4 4-4 4"/></svg></div>
+      <div class="inc-item"><div class="inc-left"><div class="inc-check"><svg viewBox="0 0 12 12"><path d="M2 6l3 3 5-5"/></svg></div><span class="inc-name">Sunsynk W5.3 battery (5.3kWh) — 10yr warranty</span></div><svg class="inc-chevron" viewBox="0 0 16 16"><path d="M6 4l4 4-4 4"/></svg></div>
+      <div class="inc-item"><div class="inc-left"><div class="inc-check"><svg viewBox="0 0 12 12"><path d="M2 6l3 3 5-5"/></svg></div><span class="inc-name">Sunsynk ECCO Hybrid Inverter</span></div><svg class="inc-chevron" viewBox="0 0 16 16"><path d="M6 4l4 4-4 4"/></svg></div>
+      <div class="inc-item"><div class="inc-left"><div class="inc-check"><svg viewBox="0 0 12 12"><path d="M2 6l3 3 5-5"/></svg></div><span class="inc-name">Scaffolding and access equipment</span></div><svg class="inc-chevron" viewBox="0 0 16 16"><path d="M6 4l4 4-4 4"/></svg></div>
+
+      <div class="included-title" style="margin-top:14px;">Also on us...</div>
+      <div class="inc-item"><div class="inc-left"><div class="inc-check"><svg viewBox="0 0 12 12"><path d="M2 6l3 3 5-5"/></svg></div><span class="inc-name">Fully MCS compliant installation</span></div><svg class="inc-chevron" viewBox="0 0 16 16"><path d="M6 4l4 4-4 4"/></svg></div>
+      <div class="inc-item"><div class="inc-left"><div class="inc-check"><svg viewBox="0 0 12 12"><path d="M2 6l3 3 5-5"/></svg></div><span class="inc-name">DNO application and grid connection</span></div><svg class="inc-chevron" viewBox="0 0 16 16"><path d="M6 4l4 4-4 4"/></svg></div>
+      <div class="inc-item"><div class="inc-left"><div class="inc-check"><svg viewBox="0 0 12 12"><path d="M2 6l3 3 5-5"/></svg></div><span class="inc-name">Smart export tariff setup</span></div><svg class="inc-chevron" viewBox="0 0 16 16"><path d="M6 4l4 4-4 4"/></svg></div>
+      <div class="inc-item"><div class="inc-left"><div class="inc-check"><svg viewBox="0 0 12 12"><path d="M2 6l3 3 5-5"/></svg></div><span class="inc-name">All paperwork and certificates</span></div></div>
+    </div>
+
+    <div class="price-section">
+      <div class="price-lbl">Total fixed price including installation:</div>
+      <div class="price-boxes">
+        <div class="pbox"><div class="pbox-lbl">Full system price</div><div class="pbox-val" id="full-price">£7,999</div></div>
+        <div class="pbox"><div class="pbox-lbl">Monthly from*</div><div class="pbox-val" id="mo-price">£40/mo</div></div>
+      </div>
+      <div class="vat-note">Including VAT at 0% on qualifying systems</div>
+      <a class="finance-link">View finance calculator</a>
+      <button class="proposal-btn" onclick="go(12)">Get your full proposal →</button>
+    </div>
+  </div>
+
+  <!-- What happens next -->
+  <div class="next-section">
+    <div class="next-title">What happens next?</div>
+    <div class="next-steps">
+      <div class="next-step">
+        <div class="next-dot active">1</div>
+        <div class="next-step-line"></div>
+        <div class="next-step-text"><h4>Request your full proposal</h4><p>Share a few details and our solar engineers will review your chosen system and begin preparing your full design — within 48 hours.</p></div>
+      </div>
+      <div class="next-step">
+        <div class="next-dot pending">2</div>
+        <div class="next-step-line"></div>
+        <div class="next-step-text"><h4>Receive within 48 hours</h4><p>Your personalised solar design with exact panel layout, generation estimates and savings.</p></div>
+      </div>
+      <div class="next-step">
+        <div class="next-dot pending">3</div>
+        <div class="next-step-text"><h4>Review and decide</h4><p>No pressure. Take your time to review. We're on hand to answer any questions.</p></div>
+      </div>
+    </div>
+    <button class="get-proposal-btn" onclick="go(12)">Get your full proposal</button>
+    <button class="callback-btn">Request a callback instead</button>
+  </div>
+
+  <!-- FAQs -->
+  <div class="faq-section">
+    <div class="faq-title">Most frequently asked questions</div>
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q"><span>How long does solar installation take?</span><svg viewBox="0 0 16 16"><path d="M8 4v8M4 8h8"/></svg></div>
+      <div class="faq-a">Most domestic solar installations take 1–2 days. We'll erect scaffolding the day before and have your system generating electricity the same day the panels go up.</div>
+    </div>
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q"><span>Will I need planning permission?</span><svg viewBox="0 0 16 16"><path d="M8 4v8M4 8h8"/></svg></div>
+      <div class="faq-a">In most cases, no. Solar panels on a domestic property are typically covered by permitted development. If you're in a conservation area or have a listed building, there may be additional requirements — we'll advise you.</div>
+    </div>
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q"><span>Can I earn money from my solar panels?</span><svg viewBox="0 0 16 16"><path d="M8 4v8M4 8h8"/></svg></div>
+      <div class="faq-a">Yes. The Smart Export Guarantee (SEG) pays you for surplus electricity you export back to the grid. We'll set this up for you as part of your installation.</div>
+    </div>
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q"><span>What warranty do the panels come with?</span><svg viewBox="0 0 16 16"><path d="M8 4v8M4 8h8"/></svg></div>
+      <div class="faq-a">AIKO NEOSTAR panels come with a 25-year manufacturer guarantee and a 30-year performance warranty. The Sunsynk battery has a 10-year warranty. We'll register all warranties for you on installation day.</div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- S12: Details -->
+<div class="scr" id="s12">
+  <div class="fcard">
+    <h3>Your details</h3>
+    <div class="ff-2">
+      <div class="ff"><label>First name</label><input type="text" placeholder="Sarah"></div>
+      <div class="ff"><label>Last name</label><input type="text" placeholder="Miller"></div>
+    </div>
+    <div class="ff"><label>Email</label><input type="email" placeholder="you@example.com"></div>
+    <div class="ff"><label>Mobile</label><input type="tel" placeholder="07700 000000"></div>
+  </div>
+</div>
+
+<!-- S13: Success -->
+<div class="scr" id="s13">
+  <div class="success-card">
+    <div class="suc-icon"><svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="17"/><path d="M13 20l5 5 9-10"/></svg></div>
+    <h2>Proposal requested!</h2>
+    <p>Our solar engineers are reviewing your chosen system and will have your full design ready within 48 hours.</p>
+    <div class="suc-table">
+      <div class="suc-row"><span class="suc-l">System</span><span class="suc-v">10× AIKO 475W + Sunsynk 5.3kWh</span></div>
+      <div class="suc-row"><span class="suc-l">From price</span><span class="suc-v">£7,999</span></div>
+      <div class="suc-row"><span class="suc-l">Est. savings</span><span class="suc-v">Up to £72/month</span></div>
+      <div class="suc-row"><span class="suc-l">Proposal</span><span class="suc-v">Within 48 hours</span></div>
+    </div>
+  </div>
+  <div class="eng">
+    <div class="eng-title"><svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="8"/><path d="M7 10l2 2 4-4"/></svg>What happens next</div>
+    <div class="eng-steps">
+      <div class="estep"><div class="estep-dot">✓</div><div><h4>MCS engineer designs your system</h4><p>Using satellite roof mapping, we calculate the exact panel layout and generation estimates for your home.</p></div></div>
+      <div class="estep"><div class="estep-dot">✓</div><div><h4>Full proposal sent within 48 hours</h4><p>You'll receive your personalised solar design, savings projection, and all technical details by email.</p></div></div>
+      <div class="estep"><div class="estep-dot">✓</div><div><h4>Review and book</h4><p>No pressure — take your time. Installation in as little as 2 weeks once you confirm.</p></div></div>
+      <div class="estep"><div class="estep-dot">✓</div><div><h4>Installation day</h4><p>MCS-certified installers fit your panels and battery. DNO, grid connection and smart export tariff all handled for you.</p></div></div>
+    </div>
+  </div>
+</div>
+
+</div><!-- end .page -->
+
+<!-- Fixed bottom bar (results page) -->
+<div class="bottom-bar" id="bottom-bar">
+  <div class="bottom-bar-inner">
+    <div class="bottom-price">
+      <span class="bottom-price-val" id="bar-price">£7,999</span>
+      <span class="bottom-price-mo" id="bar-mo">from £40/mo*</span>
+    </div>
+    <button class="bottom-proposal" onclick="go(12)">Get proposal</button>
+  </div>
+</div>
+
+<!-- Details CTA -->
+<div class="cta-bar" id="cta-bar">
+  <div class="cta-lhs"><span class="cta-from">System from</span><span class="cta-amount">£7,999</span></div>
+  <button class="cta-btn" onclick="go(13)">Submit request →</button>
+</div>
+
+<script>
+let step=1; const TOTAL=12;
+const meta={
+  1:['1 of 4','Your home'],2:['1 of 4','Your home'],3:['1 of 4','Your home'],
+  4:['1 of 4','Your home'],5:['1 of 4','Your home'],6:['1 of 4','Your home'],
+  7:['1 of 4','Your home'],8:['1 of 4','Your home'],9:['1 of 4','Your home'],
+  10:['1 of 4','Your home'],11:['2 of 4','Panels'],
+  12:['3 of 4','Your details'],13:['4 of 4','Confirmed']
+};
+
+function go(n) {
+  document.getElementById('s'+step).classList.remove('on');
+  step=n;
+  const el=document.getElementById('s'+n);
+  if(el){el.classList.add('on');window.scrollTo(0,0);}
+  document.getElementById('prog').style.width=Math.min(100,Math.round(n/TOTAL*100))+'%';
+  const m=meta[n]||['4 of 4','Confirmed'];
+  document.getElementById('hdr-step').textContent='Step '+m[0];
+  document.getElementById('hdr-name').textContent=m[1];
+  document.getElementById('hdr-back').classList.toggle('show',n>1);
+  document.getElementById('bottom-bar').style.display = n===11 ? 'block' : 'none';
+  document.getElementById('cta-bar').style.display = n===12 ? 'flex' : 'none';
+}
+
+function goBack(){if(step>1)go(step-1);}
+
+function selectPanels(el, count, kwp, savings) {
+  el.closest('.panels-section').querySelectorAll('.panel-option').forEach(o=>o.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+function selectBattery(el, size, desc) {
+  el.closest('.panels-section').querySelectorAll('.panel-option').forEach(o=>o.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+function selectBatteryLoc(el) {
+  el.closest('.panels-section').querySelectorAll('.panel-option').forEach(o=>o.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+function toggleFaq(el) { el.classList.toggle('open'); }
+
+go(1);
+</script>
+</body>
+</html>
