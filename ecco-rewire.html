@@ -133,6 +133,31 @@ body::before { content:''; position:fixed; inset:0; background:#eef1f6; z-index:
 .suc-row:last-child { border-bottom:none; }
 .suc-l { color:var(--muted); }
 .suc-v { font-weight:600; color:var(--navy); }
+
+/* ─── ROOM-BY-ROOM BREAKDOWN ───────────────────────── */
+.rooms-intro { font-size:13px; color:var(--muted); text-align:center; margin-bottom:18px; line-height:1.5; }
+.rooms-list { display:flex; flex-direction:column; gap:12px; }
+.room-card { border:1.5px solid var(--line); border-radius:14px; padding:14px; background:var(--white); }
+.room-head { display:flex; align-items:center; gap:10px; margin-bottom:12px; }
+.room-ico { width:34px; height:34px; border-radius:9px; background:var(--bg); display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.room-ico svg { width:18px; height:18px; stroke:var(--navy); fill:none; stroke-width:1.6; stroke-linecap:round; stroke-linejoin:round; }
+.room-name { font-family:'DM Sans',sans-serif; font-weight:700; font-size:.95rem; color:var(--navy); flex:1; }
+.room-remove { width:24px; height:24px; border-radius:50%; border:none; background:var(--bg); color:var(--muted); font-size:14px; cursor:pointer; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.room-scope { display:flex; gap:7px; margin-bottom:10px; }
+.scope-pill { flex:1; border:1.5px solid var(--line); border-radius:9px; background:var(--white); padding:9px 4px; font-family:'DM Sans',sans-serif; font-size:12.5px; font-weight:600; color:var(--slate); cursor:pointer; text-align:center; -webkit-tap-highlight-color:transparent; transition:border-color .1s,background .1s,color .1s; }
+.scope-pill[data-scope="full"].active { border-color:var(--red); background:var(--red-l); color:var(--red); }
+.scope-pill[data-scope="partial"].active { border-color:#d97706; background:#fef3c7; color:#b45309; }
+.scope-pill[data-scope="skip"].active { border-color:var(--line); background:var(--bg); color:var(--slate); }
+.room-photo { display:flex; align-items:center; gap:10px; border:1.5px dashed var(--line); border-radius:10px; padding:9px 10px; cursor:pointer; -webkit-tap-highlight-color:transparent; }
+.room-photo.has-photo { border-style:solid; border-color:var(--blue); }
+.photo-thumb { width:36px; height:36px; border-radius:7px; object-fit:cover; flex-shrink:0; display:none; }
+.photo-icon { width:18px; height:18px; stroke:var(--muted); fill:none; stroke-width:1.5; stroke-linecap:round; stroke-linejoin:round; flex-shrink:0; }
+.photo-label { font-size:12.5px; color:var(--slate); font-weight:500; flex:1; }
+.photo-clear { font-size:11px; color:var(--blue); font-weight:600; text-decoration:underline; flex-shrink:0; display:none; }
+.add-room-btn { border:1.5px dashed var(--line); border-radius:12px; padding:13px; text-align:center; font-size:13px; font-weight:600; color:var(--blue); cursor:pointer; background:transparent; width:100%; -webkit-tap-highlight-color:transparent; }
+.room-name-input { border:none; outline:none; font-family:'DM Sans',sans-serif; font-weight:700; font-size:.95rem; color:var(--navy); flex:1; background:transparent; border-bottom:1px solid var(--line); padding-bottom:2px; }
+.rooms-continue-btn { display:block; width:100%; margin-top:16px; background:var(--navy); color:white; font-family:'DM Sans',sans-serif; font-size:15px; font-weight:600; border:none; border-radius:10px; padding:16px; cursor:pointer; -webkit-tap-highlight-color:transparent; }
+.rooms-continue-btn:active { background:var(--navy2); }
 </style>
 </head>
 <body>
@@ -205,22 +230,33 @@ body::before { content:''; position:fixed; inset:0; background:#eef1f6; z-index:
   <h1 class="qtitle">How many <span class="hl">bedrooms</span>?</h1>
   <p class="qsub">This helps us estimate the scale of the rewire needed.</p>
   <div class="opts">
-    <div class="opt" onclick="go(4)"><div class="otext"><div class="oname">1 bedroom</div></div></div>
-    <div class="opt" onclick="go(4)"><div class="otext"><div class="oname">2 bedrooms</div></div></div>
-    <div class="opt" onclick="go(4)"><div class="otext"><div class="oname">3 bedrooms</div></div></div>
-    <div class="opt" onclick="go(4)"><div class="otext"><div class="oname">4 bedrooms</div></div></div>
-    <div class="opt" onclick="go(4)"><div class="otext"><div class="oname">5 or more</div></div></div>
+    <div class="opt" onclick="selectBedrooms(1)"><div class="otext"><div class="oname">1 bedroom</div></div></div>
+    <div class="opt" onclick="selectBedrooms(2)"><div class="otext"><div class="oname">2 bedrooms</div></div></div>
+    <div class="opt" onclick="selectBedrooms(3)"><div class="otext"><div class="oname">3 bedrooms</div></div></div>
+    <div class="opt" onclick="selectBedrooms(4)"><div class="otext"><div class="oname">4 bedrooms</div></div></div>
+    <div class="opt" onclick="selectBedrooms(5)"><div class="otext"><div class="oname">5 or more</div></div></div>
   </div>
 </div>
 </div>
 
-<!-- S4: Current consumer unit -->
+<!-- S4: Room-by-room breakdown -->
 <div class="scr" id="s4">
+<div class="qcard">
+  <h1 class="qtitle">Tell us about <span class="hl">each room</span></h1>
+  <p class="rooms-intro">Choose the work needed in each room. Add a photo of the existing sockets or wiring if you can — it's optional, but helps your engineer prepare.</p>
+  <div class="rooms-list" id="rooms-list"></div>
+  <button class="add-room-btn" onclick="addExtraRoom()">+ Add another room</button>
+  <button class="rooms-continue-btn" onclick="go(5)">Continue →</button>
+</div>
+</div>
+
+<!-- S5: Current consumer unit -->
+<div class="scr" id="s5">
 <div class="qcard">
   <h1 class="qtitle">What type of <span class="hl">consumer unit</span> do you currently have?</h1>
   <div class="qhelper"><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="7"/><path d="M8 7v4M8 5v.5"/></svg>How to find out</div>
   <div class="opts">
-    <div class="opt" onclick="go(5)">
+    <div class="opt" onclick="go(6)">
       <div class="oico">
         <svg width="44" height="44" viewBox="0 0 44 44" fill="none" stroke="#0b1e38" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
           <rect x="4" y="8" width="36" height="28" rx="2"/>
@@ -233,7 +269,7 @@ body::before { content:''; position:fixed; inset:0; background:#eef1f6; z-index:
       <div class="otext"><div class="oname">Modern consumer unit (MCBs)</div><div class="odesc">Plastic box with row of switches — post-2000</div></div>
       <div class="odiv"></div><div class="oinfo">i</div>
     </div>
-    <div class="opt" onclick="go(5)">
+    <div class="opt" onclick="go(6)">
       <div class="oico">
         <svg width="44" height="44" viewBox="0 0 44 44" fill="none" stroke="#0b1e38" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
           <rect x="4" y="8" width="36" height="28" rx="2"/>
@@ -245,42 +281,8 @@ body::before { content:''; position:fixed; inset:0; background:#eef1f6; z-index:
       <div class="otext"><div class="oname">Old fuse box (rewirable fuses)</div><div class="odesc">Older metal box with ceramic fuses</div></div>
       <div class="odiv"></div><div class="oinfo">i</div>
     </div>
-    <div class="opt" onclick="go(5)">
+    <div class="opt" onclick="go(6)">
       <div class="otext"><div class="oname">I'm not sure</div></div>
-    </div>
-  </div>
-</div>
-</div>
-
-<!-- S5: Scope of work -->
-<div class="scr" id="s5">
-<div class="qcard">
-  <h1 class="qtitle">What <span class="hl">work</span> do you need?</h1>
-  <div class="opts" style="margin-top:20px;">
-    <div class="opt" onclick="go(6)">
-      <div class="oico">
-        <svg width="44" height="44" viewBox="0 0 44 44" fill="none" stroke="#0b1e38" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="4" y="4" width="36" height="36" rx="3"/>
-          <path d="M12 22h20M22 12v20"/>
-        </svg>
-      </div>
-      <div class="otext"><div class="oname">Full rewire</div><div class="odesc">All circuits, new consumer unit, all sockets and switches</div></div>
-    </div>
-    <div class="opt" onclick="go(6)">
-      <div class="oico">
-        <svg width="44" height="44" viewBox="0 0 44 44" fill="none" stroke="#0b1e38" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="4" y="4" width="36" height="36" rx="3"/>
-          <path d="M14 22h8M26 22h4"/>
-          <circle cx="24" cy="22" r="3"/>
-        </svg>
-      </div>
-      <div class="otext"><div class="oname">Partial rewire</div><div class="odesc">Specific rooms or circuits only</div></div>
-    </div>
-    <div class="opt" onclick="go(6)">
-      <div class="otext"><div class="oname">Consumer unit replacement only</div><div class="odesc">New fuse board, no circuit rewiring needed</div></div>
-    </div>
-    <div class="opt" onclick="go(6)">
-      <div class="otext"><div class="oname">I'm not sure — I need advice</div></div>
     </div>
   </div>
 </div>
@@ -365,7 +367,7 @@ body::before { content:''; position:fixed; inset:0; background:#eef1f6; z-index:
 <div class="scr" id="s9">
   <div class="filter-bar">
     <svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="7"/><path d="M8 7v4M8 5v.5"/></svg>
-    <span class="filter-txt">3-bed semi-detached · Full rewire · EV charger</span>
+    <span class="filter-txt" id="filter-txt">3-bed semi-detached · Full rewire · EV charger</span>
     <span class="filter-edit">Edit</span>
   </div>
 
@@ -544,6 +546,149 @@ let step=1; const TOTAL=10;
 let chosenProduct='', chosenPrice='';
 const meta={1:['1 of 4','Your home'],2:['1 of 4','Your home'],3:['1 of 4','Your home'],4:['1 of 4','Your home'],5:['1 of 4','Your home'],6:['1 of 4','Your home'],7:['1 of 4','Your home'],8:['1 of 4','Your home'],9:['2 of 4','Your options'],10:['3 of 4','Your details'],11:['4 of 4','Confirmed']};
 
+// ── Room-by-room state ──
+let bedroomCount = 3;
+let roomData = {}; // { roomName: { scope:'full'|'partial'|'skip', photo:dataURL|null } }
+let extraRoomCount = 0;
+
+const ROOM_ICONS = {
+  kitchen: '<path d="M6 4v8M10 4v8M6 6h4"/><path d="M16 4v16"/><circle cx="16" cy="9" r="2.4"/>',
+  living:  '<path d="M3 13v5h18v-5"/><path d="M4 13V9a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v4"/><path d="M5 18v2M19 18v2"/>',
+  hall:    '<rect x="6" y="3" width="12" height="18" rx="1"/><circle cx="14.5" cy="12" r=".8" fill="var(--navy)" stroke="none"/>',
+  bath:    '<path d="M4 12h16v3a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4v-3z"/><path d="M7 12V7a2 2 0 0 1 3.5-1.3"/><line x1="7" y1="19" x2="7" y2="21"/><line x1="17" y1="19" x2="17" y2="21"/>',
+  bed:     '<path d="M3 18v-6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v6"/><path d="M3 18v2M21 18v2"/><path d="M5 12V9a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3"/>',
+  default: '<rect x="4" y="4" width="16" height="16" rx="2"/>'
+};
+function iconFor(name){
+  const n = name.toLowerCase();
+  if(n.includes('kitchen')) return ROOM_ICONS.kitchen;
+  if(n.includes('living')) return ROOM_ICONS.living;
+  if(n.includes('hall') || n.includes('landing')) return ROOM_ICONS.hall;
+  if(n.includes('bath')) return ROOM_ICONS.bath;
+  if(n.includes('bedroom')) return ROOM_ICONS.bed;
+  return ROOM_ICONS.default;
+}
+
+function selectBedrooms(n){
+  bedroomCount = n;
+  buildRooms();
+  go(4);
+}
+
+function buildRooms(){
+  const base = ['Kitchen','Living Room','Hallway & Landing','Bathroom'];
+  const beds = [];
+  const count = bedroomCount >= 5 ? 5 : bedroomCount;
+  for(let i=1;i<=count;i++) beds.push('Bedroom '+i);
+  const rooms = base.concat(beds);
+  roomData = {};
+  extraRoomCount = 0;
+  rooms.forEach(r => roomData[r] = {scope:'full', photo:null});
+  renderRooms();
+}
+
+function renderRooms(){
+  const list = document.getElementById('rooms-list');
+  list.innerHTML = '';
+  Object.keys(roomData).forEach(name => {
+    list.appendChild(buildRoomCard(name));
+  });
+}
+
+function buildRoomCard(name, removable){
+  const card = document.createElement('div');
+  card.className = 'room-card';
+  card.dataset.room = name;
+  const safeId = 'photo-' + name.replace(/[^a-zA-Z0-9]/g,'');
+  card.innerHTML = `
+    <div class="room-head">
+      <div class="room-ico"><svg viewBox="0 0 24 24">${iconFor(name)}</svg></div>
+      <div class="room-name">${name}</div>
+      ${removable ? '<button class="room-remove" type="button" onclick="removeRoom(this)">✕</button>' : ''}
+    </div>
+    <div class="room-scope">
+      <button type="button" class="scope-pill active" data-scope="full" onclick="setRoomScope(this,'full')">Full rewire</button>
+      <button type="button" class="scope-pill" data-scope="partial" onclick="setRoomScope(this,'partial')">Partial</button>
+      <button type="button" class="scope-pill" data-scope="skip" onclick="setRoomScope(this,'skip')">Skip</button>
+    </div>
+    <label class="room-photo" for="${safeId}">
+      <input type="file" accept="image/*" capture="environment" id="${safeId}" style="display:none" onchange="handlePhoto(event,this)">
+      <svg class="photo-icon" viewBox="0 0 24 24"><path d="M4 7h3l2-3h6l2 3h3a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.5"/></svg>
+      <img class="photo-thumb">
+      <span class="photo-label">Add a photo (optional)</span>
+      <span class="photo-clear" onclick="clearPhoto(event,this)">Remove</span>
+    </label>`;
+  return card;
+}
+
+function setRoomScope(btn, scope){
+  const card = btn.closest('.room-card');
+  card.querySelectorAll('.scope-pill').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  roomData[card.dataset.room].scope = scope;
+}
+
+function handlePhoto(evt, input){
+  const file = input.files[0];
+  if(!file) return;
+  const card = input.closest('.room-card');
+  const label = input.closest('.room-photo');
+  const reader = new FileReader();
+  reader.onload = function(e){
+    roomData[card.dataset.room].photo = e.target.result;
+    const thumb = label.querySelector('.photo-thumb');
+    thumb.src = e.target.result;
+    thumb.style.display = 'block';
+    label.querySelector('.photo-icon').style.display = 'none';
+    label.querySelector('.photo-label').textContent = 'Photo added';
+    label.querySelector('.photo-clear').style.display = 'inline';
+    label.classList.add('has-photo');
+  };
+  reader.readAsDataURL(file);
+}
+
+function clearPhoto(evt, el){
+  evt.preventDefault();
+  evt.stopPropagation();
+  const label = el.closest('.room-photo');
+  const card = label.closest('.room-card');
+  roomData[card.dataset.room].photo = null;
+  const input = label.querySelector('input[type="file"]');
+  input.value = '';
+  label.querySelector('.photo-thumb').style.display = 'none';
+  label.querySelector('.photo-icon').style.display = 'block';
+  label.querySelector('.photo-label').textContent = 'Add a photo (optional)';
+  label.querySelector('.photo-clear').style.display = 'none';
+  label.classList.remove('has-photo');
+}
+
+function addExtraRoom(){
+  extraRoomCount++;
+  const name = 'Other room ' + extraRoomCount;
+  roomData[name] = {scope:'full', photo:null};
+  const list = document.getElementById('rooms-list');
+  const card = buildRoomCard(name, true);
+  list.appendChild(card);
+}
+
+function removeRoom(btn){
+  const card = btn.closest('.room-card');
+  delete roomData[card.dataset.room];
+  card.remove();
+}
+
+function roomsSummary(){
+  const names = Object.keys(roomData);
+  const scopes = names.map(n => roomData[n].scope);
+  const photoCount = names.filter(n => roomData[n].photo).length;
+  let label = 'Consumer unit only';
+  if(scopes.includes('full')) label = 'Full rewire';
+  else if(scopes.includes('partial')) label = 'Partial rewire';
+  return {
+    bedroomCount, roomCount: names.length, photoCount, label
+  };
+}
+
 function go(n){
   document.getElementById('s'+step).classList.remove('on');
   step=n;
@@ -556,6 +701,11 @@ function go(n){
   document.getElementById('hdr-back').classList.toggle('show',n>1);
   document.getElementById('cta').style.display=n===10?'flex':'none';
   if(n===10) document.getElementById('cta-amt').textContent=chosenPrice||'£3,999';
+  if(n===9){
+    const s = roomsSummary();
+    const ft = document.getElementById('filter-txt');
+    if(ft) ft.textContent = s.bedroomCount + '-bed property · ' + s.label + (s.photoCount ? ' · ' + s.photoCount + ' room photo' + (s.photoCount>1?'s':'') + ' added' : '');
+  }
 }
 function goBack(){if(step>1)go(step-1);}
 function pick(name,price){
@@ -576,6 +726,7 @@ function toggleExtra(el){
   const anySelected = document.querySelectorAll('.extra-selected').length > 0;
   document.getElementById('extras-continue').style.display = anySelected ? 'block' : 'none';
 }
+buildRooms();
 go(1);
 </script>
 </body>
