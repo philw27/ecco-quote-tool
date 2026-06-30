@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Ecco — Rewire Quote</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --navy:#0b1e38; --navy2:#162d4e;
+  --blue:#0088bb; --blue-l:#e0f4fb;
+  --slate:#4a5568; --muted:#8896a6;
+  --line:#dde4ec; --bg:#eef1f6; --white:#ffffff;
+  --red:#dc2626; --red-l:#fee2e2;
+  --green:#2da771; --green-l:#e4f5ed;
+}
+html { background-color:#eef1f6; height:100%; -webkit-text-size-adjust:100%; }
+body { font-family:'DM Sans',sans-serif; color:var(--navy); -webkit-font-smoothing:antialiased; background-color:#eef1f6; min-height:100%; min-height:100dvh; position:relative; }
+body::before { content:''; position:fixed; inset:0; background:#eef1f6; z-index:-1; }
+
+#prog { position:fixed; top:0; left:0; z-index:400; height:3px; background:var(--red); transition:width .3s ease; width:0%; }
+
+.hdr { position:fixed; top:3px; left:0; right:0; z-index:300; background:var(--navy); height:52px; display:flex; align-items:center; padding:0 16px; gap:10px; }
+.hdr-back { width:34px; height:34px; border-radius:50%; background:rgba(255,255,255,.15); border:none; cursor:pointer; flex-shrink:0; display:none; align-items:center; justify-content:center; -webkit-tap-highlight-color:transparent; }
+.hdr-back.show { display:flex; }
+.hdr-back svg { width:16px; height:16px; stroke:white; fill:none; stroke-width:2.5; stroke-linecap:round; }
+.hdr-logo { font-family:'Syne',sans-serif; font-weight:800; font-size:1.15rem; letter-spacing:-.04em; color:white; line-height:1; flex-shrink:0; }
+.hdr-logo span { color:var(--blue); }
+.hdr-info { flex:1; display:flex; flex-direction:column; }
+.hdr-step { font-size:10px; color:rgba(255,255,255,.6); font-weight:500; }
+.hdr-name { font-size:13px; color:white; font-weight:700; line-height:1.2; }
+.hdr-help { width:30px; height:30px; border-radius:50%; border:1.5px solid rgba(255,255,255,.35); display:flex; align-items:center; justify-content:center; color:white; font-size:13px; font-weight:700; text-decoration:none; flex-shrink:0; }
+
+.page { padding-top:55px; background-color:#eef1f6; min-height:100vh; }
+.scr { display:none; padding:16px 16px 40px; }
+.scr.on { display:block; animation:up .2s ease both; }
+@keyframes up { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+
+.qcard { background:var(--white); border-radius:16px; padding:28px 20px 24px; }
+.qtitle { font-family:'DM Sans',sans-serif; font-weight:700; font-size:1.3rem; line-height:1.25; letter-spacing:-.02em; color:var(--navy); text-align:center; margin-bottom:6px; }
+.qtitle .hl { color:var(--red); }
+.qsub { font-size:13px; color:var(--muted); text-align:center; margin-bottom:20px; line-height:1.5; }
+.qsub.note { font-style:italic; color:var(--slate); }
+.qhelper { display:flex; align-items:center; gap:6px; background:var(--bg); border-radius:20px; padding:7px 14px; width:fit-content; margin:0 auto 20px; cursor:pointer; font-size:12px; color:var(--slate); font-weight:500; }
+.qhelper svg { width:14px; height:14px; flex-shrink:0; stroke:var(--muted); fill:none; stroke-width:1.5; }
+
+.opts { display:flex; flex-direction:column; gap:10px; }
+.opt { display:flex; align-items:center; gap:14px; border:1.5px solid var(--line); border-radius:12px; background:var(--white); padding:15px 14px; cursor:pointer; -webkit-tap-highlight-color:transparent; transition:border-color .1s,background .1s; min-height:62px; }
+.opt:active { background:var(--red-l); border-color:var(--red); }
+.oico { width:48px; flex-shrink:0; display:flex; align-items:center; justify-content:center; }
+.oico svg { display:block; }
+.otext { flex:1; min-width:0; }
+.oname { font-family:'DM Sans',sans-serif; font-weight:600; font-size:.95rem; color:var(--navy); line-height:1.3; }
+.odesc { font-size:12px; color:var(--muted); margin-top:2px; line-height:1.4; }
+.odiv { width:1px; height:36px; background:var(--line); flex-shrink:0; }
+.oinfo { width:26px; height:26px; border-radius:50%; border:1px solid var(--line); display:flex; align-items:center; justify-content:center; font-size:12px; color:var(--muted); flex-shrink:0; font-weight:600; }
+
+.pc-row { display:flex; border:2px solid var(--red); border-radius:40px; overflow:hidden; background:white; margin-top:4px; }
+.pc-input { flex:1; border:none; outline:none; padding:14px 18px; font-family:'DM Sans',sans-serif; font-size:16px; color:var(--navy); background:transparent; }
+.pc-input::placeholder { color:var(--muted); }
+.pc-go { background:var(--red); color:white; border:none; padding:14px 20px; font-family:'DM Sans',sans-serif; font-size:14px; font-weight:600; cursor:pointer; white-space:nowrap; }
+
+.filter-bar { background:var(--white); border-radius:10px; padding:11px 14px; margin-bottom:14px; display:flex; align-items:center; gap:8px; border:1px solid var(--line); }
+.filter-bar svg { width:15px; height:15px; stroke:var(--muted); fill:none; stroke-width:1.5; flex-shrink:0; }
+.filter-txt { font-size:12px; color:var(--slate); flex:1; }
+.filter-edit { font-size:12px; color:var(--blue); font-weight:600; cursor:pointer; flex-shrink:0; }
+
+.pc { background:var(--white); border-radius:16px; overflow:hidden; margin-bottom:16px; border:2px solid var(--line); -webkit-tap-highlight-color:transparent; }
+.pc.featured { border-color:var(--red); }
+.pc-banner { background:var(--red); color:white; font-size:11px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; text-align:center; padding:8px 16px; }
+.pc-img { background:#fef2f2; padding:28px 24px 24px; display:flex; align-items:flex-start; justify-content:space-between; gap:16px; min-height:140px; }
+.pc-brand { display:flex; flex-direction:column; gap:4px; padding-top:4px; }
+.pc-brand-name { font-family:'DM Sans',sans-serif; font-weight:700; font-size:.8rem; color:var(--navy); letter-spacing:.04em; text-transform:uppercase; line-height:1.4; }
+.pc-body { padding:18px 18px 0; }
+.pc-name { font-family:'DM Sans',sans-serif; font-weight:700; font-size:1rem; letter-spacing:-.01em; color:var(--navy); line-height:1.35; margin-bottom:12px; }
+.pc-pills { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:16px; }
+.pill { font-size:11px; font-weight:600; padding:4px 10px; border-radius:20px; display:inline-flex; align-items:center; gap:4px; line-height:1.4; font-family:'DM Sans',sans-serif; }
+.pill-red   { background:var(--red-l); color:var(--red); }
+.pill-blue  { background:var(--blue-l); color:var(--blue); }
+.pill-grey  { background:#f0f3f7; color:var(--slate); }
+.pill-green { background:var(--green-l); color:var(--green); }
+.pc-feats { display:flex; flex-direction:column; gap:12px; margin-bottom:14px; }
+.feat { display:flex; align-items:center; gap:10px; font-size:14px; color:var(--blue); text-decoration:underline; text-underline-offset:2px; cursor:pointer; line-height:1.4; }
+.feat svg { width:17px; height:17px; flex-shrink:0; stroke:var(--blue); fill:none; stroke-width:1.5; stroke-linecap:round; stroke-linejoin:round; }
+.feat-plain { display:flex; align-items:center; gap:10px; font-size:14px; color:var(--slate); line-height:1.4; }
+.feat-plain svg { width:17px; height:17px; flex-shrink:0; stroke:var(--muted); fill:none; stroke-width:1.5; stroke-linecap:round; }
+.pc-included { font-size:14px; color:var(--blue); font-weight:500; text-decoration:underline; text-underline-offset:2px; cursor:pointer; display:inline-block; padding-bottom:14px; }
+.pc-price { border-top:1px solid var(--line); padding:16px 18px 18px; }
+.pc-price-lbl { font-size:12px; color:var(--muted); text-align:center; margin-bottom:14px; }
+.pc-price-main { display:flex; align-items:baseline; justify-content:center; gap:20px; margin-bottom:6px; }
+.pc-price-today { font-family:'DM Sans',sans-serif; font-weight:700; font-size:2rem; letter-spacing:-.02em; color:var(--navy); }
+.pc-price-divider { width:1px; height:32px; background:var(--line); }
+.pc-price-monthly { display:flex; flex-direction:column; align-items:flex-start; }
+.pc-price-monthly-val { font-family:'DM Sans',sans-serif; font-weight:600; font-size:1.1rem; color:var(--navy); }
+.pc-price-monthly-lbl { font-size:11px; color:var(--muted); }
+.pc-finance { font-size:13px; color:var(--blue); text-align:center; margin-top:12px; display:block; text-decoration:underline; cursor:pointer; }
+.pc-btn { display:block; width:100%; margin-top:14px; background:var(--navy); color:white; font-family:'DM Sans',sans-serif; font-size:15px; font-weight:600; border:none; border-radius:10px; padding:16px; cursor:pointer; -webkit-tap-highlight-color:transparent; }
+.pc-btn:active { background:var(--navy2); }
+
+.eng { background:var(--navy); border-radius:16px; padding:20px 18px; margin-bottom:16px; }
+.eng-title { font-family:'DM Sans',sans-serif; font-weight:700; font-size:.9rem; color:white; display:flex; align-items:center; gap:8px; margin-bottom:16px; }
+.eng-title svg { width:18px; height:18px; fill:none; stroke:#34d399; stroke-width:1.5; flex-shrink:0; }
+.eng-steps { display:flex; flex-direction:column; gap:14px; }
+.estep { display:flex; gap:12px; align-items:flex-start; }
+.estep-dot { width:22px; height:22px; border-radius:50%; flex-shrink:0; background:rgba(0,136,187,.3); color:#4dd8f5; font-size:10px; font-weight:800; display:flex; align-items:center; justify-content:center; margin-top:1px; }
+.estep h4 { font-size:13px; font-weight:600; color:white; margin-bottom:2px; }
+.estep p { font-size:12px; color:rgba(255,255,255,.55); line-height:1.5; }
+
+.fcard { background:var(--white); border-radius:16px; padding:20px 18px; margin-bottom:14px; }
+.fcard h3 { font-family:'DM Sans',sans-serif; font-weight:700; font-size:.95rem; color:var(--navy); margin-bottom:16px; }
+.ff { display:flex; flex-direction:column; gap:5px; margin-bottom:12px; }
+.ff label { font-size:12px; font-weight:600; color:var(--slate); }
+.ff input { border:1.5px solid var(--line); border-radius:8px; padding:13px 14px; font-family:'DM Sans',sans-serif; font-size:15px; color:var(--navy); outline:none; width:100%; background:white; }
+.ff input:focus { border-color:var(--blue); }
+.ff input::placeholder { color:var(--muted); }
+.ff-2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+
+.cta { position:fixed; bottom:0; left:0; right:0; z-index:200; background:white; border-top:1px solid var(--line); padding:12px 16px; display:none; align-items:center; gap:14px; }
+.cta-lhs { display:flex; flex-direction:column; flex-shrink:0; }
+.cta-from { font-size:11px; color:var(--muted); }
+.cta-amount { font-family:'DM Sans',sans-serif; font-weight:700; font-size:1.05rem; color:var(--navy); }
+.cta-btn { flex:1; background:var(--navy); color:white; font-family:'DM Sans',sans-serif; font-size:15px; font-weight:600; border:none; border-radius:10px; padding:14px 20px; cursor:pointer; }
+
+.success-card { background:var(--white); border-radius:16px; padding:36px 20px; text-align:center; margin-bottom:16px; }
+.suc-icon { width:68px; height:68px; border-radius:50%; background:var(--green-l); margin:0 auto 18px; display:flex; align-items:center; justify-content:center; }
+.suc-icon svg { width:32px; height:32px; stroke:var(--green); fill:none; stroke-width:2.5; stroke-linecap:round; stroke-linejoin:round; }
+.success-card h2 { font-family:'DM Sans',sans-serif; font-weight:700; font-size:1.35rem; color:var(--navy); margin-bottom:8px; }
+.success-card p { font-size:14px; color:var(--slate); line-height:1.6; margin-bottom:20px; }
+.suc-table { background:var(--bg); border-radius:10px; padding:14px; text-align:left; }
+.suc-row { display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--line); font-size:13px; }
+.suc-row:last-child { border-bottom:none; }
+.suc-l { color:var(--muted); }
+.suc-v { font-weight:600; color:var(--navy); }
+</style>
+</head>
+<body>
+
+<div id="prog"></div>
+
+<header class="hdr">
+  <button class="hdr-back" id="hdr-back" onclick="goBack()">
+    <svg viewBox="0 0 16 16"><path d="M10 12L6 8l4-4"/></svg>
+  </button>
+  <a href="ecco.html" class="hdr-logo" style="text-decoration:none;">Ecco<span>.</span></a>
+  <div class="hdr-info">
+    <span class="hdr-step" id="hdr-step">Step 1 of 4</span>
+    <span class="hdr-name" id="hdr-name">Your home</span>
+  </div>
+  <a href="#" class="hdr-help">?</a>
+</header>
+
+<div class="page">
+
+<!-- S1: Owner -->
+<div class="scr on" id="s1">
+<div class="qcard">
+  <h1 class="qtitle">Are you a <span class="hl">homeowner</span> or a <span class="hl">landlord</span>?</h1>
+  <div class="opts" style="margin-top:20px;">
+    <div class="opt" onclick="go(2)">
+      <div class="oico"><svg width="44" height="42" viewBox="0 0 44 42" fill="none" stroke="#0b1e38" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20L22 4l18 16v18a2 2 0 01-2 2H6a2 2 0 01-2-2V20z"/><path d="M14 40V26h16v14"/><rect x="18" y="12" width="8" height="7" rx=".8"/></svg></div>
+      <div class="otext"><div class="oname">Homeowner</div></div>
+    </div>
+    <div class="opt" onclick="go(2)">
+      <div class="oico"><svg width="44" height="42" viewBox="0 0 44 42" fill="none" stroke="#0b1e38" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M2 22L13 10l11 12v18H2V22z"/><path d="M13 40V30h8v10"/><path d="M24 22l11-12 7 8v22H24V22z"/><path d="M28 40V30h8v10"/></svg></div>
+      <div class="otext"><div class="oname">Landlord</div></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- S2: Property type -->
+<div class="scr" id="s2">
+<div class="qcard">
+  <h1 class="qtitle">Which best describes <span class="hl">your home</span>?</h1>
+  <div class="opts" style="margin-top:20px;">
+    <div class="opt" onclick="go(3)">
+      <div class="oico"><svg width="44" height="40" viewBox="0 0 44 40" fill="none" stroke="#0b1e38" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20L22 4l18 16v18a1 1 0 01-1 1H5a1 1 0 01-1-1V20z"/><path d="M14 39V28h16v11"/><rect x="18" y="13" width="8" height="7" rx=".5"/></svg></div>
+      <div class="otext"><div class="oname">Detached</div></div><div class="odiv"></div><div class="oinfo">i</div>
+    </div>
+    <div class="opt" onclick="go(3)">
+      <div class="oico"><svg width="44" height="40" viewBox="0 0 44 40" fill="none" stroke="#0b1e38" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M2 22L14 8l12 14v16H2V22z"/><path d="M14 38V28h8v10"/><path d="M26 22l10-14 6 10v20H26V22z"/><path d="M30 38V28h7v10"/></svg></div>
+      <div class="otext"><div class="oname">Semi-Detached</div></div><div class="odiv"></div><div class="oinfo">i</div>
+    </div>
+    <div class="opt" onclick="go(3)">
+      <div class="oico"><svg width="44" height="40" viewBox="0 0 44 40" fill="none" stroke="#0b1e38" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M2 24L10 12h24l8 12v16H2V24z"/><line x1="18" y1="12" x2="18" y2="40"/><line x1="28" y1="12" x2="28" y2="40"/></svg></div>
+      <div class="otext"><div class="oname">Terraced</div></div><div class="odiv"></div><div class="oinfo">i</div>
+    </div>
+    <div class="opt" onclick="go(3)">
+      <div class="oico"><svg width="44" height="40" viewBox="0 0 44 40" fill="none" stroke="#0b1e38" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="36" height="38" rx="2"/><line x1="4" y1="14" x2="40" y2="14"/><line x1="4" y1="26" x2="40" y2="26"/><rect x="10" y="5" width="8" height="7" rx=".5"/><rect x="26" y="5" width="8" height="7" rx=".5"/></svg></div>
+      <div class="otext"><div class="oname">Flat / apartment</div></div><div class="odiv"></div><div class="oinfo">i</div>
+    </div>
+    <div class="opt" onclick="go(3)">
+      <div class="oico"><svg width="44" height="40" viewBox="0 0 44 40" fill="none" stroke="#0b1e38" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M2 24L22 8l20 16v12a2 2 0 01-2 2H4a2 2 0 01-2-2V24z"/></svg></div>
+      <div class="otext"><div class="oname">Bungalow</div></div><div class="odiv"></div><div class="oinfo">i</div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- S3: Bedrooms -->
+<div class="scr" id="s3">
+<div class="qcard">
+  <h1 class="qtitle">How many <span class="hl">bedrooms</span>?</h1>
+  <p class="qsub">This helps us estimate the scale of the rewire needed.</p>
+  <div class="opts">
+    <div class="opt" onclick="go(4)"><div class="otext"><div class="oname">1 bedroom</div></div></div>
+    <div class="opt" onclick="go(4)"><div class="otext"><div class="oname">2 bedrooms</div></div></div>
+    <div class="opt" onclick="go(4)"><div class="otext"><div class="oname">3 bedrooms</div></div></div>
+    <div class="opt" onclick="go(4)"><div class="otext"><div class="oname">4 bedrooms</div></div></div>
+    <div class="opt" onclick="go(4)"><div class="otext"><div class="oname">5 or more</div></div></div>
+  </div>
+</div>
+</div>
+
+<!-- S4: Current consumer unit -->
+<div class="scr" id="s4">
+<div class="qcard">
+  <h1 class="qtitle">What type of <span class="hl">consumer unit</span> do you currently have?</h1>
+  <div class="qhelper"><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="7"/><path d="M8 7v4M8 5v.5"/></svg>How to find out</div>
+  <div class="opts">
+    <div class="opt" onclick="go(5)">
+      <div class="oico">
+        <svg width="44" height="44" viewBox="0 0 44 44" fill="none" stroke="#0b1e38" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="4" y="8" width="36" height="28" rx="2"/>
+          <rect x="8" y="14" width="8" height="16" rx="1"/>
+          <rect x="18" y="14" width="4" height="8" rx="1"/>
+          <rect x="24" y="14" width="4" height="8" rx="1"/>
+          <rect x="30" y="14" width="6" height="16" rx="1"/>
+        </svg>
+      </div>
+      <div class="otext"><div class="oname">Modern consumer unit (MCBs)</div><div class="odesc">Plastic box with row of switches — post-2000</div></div>
+      <div class="odiv"></div><div class="oinfo">i</div>
+    </div>
+    <div class="opt" onclick="go(5)">
+      <div class="oico">
+        <svg width="44" height="44" viewBox="0 0 44 44" fill="none" stroke="#0b1e38" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="4" y="8" width="36" height="28" rx="2"/>
+          <circle cx="14" cy="22" r="5"/>
+          <circle cx="22" cy="22" r="5"/>
+          <circle cx="30" cy="22" r="5"/>
+        </svg>
+      </div>
+      <div class="otext"><div class="oname">Old fuse box (rewirable fuses)</div><div class="odesc">Older metal box with ceramic fuses</div></div>
+      <div class="odiv"></div><div class="oinfo">i</div>
+    </div>
+    <div class="opt" onclick="go(5)">
+      <div class="otext"><div class="oname">I'm not sure</div></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- S5: Scope of work -->
+<div class="scr" id="s5">
+<div class="qcard">
+  <h1 class="qtitle">What <span class="hl">work</span> do you need?</h1>
+  <div class="opts" style="margin-top:20px;">
+    <div class="opt" onclick="go(6)">
+      <div class="oico">
+        <svg width="44" height="44" viewBox="0 0 44 44" fill="none" stroke="#0b1e38" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="4" y="4" width="36" height="36" rx="3"/>
+          <path d="M12 22h20M22 12v20"/>
+        </svg>
+      </div>
+      <div class="otext"><div class="oname">Full rewire</div><div class="odesc">All circuits, new consumer unit, all sockets and switches</div></div>
+    </div>
+    <div class="opt" onclick="go(6)">
+      <div class="oico">
+        <svg width="44" height="44" viewBox="0 0 44 44" fill="none" stroke="#0b1e38" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="4" y="4" width="36" height="36" rx="3"/>
+          <path d="M14 22h8M26 22h4"/>
+          <circle cx="24" cy="22" r="3"/>
+        </svg>
+      </div>
+      <div class="otext"><div class="oname">Partial rewire</div><div class="odesc">Specific rooms or circuits only</div></div>
+    </div>
+    <div class="opt" onclick="go(6)">
+      <div class="otext"><div class="oname">Consumer unit replacement only</div><div class="odesc">New fuse board, no circuit rewiring needed</div></div>
+    </div>
+    <div class="opt" onclick="go(6)">
+      <div class="otext"><div class="oname">I'm not sure — I need advice</div></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- S6: Extras -->
+<div class="scr" id="s6">
+<div class="qcard">
+  <h1 class="qtitle">Would you like to add any <span class="hl">extras</span>?</h1>
+  <p class="qsub">Select all that apply. You can adjust at checkout.</p>
+  <div class="opts" style="margin-top:4px;" id="extras-opts">
+    <div class="opt extra-opt" data-val="ev" onclick="toggleExtra(this)">
+      <div class="oico">
+        <svg width="44" height="36" viewBox="0 0 44 36" fill="none" stroke="#0b1e38" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="10" width="36" height="18" rx="4"/>
+          <circle cx="10" cy="28" r="4"/>
+          <circle cx="30" cy="28" r="4"/>
+          <path d="M38 20h4v-6l-4-4"/>
+          <path d="M14 10V6h10l4 4"/>
+        </svg>
+      </div>
+      <div class="otext"><div class="oname">EV charger installation</div><div class="odesc">7kW home EV charger — from £799</div></div>
+    </div>
+    <div class="opt extra-opt" data-val="smoke" onclick="toggleExtra(this)">
+      <div class="oico">
+        <svg width="40" height="40" viewBox="0 0 40 40" fill="none" stroke="#0b1e38" stroke-width="1.3" stroke-linecap="round">
+          <circle cx="20" cy="18" r="12"/>
+          <path d="M14 26c-2 4-2 8 0 10h12c2-2 2-6 0-10"/>
+          <line x1="16" y1="14" x2="24" y2="22"/>
+          <line x1="24" y1="14" x2="16" y2="22"/>
+        </svg>
+      </div>
+      <div class="otext"><div class="oname">Smoke &amp; CO alarm installation</div><div class="odesc">Wired interlinked alarms throughout — from £299</div></div>
+    </div>
+    <div class="opt extra-opt" data-val="sockets" onclick="toggleExtra(this)">
+      <div class="oico">
+        <svg width="40" height="40" viewBox="0 0 40 40" fill="none" stroke="#0b1e38" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="6" y="6" width="28" height="28" rx="3"/>
+          <circle cx="15" cy="18" r="3"/>
+          <circle cx="25" cy="18" r="3"/>
+          <rect x="14" y="24" width="12" height="5" rx="1"/>
+        </svg>
+      </div>
+      <div class="otext"><div class="oname">Extra sockets &amp; USB outlets</div><div class="odesc">Additional sockets in any rooms — from £149</div></div>
+    </div>
+    <div class="opt" onclick="go(7)" style="border-color:var(--line)">
+      <div class="otext"><div class="oname">No extras — rewire only</div></div>
+    </div>
+  </div>
+  <button id="extras-continue" onclick="go(7)" style="display:none;width:100%;margin-top:14px;background:var(--navy);color:white;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;border:none;border-radius:10px;padding:16px;cursor:pointer;">Continue →</button>
+</div>
+</div>
+
+<!-- S7: Current wiring age -->
+<div class="scr" id="s7">
+<div class="qcard">
+  <h1 class="qtitle">Roughly how <span class="hl">old</span> is your current wiring?</h1>
+  <p class="qsub note">This won't change your fixed price — it helps our engineers plan the job.</p>
+  <div class="opts">
+    <div class="opt" onclick="go(8)"><div class="otext"><div class="oname">Under 10 years</div></div></div>
+    <div class="opt" onclick="go(8)"><div class="otext"><div class="oname">10–25 years</div></div></div>
+    <div class="opt" onclick="go(8)"><div class="otext"><div class="oname">25–40 years</div></div></div>
+    <div class="opt" onclick="go(8)"><div class="otext"><div class="oname">Over 40 years</div></div></div>
+    <div class="opt" onclick="go(8)"><div class="otext"><div class="oname">I don't know</div></div></div>
+  </div>
+</div>
+</div>
+
+<!-- S8: Postcode -->
+<div class="scr" id="s8">
+<div class="qcard">
+  <h1 class="qtitle">What's the <span class="hl">postcode</span> of the property?</h1>
+  <p class="qsub">We need this to check local engineer availability and confirm your installation date.</p>
+  <div class="pc-row">
+    <input class="pc-input" type="text" placeholder="Enter postcode" autocomplete="postal-code">
+    <button class="pc-go" onclick="go(9)">Show results</button>
+  </div>
+</div>
+</div>
+
+<!-- S9: Results -->
+<div class="scr" id="s9">
+  <div class="filter-bar">
+    <svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="7"/><path d="M8 7v4M8 5v.5"/></svg>
+    <span class="filter-txt">3-bed semi-detached · Full rewire · EV charger</span>
+    <span class="filter-edit">Edit</span>
+  </div>
+
+  <!-- Featured quote -->
+  <div class="pc featured" onclick="pick('Full Rewire — 3-bed semi-detached + EV Charger','£3,999','£51.40')">
+    <div class="pc-banner">⭐ Recommended for your home</div>
+    <div class="pc-img">
+      <div class="pc-brand"><div class="pc-brand-name">NICEIC<br>Approved</div></div>
+      <!-- Consumer unit SVG -->
+      <svg width="110" height="110" viewBox="0 0 100 100" fill="none" style="flex-shrink:0;filter:drop-shadow(2px 4px 8px rgba(0,0,0,.1))">
+        <!-- Main box -->
+        <rect x="8" y="12" width="84" height="76" rx="5" fill="white" stroke="#c8d2de" stroke-width="1"/>
+        <!-- Top label strip -->
+        <rect x="8" y="12" width="84" height="14" rx="5" fill="#f4f6f9" stroke="#c8d2de" stroke-width="1"/>
+        <!-- Main switch left -->
+        <rect x="14" y="32" width="18" height="48" rx="3" fill="#eef1f6" stroke="#b8c4d0" stroke-width="1"/>
+        <rect x="18" y="38" width="10" height="20" rx="2" fill="#0b1e38" opacity=".15"/>
+        <rect x="18" y="38" width="10" height="8" rx="2" fill="#0b1e38" opacity=".4"/>
+        <!-- MCB row -->
+        <rect x="36" y="32" width="10" height="22" rx="2" fill="#eef1f6" stroke="#b8c4d0" stroke-width="1"/>
+        <rect x="38" y="35" width="6" height="10" rx="1" fill="#dc2626" opacity=".6"/>
+        <rect x="48" y="32" width="10" height="22" rx="2" fill="#eef1f6" stroke="#b8c4d0" stroke-width="1"/>
+        <rect x="50" y="35" width="6" height="10" rx="1" fill="#0088bb" opacity=".6"/>
+        <rect x="60" y="32" width="10" height="22" rx="2" fill="#eef1f6" stroke="#b8c4d0" stroke-width="1"/>
+        <rect x="62" y="35" width="6" height="10" rx="1" fill="#0088bb" opacity=".6"/>
+        <rect x="72" y="32" width="10" height="22" rx="2" fill="#eef1f6" stroke="#b8c4d0" stroke-width="1"/>
+        <rect x="74" y="35" width="6" height="10" rx="1" fill="#0088bb" opacity=".6"/>
+        <!-- RCD row -->
+        <rect x="36" y="58" width="10" height="22" rx="2" fill="#eef1f6" stroke="#b8c4d0" stroke-width="1"/>
+        <rect x="38" y="61" width="6" height="10" rx="1" fill="#16a34a" opacity=".6"/>
+        <rect x="48" y="58" width="10" height="22" rx="2" fill="#eef1f6" stroke="#b8c4d0" stroke-width="1"/>
+        <rect x="50" y="61" width="6" height="10" rx="1" fill="#16a34a" opacity=".6"/>
+        <rect x="60" y="58" width="10" height="22" rx="2" fill="#eef1f6" stroke="#b8c4d0" stroke-width="1"/>
+        <rect x="62" y="61" width="6" height="10" rx="1" fill="#0088bb" opacity=".6"/>
+        <rect x="72" y="58" width="10" height="22" rx="2" fill="#eef1f6" stroke="#b8c4d0" stroke-width="1"/>
+        <rect x="74" y="61" width="6" height="10" rx="1" fill="#0088bb" opacity=".6"/>
+      </svg>
+    </div>
+    <div class="pc-body">
+      <div class="pc-name">Full Rewire + New Consumer Unit + 7kW EV Charger — 3-bed semi-detached</div>
+      <div class="pc-pills">
+        <span class="pill pill-red">⚡ NICEIC approved</span>
+        <span class="pill pill-blue">0% finance</span>
+        <span class="pill pill-green">EIC certificate included</span>
+      </div>
+      <div class="pc-feats">
+        <div class="feat"><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6"/><path d="M5.5 8.5l2 2 3-4"/></svg>Full rewire to BS7671 18th Edition</div>
+        <div class="feat"><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6"/><path d="M5.5 8.5l2 2 3-4"/></svg>New dual RCD consumer unit included</div>
+        <div class="feat"><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6"/><path d="M5.5 8.5l2 2 3-4"/></svg>7kW EV charger with smart app control</div>
+        <div class="feat-plain"><svg viewBox="0 0 16 16" stroke-linecap="round"><rect x="2" y="3" width="12" height="10" rx="1"/></svg>Electrical Installation Certificate issued same day</div>
+      </div>
+      <div class="pc-included">See what's included ›</div>
+    </div>
+    <div class="pc-price">
+      <div class="pc-price-lbl">Your fixed price including installation:</div>
+      <div class="pc-price-main">
+        <div class="pc-price-today">£3,999</div>
+        <div class="pc-price-divider"></div>
+        <div class="pc-price-monthly"><div class="pc-price-monthly-val">£51.40/mo*</div><div class="pc-price-monthly-lbl">0% finance available</div></div>
+      </div>
+      <a class="pc-finance">View finance calculator</a>
+      <button class="pc-btn">Select this quote →</button>
+    </div>
+  </div>
+
+  <!-- Rewire only -->
+  <div class="pc" onclick="pick('Full Rewire — 3-bed semi-detached','£2,995','£38.50')">
+    <div class="pc-img">
+      <div class="pc-brand"><div class="pc-brand-name">NICEIC<br>Approved</div></div>
+      <svg width="110" height="110" viewBox="0 0 100 100" fill="none" style="flex-shrink:0;filter:drop-shadow(2px 4px 8px rgba(0,0,0,.1))">
+        <rect x="8" y="12" width="84" height="76" rx="5" fill="white" stroke="#c8d2de" stroke-width="1"/>
+        <rect x="8" y="12" width="84" height="14" rx="5" fill="#f4f6f9" stroke="#c8d2de" stroke-width="1"/>
+        <rect x="14" y="32" width="18" height="48" rx="3" fill="#eef1f6" stroke="#b8c4d0" stroke-width="1"/>
+        <rect x="18" y="38" width="10" height="20" rx="2" fill="#0b1e38" opacity=".15"/>
+        <rect x="18" y="38" width="10" height="8" rx="2" fill="#0b1e38" opacity=".4"/>
+        <rect x="36" y="32" width="10" height="22" rx="2" fill="#eef1f6" stroke="#b8c4d0" stroke-width="1"/>
+        <rect x="38" y="35" width="6" height="10" rx="1" fill="#0088bb" opacity=".6"/>
+        <rect x="48" y="32" width="10" height="22" rx="2" fill="#eef1f6" stroke="#b8c4d0" stroke-width="1"/>
+        <rect x="50" y="35" width="6" height="10" rx="1" fill="#0088bb" opacity=".6"/>
+        <rect x="60" y="32" width="10" height="22" rx="2" fill="#eef1f6" stroke="#b8c4d0" stroke-width="1"/>
+        <rect x="62" y="35" width="6" height="10" rx="1" fill="#0088bb" opacity=".6"/>
+        <rect x="36" y="58" width="10" height="22" rx="2" fill="#eef1f6" stroke="#b8c4d0" stroke-width="1"/>
+        <rect x="38" y="61" width="6" height="10" rx="1" fill="#16a34a" opacity=".6"/>
+        <rect x="48" y="58" width="10" height="22" rx="2" fill="#eef1f6" stroke="#b8c4d0" stroke-width="1"/>
+        <rect x="50" y="61" width="6" height="10" rx="1" fill="#16a34a" opacity=".6"/>
+      </svg>
+    </div>
+    <div class="pc-body">
+      <div class="pc-name">Full Rewire + New Consumer Unit — 3-bed semi-detached</div>
+      <div class="pc-pills">
+        <span class="pill pill-red">⚡ NICEIC approved</span>
+        <span class="pill pill-blue">0% finance</span>
+        <span class="pill pill-grey">EV charger add-on available</span>
+      </div>
+      <div class="pc-feats">
+        <div class="feat"><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6"/><path d="M5.5 8.5l2 2 3-4"/></svg>Full rewire to BS7671 18th Edition</div>
+        <div class="feat"><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6"/><path d="M5.5 8.5l2 2 3-4"/></svg>New dual RCD consumer unit included</div>
+        <div class="feat-plain"><svg viewBox="0 0 16 16" stroke-linecap="round"><rect x="2" y="3" width="12" height="10" rx="1"/></svg>EV charger can be added at checkout — from £799</div>
+      </div>
+      <div class="pc-included">See what's included ›</div>
+    </div>
+    <div class="pc-price">
+      <div class="pc-price-lbl">Your fixed price including installation:</div>
+      <div class="pc-price-main">
+        <div class="pc-price-today">£2,995</div>
+        <div class="pc-price-divider"></div>
+        <div class="pc-price-monthly"><div class="pc-price-monthly-val">£38.50/mo*</div><div class="pc-price-monthly-lbl">0% finance available</div></div>
+      </div>
+      <a class="pc-finance">View finance calculator</a>
+      <button class="pc-btn">Select this quote →</button>
+    </div>
+  </div>
+
+  <div class="eng">
+    <div class="eng-title"><svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="8"/><path d="M7 10l2 2 4-4"/></svg>Every quote reviewed by a qualified engineer</div>
+    <div class="eng-steps">
+      <div class="estep"><div class="estep-dot">1</div><div><h4>You submit your answers</h4><p>Your property details are sent to our team straight away.</p></div></div>
+      <div class="estep"><div class="estep-dot">2</div><div><h4>A NICEIC engineer reviews your quote</h4><p>A qualified electrician confirms the scope of work for your property — no surprises on the day.</p></div></div>
+      <div class="estep"><div class="estep-dot">3</div><div><h4>You're confirmed within 2 hours</h4><p>We contact you to confirm everything is correct and your engineer is booked.</p></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- S10: Details -->
+<div class="scr" id="s10">
+  <div class="fcard">
+    <h3>Your details</h3>
+    <div class="ff-2">
+      <div class="ff"><label>First name</label><input type="text" placeholder="Sarah"></div>
+      <div class="ff"><label>Last name</label><input type="text" placeholder="Miller"></div>
+    </div>
+    <div class="ff"><label>Email</label><input type="email" placeholder="you@example.com"></div>
+    <div class="ff"><label>Mobile</label><input type="tel" placeholder="07700 000000"></div>
+  </div>
+  <div class="fcard">
+    <h3>Payment</h3>
+    <div class="opts">
+      <div class="opt" id="pay-full" onclick="selPay('full')" style="border-color:var(--blue)"><div class="otext"><div class="oname">Pay in full today</div><div class="odesc">Secure payment — no interest</div></div></div>
+      <div class="opt" id="pay-fin" onclick="selPay('fin')"><div class="otext"><div class="oname">Monthly finance</div><div class="odesc">From £51.40/mo · apply at checkout</div></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- S11: Success -->
+<div class="scr" id="s11">
+  <div class="success-card">
+    <div class="suc-icon"><svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="17"/><path d="M13 20l5 5 9-10"/></svg></div>
+    <h2>Booking confirmed!</h2>
+    <p>A NICEIC-approved engineer will review your quote within 2 hours to confirm the scope of work.</p>
+    <div class="suc-table">
+      <div class="suc-row"><span class="suc-l">Work</span><span class="suc-v" id="conf-p">—</span></div>
+      <div class="suc-row"><span class="suc-l">Total</span><span class="suc-v" id="conf-price">—</span></div>
+      <div class="suc-row"><span class="suc-l">Certificate</span><span class="suc-v">EIC issued same day</span></div>
+      <div class="suc-row"><span class="suc-l">Standard</span><span class="suc-v">BS7671 18th Edition</span></div>
+    </div>
+  </div>
+  <div class="eng">
+    <div class="eng-title"><svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="8"/><path d="M7 10l2 2 4-4"/></svg>What happens next</div>
+    <div class="eng-steps">
+      <div class="estep"><div class="estep-dot">✓</div><div><h4>Engineer review</h4><p>A NICEIC engineer confirms the scope within 2 hours.</p></div></div>
+      <div class="estep"><div class="estep-dot">✓</div><div><h4>Engineer assigned</h4><p>A vetted local electrician is confirmed and you'll get their details.</p></div></div>
+      <div class="estep"><div class="estep-dot">✓</div><div><h4>Installation day</h4><p>Engineer arrives, completes the work, removes all waste. EIC certificate issued and stored in your Ecco account same day.</p></div></div>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<div class="cta" id="cta">
+  <div class="cta-lhs"><span class="cta-from">Your fixed price</span><span class="cta-amount" id="cta-amt">£3,999</span></div>
+  <button class="cta-btn" onclick="go(11)">Confirm &amp; pay</button>
+</div>
+
+<script>
+let step=1; const TOTAL=10;
+let chosenProduct='', chosenPrice='';
+const meta={1:['1 of 4','Your home'],2:['1 of 4','Your home'],3:['1 of 4','Your home'],4:['1 of 4','Your home'],5:['1 of 4','Your home'],6:['1 of 4','Your home'],7:['1 of 4','Your home'],8:['1 of 4','Your home'],9:['2 of 4','Your options'],10:['3 of 4','Your details'],11:['4 of 4','Confirmed']};
+
+function go(n){
+  document.getElementById('s'+step).classList.remove('on');
+  step=n;
+  const el=document.getElementById('s'+n);
+  if(el){el.classList.add('on');window.scrollTo(0,0);}
+  document.getElementById('prog').style.width=Math.min(100,Math.round(n/TOTAL*100))+'%';
+  const m=meta[n]||['4 of 4','Confirmed'];
+  document.getElementById('hdr-step').textContent='Step '+m[0];
+  document.getElementById('hdr-name').textContent=m[1];
+  document.getElementById('hdr-back').classList.toggle('show',n>1);
+  document.getElementById('cta').style.display=n===10?'flex':'none';
+  if(n===10) document.getElementById('cta-amt').textContent=chosenPrice||'£3,999';
+}
+function goBack(){if(step>1)go(step-1);}
+function pick(name,price){
+  chosenProduct=name; chosenPrice=price;
+  document.getElementById('conf-p').textContent=name;
+  document.getElementById('conf-price').textContent=price;
+  go(10);
+}
+function selPay(t){
+  document.getElementById('pay-full').style.borderColor=t==='full'?'var(--blue)':'var(--line)';
+  document.getElementById('pay-fin').style.borderColor=t==='fin'?'var(--blue)':'var(--line)';
+}
+// Extras toggle — multi-select
+function toggleExtra(el){
+  el.classList.toggle('extra-selected');
+  el.style.borderColor = el.classList.contains('extra-selected') ? 'var(--red)' : 'var(--line)';
+  el.style.background  = el.classList.contains('extra-selected') ? 'var(--red-l)' : 'var(--white)';
+  const anySelected = document.querySelectorAll('.extra-selected').length > 0;
+  document.getElementById('extras-continue').style.display = anySelected ? 'block' : 'none';
+}
+go(1);
+</script>
+</body>
+</html>
