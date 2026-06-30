@@ -158,6 +158,19 @@ body::before { content:''; position:fixed; inset:0; background:#eef1f6; z-index:
 .room-name-input { border:none; outline:none; font-family:'DM Sans',sans-serif; font-weight:700; font-size:.95rem; color:var(--navy); flex:1; background:transparent; border-bottom:1px solid var(--line); padding-bottom:2px; }
 .rooms-continue-btn { display:block; width:100%; margin-top:16px; background:var(--navy); color:white; font-family:'DM Sans',sans-serif; font-size:15px; font-weight:600; border:none; border-radius:10px; padding:16px; cursor:pointer; -webkit-tap-highlight-color:transparent; }
 .rooms-continue-btn:active { background:var(--navy2); }
+
+.room-fields { display:flex; flex-direction:column; gap:8px; margin-bottom:10px; }
+.room-fields.dimmed { opacity:.4; pointer-events:none; }
+.field-row { display:flex; align-items:center; justify-content:space-between; border:1.5px solid var(--line); border-radius:10px; padding:9px 11px; }
+.field-lbl { font-size:12.5px; font-weight:600; color:var(--navy); }
+.field-counter { display:flex; align-items:center; gap:10px; }
+.field-btn { width:25px; height:25px; border-radius:7px; border:1px solid var(--line); background:var(--white); color:var(--navy); font-size:14px; font-weight:600; cursor:pointer; display:flex; align-items:center; justify-content:center; -webkit-tap-highlight-color:transparent; line-height:1; flex-shrink:0; }
+.field-btn:active { background:var(--bg); }
+.field-val { font-family:'DM Sans',sans-serif; font-weight:700; font-size:.9rem; color:var(--navy); min-width:14px; text-align:center; }
+.field-toggle { width:42px; height:24px; border-radius:20px; background:var(--line); position:relative; cursor:pointer; flex-shrink:0; -webkit-tap-highlight-color:transparent; transition:background .15s; }
+.field-toggle.on { background:var(--red); }
+.field-toggle::after { content:''; position:absolute; top:2px; left:2px; width:20px; height:20px; border-radius:50%; background:white; transition:transform .15s; box-shadow:0 1px 2px rgba(0,0,0,.2); }
+.field-toggle.on::after { transform:translateX(18px); }
 </style>
 </head>
 <body>
@@ -559,14 +572,54 @@ const ROOM_ICONS = {
   bed:     '<path d="M3 18v-6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v6"/><path d="M3 18v2M21 18v2"/><path d="M5 12V9a2 2 0 0 1 2-2h3a2 2 0 0 1 2 2v3"/>',
   default: '<rect x="4" y="4" width="16" height="16" rx="2"/>'
 };
-function iconFor(name){
+function categoryFor(name){
   const n = name.toLowerCase();
-  if(n.includes('kitchen')) return ROOM_ICONS.kitchen;
-  if(n.includes('living')) return ROOM_ICONS.living;
-  if(n.includes('hall') || n.includes('landing')) return ROOM_ICONS.hall;
-  if(n.includes('bath')) return ROOM_ICONS.bath;
-  if(n.includes('bedroom')) return ROOM_ICONS.bed;
-  return ROOM_ICONS.default;
+  if(n.includes('kitchen')) return 'kitchen';
+  if(n.includes('living')) return 'living';
+  if(n.includes('hall') || n.includes('landing')) return 'hall';
+  if(n.includes('bath')) return 'bath';
+  if(n.includes('bedroom')) return 'bed';
+  return 'default';
+}
+function iconFor(name){ return ROOM_ICONS[categoryFor(name)]; }
+
+// Field config per room category — mix of numeric counters and on/off toggles
+const ROOM_FIELDS = {
+  kitchen: [
+    {key:'sockets', label:'Sockets', type:'counter', def:8},
+    {key:'cooker',  label:'Electric cooker point', type:'counter', def:1},
+    {key:'hob',     label:'Gas hob spark lead', type:'toggle', def:false},
+    {key:'fan',     label:'Extractor fan', type:'toggle', def:true},
+    {key:'lights',  label:'Light points', type:'counter', def:3}
+  ],
+  living: [
+    {key:'sockets', label:'Sockets', type:'counter', def:6},
+    {key:'tv',      label:'TV / aerial point', type:'toggle', def:true},
+    {key:'lights',  label:'Light points', type:'counter', def:2}
+  ],
+  hall: [
+    {key:'sockets', label:'Sockets', type:'counter', def:2},
+    {key:'lights',  label:'Light points', type:'counter', def:2}
+  ],
+  bath: [
+    {key:'fan',     label:'Extractor fan', type:'toggle', def:true},
+    {key:'shaver',  label:'Shaver socket', type:'toggle', def:true},
+    {key:'lights',  label:'Light points', type:'counter', def:2}
+  ],
+  bed: [
+    {key:'sockets', label:'Sockets', type:'counter', def:4},
+    {key:'lights',  label:'Light points', type:'counter', def:1}
+  ],
+  default: [
+    {key:'sockets', label:'Sockets', type:'counter', def:4},
+    {key:'lights',  label:'Light points', type:'counter', def:1}
+  ]
+};
+function fieldsFor(name){ return ROOM_FIELDS[categoryFor(name)]; }
+function defaultFieldValues(name){
+  const out = {};
+  fieldsFor(name).forEach(f => out[f.key] = f.def);
+  return out;
 }
 
 function selectBedrooms(n){
@@ -583,7 +636,7 @@ function buildRooms(){
   const rooms = base.concat(beds);
   roomData = {};
   extraRoomCount = 0;
-  rooms.forEach(r => roomData[r] = {scope:'full', photo:null});
+  rooms.forEach(r => roomData[r] = {scope:'full', photo:null, fields: defaultFieldValues(r)});
   renderRooms();
 }
 
@@ -595,11 +648,30 @@ function renderRooms(){
   });
 }
 
+function fieldRowHTML(name, field){
+  const val = roomData[name].fields[field.key];
+  if(field.type === 'toggle'){
+    return `<div class="field-row">
+      <span class="field-lbl">${field.label}</span>
+      <div class="field-toggle${val ? ' on' : ''}" onclick="toggleField(this,'${field.key}')"></div>
+    </div>`;
+  }
+  return `<div class="field-row">
+    <span class="field-lbl">${field.label}</span>
+    <div class="field-counter">
+      <button type="button" class="field-btn" onclick="stepField(this,'${field.key}',-1)">−</button>
+      <span class="field-val" data-key="${field.key}">${val}</span>
+      <button type="button" class="field-btn" onclick="stepField(this,'${field.key}',1)">+</button>
+    </div>
+  </div>`;
+}
+
 function buildRoomCard(name, removable){
   const card = document.createElement('div');
   card.className = 'room-card';
   card.dataset.room = name;
   const safeId = 'photo-' + name.replace(/[^a-zA-Z0-9]/g,'');
+  const fields = fieldsFor(name).map(f => fieldRowHTML(name, f)).join('');
   card.innerHTML = `
     <div class="room-head">
       <div class="room-ico"><svg viewBox="0 0 24 24">${iconFor(name)}</svg></div>
@@ -611,6 +683,7 @@ function buildRoomCard(name, removable){
       <button type="button" class="scope-pill" data-scope="partial" onclick="setRoomScope(this,'partial')">Partial</button>
       <button type="button" class="scope-pill" data-scope="skip" onclick="setRoomScope(this,'skip')">Skip</button>
     </div>
+    <div class="room-fields">${fields}</div>
     <label class="room-photo" for="${safeId}">
       <input type="file" accept="image/*" capture="environment" id="${safeId}" style="display:none" onchange="handlePhoto(event,this)">
       <svg class="photo-icon" viewBox="0 0 24 24"><path d="M4 7h3l2-3h6l2 3h3a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.5"/></svg>
@@ -621,11 +694,28 @@ function buildRoomCard(name, removable){
   return card;
 }
 
+function stepField(btn, key, delta){
+  const card = btn.closest('.room-card');
+  const name = card.dataset.room;
+  const next = Math.max(0, (roomData[name].fields[key] || 0) + delta);
+  roomData[name].fields[key] = next;
+  card.querySelector('.field-val[data-key="'+key+'"]').textContent = next;
+}
+
+function toggleField(el, key){
+  const card = el.closest('.room-card');
+  const name = card.dataset.room;
+  const next = !roomData[name].fields[key];
+  roomData[name].fields[key] = next;
+  el.classList.toggle('on', next);
+}
+
 function setRoomScope(btn, scope){
   const card = btn.closest('.room-card');
   card.querySelectorAll('.scope-pill').forEach(p => p.classList.remove('active'));
   btn.classList.add('active');
   roomData[card.dataset.room].scope = scope;
+  card.querySelector('.room-fields').classList.toggle('dimmed', scope === 'skip');
 }
 
 function handlePhoto(evt, input){
@@ -665,7 +755,7 @@ function clearPhoto(evt, el){
 function addExtraRoom(){
   extraRoomCount++;
   const name = 'Other room ' + extraRoomCount;
-  roomData[name] = {scope:'full', photo:null};
+  roomData[name] = {scope:'full', photo:null, fields: defaultFieldValues(name)};
   const list = document.getElementById('rooms-list');
   const card = buildRoomCard(name, true);
   list.appendChild(card);
@@ -681,11 +771,21 @@ function roomsSummary(){
   const names = Object.keys(roomData);
   const scopes = names.map(n => roomData[n].scope);
   const photoCount = names.filter(n => roomData[n].photo).length;
+  let totalSockets = 0, totalLights = 0, hasGasHob = false, hasElecCooker = false;
+  names.forEach(n => {
+    const f = roomData[n].fields;
+    if(roomData[n].scope === 'skip') return;
+    if(f.sockets) totalSockets += f.sockets;
+    if(f.cooker) totalSockets += f.cooker; // cooker point counted separately but included in total points
+    if(f.lights) totalLights += f.lights;
+    if(f.hob) hasGasHob = true;
+    if(f.cooker) hasElecCooker = true;
+  });
   let label = 'Consumer unit only';
   if(scopes.includes('full')) label = 'Full rewire';
   else if(scopes.includes('partial')) label = 'Partial rewire';
   return {
-    bedroomCount, roomCount: names.length, photoCount, label
+    bedroomCount, roomCount: names.length, photoCount, label, totalSockets, totalLights, hasGasHob, hasElecCooker
   };
 }
 
