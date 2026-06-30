@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Ecco — Heat Pump Quote</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --navy:#0b1e38; --navy2:#162d4e;
+  --blue:#0088bb; --blue-l:#e0f4fb;
+  --slate:#4a5568; --muted:#8896a6;
+  --line:#dde4ec; --bg:#eef1f6; --white:#ffffff;
+  --green:#16a34a; --green-l:#dcfce7;
+  --green2:#2da771; --green2-l:#e4f5ed;
+  --amber:#f59e0b;
+}
+html { background-color:#eef1f6; height:100%; -webkit-text-size-adjust:100%; }
+body { font-family:'DM Sans',sans-serif; color:var(--navy); -webkit-font-smoothing:antialiased; background-color:#eef1f6; min-height:100%; min-height:100dvh; position:relative; }
+body::before { content:''; position:fixed; inset:0; background:#eef1f6; z-index:-1; }
+
+/* Progress */
+#prog { position:fixed; top:0; left:0; z-index:400; height:3px; background:var(--green); transition:width .3s ease; width:0%; }
+
+/* Header */
+.hdr { position:fixed; top:3px; left:0; right:0; z-index:300; background:var(--navy); height:52px; display:flex; align-items:center; padding:0 16px; gap:10px; }
+.hdr-back { width:34px; height:34px; border-radius:50%; background:rgba(255,255,255,.15); border:none; cursor:pointer; flex-shrink:0; display:none; align-items:center; justify-content:center; -webkit-tap-highlight-color:transparent; }
+.hdr-back.show { display:flex; }
+.hdr-back svg { width:16px; height:16px; stroke:white; fill:none; stroke-width:2.5; stroke-linecap:round; }
+.hdr-logo { font-family:'Syne',sans-serif; font-weight:800; font-size:1.15rem; letter-spacing:-.04em; color:white; line-height:1; flex-shrink:0; }
+.hdr-logo span { color:var(--blue); }
+.hdr-info { flex:1; display:flex; flex-direction:column; }
+.hdr-step { font-size:10px; color:rgba(255,255,255,.6); font-weight:500; }
+.hdr-name { font-size:13px; color:white; font-weight:700; line-height:1.2; }
+.hdr-help { width:30px; height:30px; border-radius:50%; border:1.5px solid rgba(255,255,255,.35); display:flex; align-items:center; justify-content:center; color:white; font-size:13px; font-weight:700; text-decoration:none; flex-shrink:0; }
+
+/* Page */
+.page { padding-top:55px; background-color:#eef1f6; min-height:100vh; }
+.scr { display:none; padding:16px 16px 40px; }
+.scr.on { display:block; animation:up .2s ease both; }
+@keyframes up { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+
+/* Question card */
+.qcard { background:var(--white); border-radius:16px; padding:28px 20px 24px; }
+.qtitle { font-family:'DM Sans',sans-serif; font-weight:700; font-size:1.3rem; line-height:1.25; letter-spacing:-.02em; color:var(--navy); text-align:center; margin-bottom:6px; }
+.qtitle .hl { color:var(--green); }
+.qsub { font-size:13px; color:var(--muted); text-align:center; margin-bottom:20px; line-height:1.5; }
+.qsub.note { font-style:italic; color:var(--slate); }
+.qhelper { display:flex; align-items:center; gap:6px; background:var(--bg); border-radius:20px; padding:7px 14px; width:fit-content; margin:0 auto 20px; cursor:pointer; font-size:12px; color:var(--slate); font-weight:500; -webkit-tap-highlight-color:transparent; }
+.qhelper svg { width:14px; height:14px; flex-shrink:0; stroke:var(--muted); fill:none; stroke-width:1.5; }
+
+/* Options */
+.opts { display:flex; flex-direction:column; gap:10px; }
+.opt { display:flex; align-items:center; gap:14px; border:1.5px solid var(--line); border-radius:12px; background:var(--white); padding:15px 14px; cursor:pointer; -webkit-tap-highlight-color:transparent; transition:border-color .1s,background .1s; min-height:62px; }
+.opt:active { background:var(--green-l); border-color:var(--green); }
+.oico { width:48px; flex-shrink:0; display:flex; align-items:center; justify-content:center; }
+.oico svg { display:block; }
+.otext { flex:1; min-width:0; }
+.oname { font-family:'DM Sans',sans-serif; font-weight:600; font-size:.95rem; color:var(--navy); line-height:1.3; }
+.odesc { font-size:12px; color:var(--muted); margin-top:2px; line-height:1.4; }
+.odiv { width:1px; height:36px; background:var(--line); flex-shrink:0; }
+.oinfo { width:26px; height:26px; border-radius:50%; border:1px solid var(--line); display:flex; align-items:center; justify-content:center; font-size:12px; color:var(--muted); flex-shrink:0; font-weight:600; }
+
+/* Postcode */
+.pc-row { display:flex; border:2px solid var(--green); border-radius:40px; overflow:hidden; background:white; margin-top:4px; }
+.pc-input { flex:1; border:none; outline:none; padding:14px 18px; font-family:'DM Sans',sans-serif; font-size:16px; color:var(--navy); background:transparent; }
+.pc-input::placeholder { color:var(--muted); }
+.pc-go { background:var(--green); color:white; border:none; padding:14px 20px; font-family:'DM Sans',sans-serif; font-size:14px; font-weight:600; cursor:pointer; white-space:nowrap; -webkit-tap-highlight-color:transparent; }
+
+/* Grant popup */
+.popup-overlay { position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:500; display:none; align-items:flex-end; justify-content:center; padding:0; }
+.popup-overlay.show { display:flex; }
+.popup { background:white; border-radius:20px 20px 0 0; padding:0 0 40px; width:100%; max-width:500px; text-align:center; overflow:hidden; animation:slideUp .3s ease both; }
+@keyframes slideUp { from{transform:translateY(100%)} to{transform:translateY(0)} }
+.popup-img { width:100%; height:180px; background:#f4f6f9; display:flex; align-items:center; justify-content:center; margin-bottom:24px; overflow:hidden; }
+.popup-img svg { width:80px; height:80px; }
+.popup h3 { font-family:'DM Sans',sans-serif; font-weight:700; font-size:1.2rem; color:var(--navy); margin:0 24px 12px; line-height:1.3; }
+.popup p { font-size:14px; color:var(--slate); line-height:1.6; margin:0 24px 24px; }
+.popup-btn { margin:0 24px; display:block; width:calc(100% - 48px); background:var(--green); color:white; font-family:'DM Sans',sans-serif; font-size:15px; font-weight:600; border:none; border-radius:10px; padding:16px; cursor:pointer; -webkit-tap-highlight-color:transparent; }
+
+/* Confetti */
+.confetti-piece { position:fixed; width:8px; height:8px; top:-10px; border-radius:2px; animation:confettiFall 1.5s ease-in forwards; pointer-events:none; z-index:600; }
+@keyframes confettiFall { to { transform:translateY(110vh) rotate(720deg); opacity:0; } }
+
+/* Results page */
+.results-page { padding:16px 16px 100px; }
+
+.grant-bar { background:var(--green); color:white; text-align:center; padding:10px 16px; font-family:'DM Sans',sans-serif; font-weight:700; font-size:13px; margin-bottom:16px; border-radius:10px; }
+
+.filter-bar { background:var(--white); border-radius:10px; padding:11px 14px; margin-bottom:16px; display:flex; align-items:center; gap:8px; border:1px solid var(--line); }
+.filter-bar svg { width:15px; height:15px; stroke:var(--muted); fill:none; stroke-width:1.5; flex-shrink:0; }
+.filter-txt { font-size:12px; color:var(--slate); flex:1; }
+.filter-edit { font-size:12px; color:var(--blue); font-weight:600; cursor:pointer; }
+
+/* Product card */
+.pcard { background:var(--white); border-radius:16px; overflow:hidden; margin-bottom:20px; border:2px solid var(--line); }
+.pcard.featured { border-color:var(--green); }
+.pcard-banner { background:var(--green); color:white; font-size:11px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; text-align:center; padding:8px 16px; }
+
+.pcard-img { background:#f0fdf4; padding:24px; display:flex; align-items:center; justify-content:center; min-height:200px; }
+.pcard-img img { max-width:100%; max-height:180px; object-fit:contain; }
+.pcard-img-placeholder { display:flex; flex-direction:column; align-items:center; gap:12px; }
+
+.pcard-body { padding:18px 18px 0; }
+.pcard-tagline { background:var(--bg); border-radius:10px; padding:14px; margin-bottom:14px; }
+.pcard-tagline h4 { font-weight:700; font-size:.9rem; color:var(--navy); margin-bottom:4px; }
+.pcard-tagline p { font-size:13px; color:var(--slate); line-height:1.5; }
+.pcard-tagline a { color:var(--green); font-size:13px; font-weight:600; text-decoration:underline; cursor:pointer; display:inline-block; margin-top:8px; }
+
+.pcard-name { font-family:'DM Sans',sans-serif; font-weight:700; font-size:1.05rem; letter-spacing:-.01em; color:var(--navy); line-height:1.35; margin-bottom:14px; }
+
+/* Spec table */
+.spec-table { border:1px solid var(--line); border-radius:10px; overflow:hidden; margin-bottom:14px; }
+.spec-row { display:flex; align-items:center; justify-content:space-between; padding:12px 14px; border-bottom:1px solid var(--line); }
+.spec-row:last-child { border-bottom:none; }
+.spec-label { font-size:13px; color:var(--slate); }
+.spec-value { font-size:13px; font-weight:700; color:var(--navy); display:flex; align-items:center; gap:6px; }
+.spec-icon { width:18px; height:18px; stroke:var(--muted); fill:none; stroke-width:1.5; }
+
+/* Included list */
+.included-section { margin-bottom:14px; }
+.included-title { font-weight:700; font-size:.9rem; color:var(--navy); margin-bottom:10px; }
+.inc-item { display:flex; align-items:center; justify-content:space-between; padding:12px 0; border-bottom:1px solid var(--line); cursor:pointer; -webkit-tap-highlight-color:transparent; }
+.inc-item:last-child { border-bottom:none; }
+.inc-left { display:flex; align-items:center; gap:10px; }
+.inc-check { width:22px; height:22px; border-radius:50%; border:2px solid var(--green); flex-shrink:0; display:flex; align-items:center; justify-content:center; }
+.inc-check svg { width:12px; height:12px; stroke:var(--green); fill:none; stroke-width:2.5; stroke-linecap:round; stroke-linejoin:round; }
+.inc-name { font-size:13px; font-weight:600; color:var(--navy); }
+.inc-chevron { width:16px; height:16px; stroke:var(--muted); fill:none; stroke-width:1.5; flex-shrink:0; }
+
+/* Price section */
+.price-section { border-top:1px solid var(--line); padding:16px 18px 18px; }
+.price-lbl { font-size:12px; color:var(--muted); text-align:center; margin-bottom:12px; }
+.price-boxes { display:flex; gap:10px; margin-bottom:14px; }
+.pbox { flex:1; background:var(--bg); border-radius:10px; padding:12px 14px; }
+.pbox-lbl { font-size:11px; color:var(--muted); margin-bottom:4px; }
+.pbox-val { font-family:'DM Sans',sans-serif; font-weight:700; font-size:1.2rem; color:var(--navy); }
+.pbox-was { font-size:11px; color:var(--green); text-decoration:line-through; margin-top:2px; }
+.grant-line { display:flex; align-items:center; justify-content:space-between; background:var(--green-l); border-radius:8px; padding:10px 14px; margin-bottom:14px; }
+.grant-line-left { display:flex; align-items:center; gap:8px; font-size:13px; font-weight:600; color:var(--navy); }
+.grant-line-left svg { width:18px; height:18px; stroke:var(--green); fill:none; stroke-width:1.5; }
+.grant-line-amount { font-size:13px; font-weight:700; color:var(--green); }
+.finance-link { font-size:13px; color:var(--green); text-align:center; display:block; text-decoration:underline; cursor:pointer; margin-bottom:14px; }
+.choose-btn { display:block; width:100%; background:var(--green); color:white; font-family:'DM Sans',sans-serif; font-size:15px; font-weight:600; border:none; border-radius:10px; padding:16px; cursor:pointer; -webkit-tap-highlight-color:transparent; }
+
+/* Also on us */
+.also-section { background:var(--bg); border-radius:12px; padding:16px; margin-bottom:20px; }
+.also-title { font-weight:700; font-size:.9rem; color:var(--navy); margin-bottom:12px; }
+
+/* System performance */
+.perf-section { background:var(--bg); border-radius:12px; padding:16px; margin-bottom:20px; }
+.perf-title { font-weight:700; font-size:.95rem; color:var(--navy); margin-bottom:4px; }
+.perf-sub { font-size:12px; color:var(--muted); margin-bottom:14px; }
+.perf-row { padding:10px 0; border-bottom:1px solid var(--line); }
+.perf-row:last-child { border-bottom:none; }
+.perf-row-title { font-size:13px; font-weight:600; color:var(--navy); margin-bottom:2px; }
+.perf-row-sub { font-size:12px; color:var(--muted); }
+
+/* FAQs */
+.faq-section { background:var(--white); border-radius:12px; padding:16px; margin-bottom:20px; }
+.faq-title { font-weight:700; font-size:.95rem; color:var(--navy); margin-bottom:14px; }
+.faq-item { padding:12px 0; border-bottom:1px solid var(--line); cursor:pointer; -webkit-tap-highlight-color:transparent; }
+.faq-item:last-child { border-bottom:none; }
+.faq-q { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+.faq-q span { font-size:14px; font-weight:600; color:var(--navy); line-height:1.4; flex:1; }
+.faq-q svg { width:18px; height:18px; stroke:var(--green); fill:none; stroke-width:2; flex-shrink:0; transition:transform .2s; }
+.faq-item.open .faq-q svg { transform:rotate(45deg); }
+.faq-a { font-size:13px; color:var(--slate); line-height:1.6; margin-top:10px; display:none; }
+.faq-item.open .faq-a { display:block; }
+
+/* Aftercare */
+.aftercare-section { background:var(--white); border-radius:12px; padding:16px; margin-bottom:20px; }
+.aftercare-title { font-weight:700; font-size:.95rem; color:var(--navy); margin-bottom:8px; }
+.aftercare-text { font-size:13px; color:var(--slate); line-height:1.6; }
+
+/* Fixed bottom bar */
+.bottom-bar { position:fixed; bottom:0; left:0; right:0; z-index:200; background:white; border-top:1px solid var(--line); padding:12px 16px; padding-bottom:max(12px,env(safe-area-inset-bottom)); }
+.bottom-bar-inner { display:flex; align-items:center; justify-content:space-between; gap:14px; max-width:500px; margin:0 auto; }
+.bottom-price { display:flex; flex-direction:column; }
+.bottom-price-today { font-size:11px; color:var(--muted); }
+.bottom-price-val { font-family:'DM Sans',sans-serif; font-weight:700; font-size:1.1rem; color:var(--navy); }
+.bottom-price-save { font-size:11px; color:var(--green); font-weight:600; }
+.bottom-price-mo { font-size:11px; color:var(--slate); }
+.bottom-choose { background:var(--green); color:white; font-family:'DM Sans',sans-serif; font-size:15px; font-weight:600; border:none; border-radius:10px; padding:14px 24px; cursor:pointer; white-space:nowrap; }
+
+/* Details */
+.fcard { background:var(--white); border-radius:16px; padding:20px 18px; margin-bottom:14px; }
+.fcard h3 { font-family:'DM Sans',sans-serif; font-weight:700; font-size:.95rem; color:var(--navy); margin-bottom:16px; }
+.ff { display:flex; flex-direction:column; gap:5px; margin-bottom:12px; }
+.ff label { font-size:12px; font-weight:600; color:var(--slate); }
+.ff input { border:1.5px solid var(--line); border-radius:8px; padding:13px 14px; font-family:'DM Sans',sans-serif; font-size:15px; color:var(--navy); outline:none; width:100%; background:white; transition:border-color .12s; }
+.ff input:focus { border-color:var(--blue); }
+.ff input::placeholder { color:var(--muted); }
+.ff-2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+
+.cta-bar { position:fixed; bottom:0; left:0; right:0; z-index:200; background:white; border-top:1px solid var(--line); padding:12px 16px; display:none; align-items:center; gap:14px; }
+.cta-lhs { display:flex; flex-direction:column; flex-shrink:0; }
+.cta-from { font-size:11px; color:var(--muted); }
+.cta-amount { font-family:'DM Sans',sans-serif; font-weight:700; font-size:1.05rem; color:var(--navy); }
+.cta-btn { flex:1; background:var(--navy); color:white; font-family:'DM Sans',sans-serif; font-size:15px; font-weight:600; border:none; border-radius:10px; padding:14px 20px; cursor:pointer; }
+
+/* Success */
+.success-card { background:var(--white); border-radius:16px; padding:36px 20px; text-align:center; margin-bottom:16px; }
+.suc-icon { width:68px; height:68px; border-radius:50%; background:var(--green2-l); margin:0 auto 18px; display:flex; align-items:center; justify-content:center; }
+.suc-icon svg { width:32px; height:32px; stroke:var(--green2); fill:none; stroke-width:2.5; stroke-linecap:round; stroke-linejoin:round; }
+.success-card h2 { font-family:'DM Sans',sans-serif; font-weight:700; font-size:1.35rem; color:var(--navy); margin-bottom:8px; }
+.success-card p { font-size:14px; color:var(--slate); line-height:1.6; margin-bottom:20px; }
+.suc-table { background:var(--bg); border-radius:10px; padding:14px; text-align:left; }
+.suc-row { display:flex; justify-content:space-between; padding:8px 0; border-bottom:1px solid var(--line); font-size:13px; }
+.suc-row:last-child { border-bottom:none; }
+.suc-l { color:var(--muted); }
+.suc-v { font-weight:600; color:var(--navy); text-align:right; max-width:55%; }
+
+/* Eng panel */
+.eng { background:var(--navy); border-radius:16px; padding:20px 18px; margin-bottom:16px; }
+.eng-title { font-family:'DM Sans',sans-serif; font-weight:700; font-size:.9rem; color:white; display:flex; align-items:center; gap:8px; margin-bottom:16px; }
+.eng-title svg { width:18px; height:18px; fill:none; stroke:#34d399; stroke-width:1.5; flex-shrink:0; stroke-linecap:round; stroke-linejoin:round; }
+.eng-steps { display:flex; flex-direction:column; gap:14px; }
+.estep { display:flex; gap:12px; align-items:flex-start; }
+.estep-dot { width:22px; height:22px; border-radius:50%; flex-shrink:0; background:rgba(0,136,187,.3); color:#4dd8f5; font-size:10px; font-weight:800; display:flex; align-items:center; justify-content:center; margin-top:1px; }
+.estep h4 { font-size:13px; font-weight:600; color:white; margin-bottom:2px; }
+.estep p { font-size:12px; color:rgba(255,255,255,.55); line-height:1.5; }
+</style>
+</head>
+<body>
+
+<div id="prog"></div>
+
+<header class="hdr">
+  <button class="hdr-back" id="hdr-back" onclick="goBack()">
+    <svg viewBox="0 0 16 16"><path d="M10 12L6 8l4-4"/></svg>
+  </button>
+  <a href="ecco.html" class="hdr-logo" style="text-decoration:none;">Ecco<span>.</span></a>
+  <div class="hdr-info">
+    <span class="hdr-step" id="hdr-step">Step 1 of 4</span>
+    <span class="hdr-name" id="hdr-name">Your home</span>
+  </div>
+  <a href="#" class="hdr-help">?</a>
+</header>
+
+<!-- Grant eligibility popup -->
+<div class="popup-overlay" id="grant-popup">
+  <div class="popup">
+    <div class="popup-img">
+      <svg viewBox="0 0 80 80" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="40" cy="40" r="36" stroke="#dcfce7" stroke-width="4" fill="#dcfce7"/>
+        <path d="M24 40l10 10 22-22" stroke="#16a34a" stroke-width="3"/>
+        <circle cx="40" cy="40" r="36" fill="none" stroke="#16a34a" stroke-width="2.5"/>
+      </svg>
+    </div>
+    <h3>You should be eligible for a £7,500 grant towards your heat pump</h3>
+    <p>We'll complete final checks on your eligibility and take care of all the paperwork for you. The £7,500 grant has been automatically deducted from your fixed price.</p>
+    <button class="popup-btn" onclick="closeGrant()">Next</button>
+  </div>
+</div>
+
+<div class="page">
+
+<!-- S1: Owner -->
+<div class="scr on" id="s1">
+<div class="qcard">
+  <h1 class="qtitle">Are you a <span class="hl">homeowner</span> or a <span class="hl">landlord</span>?</h1>
+  <div class="opts" style="margin-top:20px;">
+    <div class="opt" onclick="go(2)">
+      <div class="oico"><svg width="44" height="42" viewBox="0 0 44 42" fill="none" stroke="#0b1e38" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20L22 4l18 16v18a2 2 0 01-2 2H6a2 2 0 01-2-2V20z"/><path d="M14 40V26h16v14"/><rect x="18" y="12" width="8" height="7" rx=".8"/></svg></div>
+      <div class="otext"><div class="oname">Homeowner</div></div>
+    </div>
+    <div class="opt" onclick="go(2)">
+      <div class="oico"><svg width="44" height="42" viewBox="0 0 44 42" fill="none" stroke="#0b1e38" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M2 22L13 10l11 12v18H2V22z"/><path d="M13 40V30h8v10"/><path d="M24 22l11-12 7 8v22H24V22z"/><path d="M28 40V30h8v10"/></svg></div>
+      <div class="otext"><div class="oname">Landlord</div></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- S2: Property type -->
+<div class="scr" id="s2">
+<div class="qcard">
+  <h1 class="qtitle">Which best describes <span class="hl">your home</span>?</h1>
+  <div class="opts" style="margin-top:20px;">
+    <div class="opt" onclick="go(3)">
+      <div class="oico"><svg width="44" height="40" viewBox="0 0 44 40" fill="none" stroke="#0b1e38" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20L22 4l18 16v18a1 1 0 01-1 1H5a1 1 0 01-1-1V20z"/><path d="M14 39V28h16v11"/><rect x="18" y="13" width="8" height="7" rx=".5"/></svg></div>
+      <div class="otext"><div class="oname">Detached</div></div><div class="odiv"></div><div class="oinfo">i</div>
+    </div>
+    <div class="opt" onclick="go(3)">
+      <div class="oico"><svg width="44" height="40" viewBox="0 0 44 40" fill="none" stroke="#0b1e38" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M2 22L14 8l12 14v16H2V22z"/><path d="M14 38V28h8v10"/><path d="M26 22l10-14 6 10v20H26V22z"/><path d="M30 38V28h7v10"/></svg></div>
+      <div class="otext"><div class="oname">Semi-Detached</div><div class="odesc">One of a pair that share a single common wall</div></div><div class="odiv"></div><div class="oinfo">i</div>
+    </div>
+    <div class="opt" onclick="go(3)">
+      <div class="oico"><svg width="44" height="40" viewBox="0 0 44 40" fill="none" stroke="#0b1e38" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M2 24L10 12h24l8 12v16H2V24z"/><line x1="18" y1="12" x2="18" y2="40"/><line x1="28" y1="12" x2="28" y2="40"/><rect x="5" y="26" width="8" height="14" rx=".5"/><rect x="20" y="26" width="6" height="14" rx=".5"/><rect x="31" y="26" width="8" height="14" rx=".5"/></svg></div>
+      <div class="otext"><div class="oname">Terraced</div></div><div class="odiv"></div><div class="oinfo">i</div>
+    </div>
+    <div class="opt" onclick="go(3)">
+      <div class="oico"><svg width="44" height="40" viewBox="0 0 44 40" fill="none" stroke="#0b1e38" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="36" height="38" rx="2"/><line x1="4" y1="14" x2="40" y2="14"/><line x1="4" y1="26" x2="40" y2="26"/><rect x="10" y="5" width="8" height="7" rx=".5"/><rect x="26" y="5" width="8" height="7" rx=".5"/><rect x="18" y="30" width="8" height="10" rx=".5"/></svg></div>
+      <div class="otext"><div class="oname">Flat / apartment</div></div><div class="odiv"></div><div class="oinfo">i</div>
+    </div>
+    <div class="opt" onclick="go(3)">
+      <div class="oico"><svg width="44" height="40" viewBox="0 0 44 40" fill="none" stroke="#0b1e38" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M2 24L22 8l20 16v12a2 2 0 01-2 2H4a2 2 0 01-2-2V24z"/><rect x="8" y="26" width="10" height="12" rx=".5"/><rect x="26" y="26" width="10" height="12" rx=".5"/></svg></div>
+      <div class="otext"><div class="oname">Bungalow</div></div><div class="odiv"></div><div class="oinfo">i</div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- S3: Bedrooms -->
+<div class="scr" id="s3">
+<div class="qcard">
+  <h1 class="qtitle">How many <span class="hl">bedrooms</span>?</h1>
+  <div class="opts" style="margin-top:20px;">
+    <div class="opt" onclick="go(4)"><div class="otext"><div class="oname">1 bedroom</div></div></div>
+    <div class="opt" onclick="go(4)"><div class="otext"><div class="oname">2 bedrooms</div></div></div>
+    <div class="opt" onclick="go(4)"><div class="otext"><div class="oname">3 bedrooms</div></div></div>
+    <div class="opt" onclick="go(4)"><div class="otext"><div class="oname">4 bedrooms</div></div></div>
+    <div class="opt" onclick="go(4)"><div class="otext"><div class="oname">5 or more</div></div></div>
+  </div>
+</div>
+</div>
+
+<!-- S4: Current heating -->
+<div class="scr" id="s4">
+<div class="qcard">
+  <h1 class="qtitle">What's your <span class="hl">current heating system</span>?</h1>
+  <div class="opts" style="margin-top:20px;">
+    <div class="opt" onclick="go(5)">
+      <div class="oico"><svg width="38" height="46" viewBox="0 0 38 46" fill="none" stroke="#0b1e38" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="28" height="36" rx="3"/><rect x="5" y="3" width="28" height="10" rx="3"/><circle cx="19" cy="28" r="7"/><circle cx="19" cy="28" r="3"/><line x1="12" y1="39" x2="12" y2="44"/><line x1="19" y1="39" x2="19" y2="44"/><line x1="26" y1="39" x2="26" y2="44"/></svg></div>
+      <div class="otext"><div class="oname">Gas boiler</div><div class="odesc">Combi, system or regular</div></div>
+    </div>
+    <div class="opt" onclick="go(5)">
+      <div class="oico"><svg width="38" height="46" viewBox="0 0 38 46" fill="none" stroke="#0b1e38" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="28" height="36" rx="3"/><circle cx="19" cy="28" r="7"/><circle cx="19" cy="28" r="3"/><line x1="12" y1="39" x2="12" y2="44"/><line x1="26" y1="39" x2="26" y2="44"/></svg></div>
+      <div class="otext"><div class="oname">Oil boiler</div></div>
+    </div>
+    <div class="opt" onclick="go(5)">
+      <div class="oico"><svg width="38" height="46" viewBox="0 0 38 46" fill="none" stroke="#0b1e38" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="28" height="36" rx="3"/><rect x="5" y="3" width="28" height="10" rx="3"/><path d="M19 22c0 0-4 5-4 9a4 4 0 008 0c0-4-4-9-4-9z"/></svg></div>
+      <div class="otext"><div class="oname">LPG boiler</div><div class="odesc">Liquid petroleum gas</div></div>
+    </div>
+    <div class="opt" onclick="go(5)">
+      <div class="oico"><svg width="38" height="46" viewBox="0 0 38 46" fill="none" stroke="#0b1e38" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="8" width="28" height="30" rx="2"/><line x1="13" y1="8" x2="13" y2="38"/><line x1="25" y1="8" x2="25" y2="38"/><line x1="5" y1="20" x2="33" y2="20"/><line x1="5" y1="28" x2="33" y2="28"/><line x1="9" y1="38" x2="9" y2="44"/><line x1="29" y1="38" x2="29" y2="44"/></svg></div>
+      <div class="otext"><div class="oname">Electric heating</div><div class="odesc">Storage heaters or electric radiators</div></div>
+    </div>
+    <div class="opt" onclick="go(5)">
+      <div class="oico"><svg width="38" height="46" viewBox="0 0 38 46" fill="none" stroke="#0b1e38" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 22L19 8l15 14v18a2 2 0 01-2 2H6a2 2 0 01-2-2V22z"/><path d="M13 42V30h12v12"/><rect x="16" y="16" width="6" height="6" rx=".5"/></svg></div>
+      <div class="otext"><div class="oname">No central heating</div></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- S5: Radiators or UFH -->
+<div class="scr" id="s5">
+<div class="qcard">
+  <h1 class="qtitle">What type of <span class="hl">heat emitters</span> do you have?</h1>
+  <div class="qhelper"><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="7"/><path d="M8 7v4M8 5v.5"/></svg>What are heat emitters?</div>
+  <div class="opts">
+    <div class="opt" onclick="go(6)">
+      <div class="oico"><svg width="44" height="36" viewBox="0 0 44 36" fill="none" stroke="#0b1e38" stroke-width="1.3" stroke-linecap="round"><rect x="2" y="4" width="40" height="24" rx="2"/><line x1="12" y1="4" x2="12" y2="28"/><line x1="22" y1="4" x2="22" y2="28"/><line x1="32" y1="4" x2="32" y2="28"/><line x1="7" y1="28" x2="7" y2="34"/><line x1="37" y1="28" x2="37" y2="34"/></svg></div>
+      <div class="otext"><div class="oname">Standard radiators</div><div class="odesc">May need larger radiators for best efficiency</div></div>
+    </div>
+    <div class="opt" onclick="go(6)">
+      <div class="oico"><svg width="44" height="36" viewBox="0 0 44 36" fill="none" stroke="#0b1e38" stroke-width="1.3" stroke-linecap="round"><rect x="2" y="28" width="40" height="6" rx="1"/><path d="M9 28c0-10 4-14 6-20M19 28c0-10 4-14 6-20M29 28c0-10 4-14 6-20"/></svg></div>
+      <div class="otext"><div class="oname">Underfloor heating</div><div class="odesc">Ideal — works perfectly with heat pumps</div></div>
+    </div>
+    <div class="opt" onclick="go(6)"><div class="otext"><div class="oname">Mix of both</div></div></div>
+    <div class="opt" onclick="go(6)"><div class="otext"><div class="oname">I'm not sure</div></div></div>
+  </div>
+</div>
+</div>
+
+<!-- S6: Radiator count -->
+<div class="scr" id="s6">
+<div class="qcard">
+  <h1 class="qtitle">How many <span class="hl">radiators</span> do you have?</h1>
+  <p class="qsub note">This helps us size the right heat pump for your home.</p>
+  <div class="opts">
+    <div class="opt" onclick="go(7)"><div class="otext"><div class="oname">0–5 radiators</div></div></div>
+    <div class="opt" onclick="go(7)"><div class="otext"><div class="oname">6–9 radiators</div></div></div>
+    <div class="opt" onclick="go(7)"><div class="otext"><div class="oname">10–13 radiators</div></div></div>
+    <div class="opt" onclick="go(7)"><div class="otext"><div class="oname">14–16 radiators</div></div></div>
+    <div class="opt" onclick="go(7)"><div class="otext"><div class="oname">17+ radiators</div></div></div>
+  </div>
+</div>
+</div>
+
+<!-- S7: Insulation -->
+<div class="scr" id="s7">
+<div class="qcard">
+  <h1 class="qtitle">How well <span class="hl">insulated</span> is your home?</h1>
+  <p class="qsub note">This won't change your fixed price — it helps our engineers size the system correctly.</p>
+  <div class="opts">
+    <div class="opt" onclick="go(8)">
+      <div class="oico"><svg width="40" height="40" viewBox="0 0 40 40" fill="none" stroke="#0b1e38" stroke-width="1.4" stroke-linecap="round"><rect x="6" y="10" width="28" height="24" rx="2"/><path d="M6 18h28M6 26h28"/><path d="M14 10v4M20 10v4M26 10v4"/></svg></div>
+      <div class="otext"><div class="oname">Well insulated</div><div class="odesc">Double glazing, loft and wall insulation fitted</div></div>
+    </div>
+    <div class="opt" onclick="go(8)">
+      <div class="oico"><svg width="40" height="40" viewBox="0 0 40 40" fill="none" stroke="#0b1e38" stroke-width="1.4" stroke-linecap="round"><rect x="6" y="10" width="28" height="24" rx="2"/><path d="M6 22h28"/><path d="M14 10v4M26 10v4"/></svg></div>
+      <div class="otext"><div class="oname">Partially insulated</div><div class="odesc">Some insulation — could be improved</div></div>
+    </div>
+    <div class="opt" onclick="go(8)">
+      <div class="oico"><svg width="40" height="40" viewBox="0 0 40 40" fill="none" stroke="#0b1e38" stroke-width="1.4" stroke-linecap="round"><rect x="6" y="10" width="28" height="24" rx="2"/></svg></div>
+      <div class="otext"><div class="oname">Poorly insulated</div><div class="odesc">Single glazing, little or no wall insulation</div></div>
+    </div>
+    <div class="opt" onclick="go(8)"><div class="otext"><div class="oname">I'm not sure</div></div></div>
+  </div>
+</div>
+</div>
+
+<!-- S8: EPC -->
+<div class="scr" id="s8">
+<div class="qcard">
+  <h1 class="qtitle">Do you know your home's <span class="hl">EPC rating</span>?</h1>
+  <p class="qsub">A rating of D or above is recommended for a heat pump. We can advise if you're unsure.</p>
+  <div class="opts">
+    <div class="opt" onclick="go(9)"><div class="otext"><div class="oname">A or B</div><div class="odesc">Very energy efficient</div></div></div>
+    <div class="opt" onclick="go(9)"><div class="otext"><div class="oname">C</div><div class="odesc">Good</div></div></div>
+    <div class="opt" onclick="go(9)"><div class="otext"><div class="oname">D</div><div class="odesc">Average — still suitable for a heat pump</div></div></div>
+    <div class="opt" onclick="go(9)"><div class="otext"><div class="oname">E, F or G</div><div class="odesc">We'll advise on insulation improvements first</div></div></div>
+    <div class="opt" onclick="go(9)"><div class="otext"><div class="oname">I don't know</div></div></div>
+  </div>
+</div>
+</div>
+
+<!-- S9: Postcode -->
+<div class="scr" id="s9">
+<div class="qcard">
+  <h1 class="qtitle">Finally, please enter the <span class="hl">postcode</span> of the property where we will be installing your new heat pump</h1>
+  <p class="qsub">This will help us confirm we have installer availability in your area.</p>
+  <div class="pc-row">
+    <input class="pc-input" type="text" placeholder="Enter postcode" autocomplete="postal-code" id="pc-val">
+    <button class="pc-go" onclick="showGrant()">Show results</button>
+  </div>
+</div>
+</div>
+
+<!-- S10: Results -->
+<div class="scr" id="s10">
+<div class="results-page">
+
+  <div class="grant-bar">£7,500 Boiler Upgrade Scheme grant applied</div>
+
+  <div class="filter-bar">
+    <svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="7"/><path d="M8 7v4M8 5v.5"/></svg>
+    <span class="filter-txt">3-bed semi-detached · Radiators · Partially insulated</span>
+    <span class="filter-edit">Edit</span>
+  </div>
+
+  <!-- Daikin card -->
+  <div class="pcard featured">
+    <div class="pcard-banner">⭐ Recommended for your home</div>
+    <div class="pcard-img">
+      <div class="pcard-img-placeholder">
+        <!-- ASHP + cylinder SVG -->
+        <svg width="220" height="160" viewBox="0 0 220 160" fill="none">
+          <!-- Cylinder -->
+          <rect x="10" y="20" width="50" height="130" rx="6" fill="white" stroke="#c8d2de" stroke-width="1.5"/>
+          <ellipse cx="35" cy="20" rx="25" ry="6" fill="#f4f6f9" stroke="#c8d2de" stroke-width="1.5"/>
+          <ellipse cx="35" cy="150" rx="25" ry="6" fill="#f4f6f9" stroke="#c8d2de" stroke-width="1.5"/>
+          <!-- Cylinder fittings -->
+          <circle cx="35" cy="70" r="8" fill="#f4f6f9" stroke="#b8c4d0" stroke-width="1"/>
+          <line x1="60" y1="60" x2="75" y2="60" stroke="#c8d2de" stroke-width="2"/>
+          <line x1="60" y1="100" x2="75" y2="100" stroke="#c8d2de" stroke-width="2"/>
+          <!-- Unit body -->
+          <rect x="90" y="15" width="120" height="130" rx="6" fill="white" stroke="#c8d2de" stroke-width="1.5"/>
+          <!-- Grille -->
+          <rect x="94" y="19" width="70" height="122" rx="4" fill="#f4f6f9" stroke="#dde4ec" stroke-width="1"/>
+          <line x1="94" y1="35" x2="164" y2="35" stroke="#c8d2de" stroke-width=".8"/>
+          <line x1="94" y1="50" x2="164" y2="50" stroke="#c8d2de" stroke-width=".8"/>
+          <line x1="94" y1="65" x2="164" y2="65" stroke="#c8d2de" stroke-width=".8"/>
+          <line x1="94" y1="80" x2="164" y2="80" stroke="#c8d2de" stroke-width=".8"/>
+          <line x1="94" y1="95" x2="164" y2="95" stroke="#c8d2de" stroke-width=".8"/>
+          <line x1="94" y1="110" x2="164" y2="110" stroke="#c8d2de" stroke-width=".8"/>
+          <line x1="94" y1="125" x2="164" y2="125" stroke="#c8d2de" stroke-width=".8"/>
+          <!-- Fan circle -->
+          <circle cx="129" cy="80" r="26" fill="none" stroke="#b8c4d0" stroke-width="1" stroke-dasharray="4 3"/>
+          <circle cx="129" cy="80" r="8" fill="#e2e8ef" stroke="#b8c4d0" stroke-width="1"/>
+          <!-- Control panel right -->
+          <rect x="168" y="24" width="38" height="118" rx="4" fill="#eef1f6" stroke="#dde4ec" stroke-width="1"/>
+          <circle cx="187" cy="40" r="4" fill="#16a34a" opacity=".7"/>
+          <circle cx="187" cy="54" r="3" fill="#0088bb" opacity=".5"/>
+          <rect x="172" y="68" width="30" height="20" rx="2" fill="#dce3ea"/>
+          <!-- Pipes bottom -->
+          <rect x="100" y="145" width="8" height="12" rx="2" fill="#e2e8ef" stroke="#b8c4d0" stroke-width="1"/>
+          <rect x="116" y="145" width="8" height="12" rx="2" fill="#e2e8ef" stroke="#b8c4d0" stroke-width="1"/>
+        </svg>
+      </div>
+    </div>
+    <div class="pcard-body">
+      <div class="pcard-name">Daikin Altherma 8kW Air Source Heat Pump + 210L Cylinder</div>
+      <div class="pcard-tagline">
+        <h4>Quiet, efficient and intelligent home heating</h4>
+        <p>A++ rated heat pump delivering low-carbon heating for your home. Includes pre-plumbed hot water cylinder — everything you need in one package.</p>
+        <a>See what's included ›</a>
+      </div>
+
+      <div class="spec-table">
+        <div class="spec-row"><span class="spec-label">Warranty</span><span class="spec-value">5 years<svg class="spec-icon" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6"/><path d="M5.5 8.5l2 2 3-4"/></svg></span></div>
+        <div class="spec-row"><span class="spec-label">Heating output</span><span class="spec-value">8 kW<svg class="spec-icon" viewBox="0 0 16 16"><rect x="2" y="2" width="12" height="12" rx="1"/></svg></span></div>
+        <div class="spec-row"><span class="spec-label">Efficiency rating</span><span class="spec-value">A++<svg class="spec-icon" viewBox="0 0 16 16"><path d="M4 8h8"/></svg></span></div>
+        <div class="spec-row"><span class="spec-label">Solar PV compatible</span><span class="spec-value">Yes<svg class="spec-icon" viewBox="0 0 16 16"><circle cx="8" cy="8" r="3"/><path d="M8 2v1M8 13v1M2 8h1M13 8h1"/></svg></span></div>
+        <div class="spec-row"><span class="spec-label">Underfloor heating</span><span class="spec-value">Yes<svg class="spec-icon" viewBox="0 0 16 16"><path d="M2 12h12M4 12c0-5 2-7 3-9"/></svg></span></div>
+        <div class="spec-row"><span class="spec-label">Cylinder included</span><span class="spec-value">210L pre-plumbed<svg class="spec-icon" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6"/><path d="M5.5 8.5l2 2 3-4"/></svg></span></div>
+      </div>
+
+      <div class="included-section">
+        <div class="included-title">Included...</div>
+        <div class="inc-item"><div class="inc-left"><div class="inc-check"><svg viewBox="0 0 12 12"><path d="M2 6l3 3 5-5"/></svg></div><span class="inc-name">210L pre-plumbed hot water cylinder</span></div><svg class="inc-chevron" viewBox="0 0 16 16"><path d="M6 4l4 4-4 4"/></svg></div>
+        <div class="inc-item"><div class="inc-left"><div class="inc-check"><svg viewBox="0 0 12 12"><path d="M2 6l3 3 5-5"/></svg></div><span class="inc-name">4× anti-vibration feet</span></div><svg class="inc-chevron" viewBox="0 0 16 16"><path d="M6 4l4 4-4 4"/></svg></div>
+        <div class="inc-item"><div class="inc-left"><div class="inc-check"><svg viewBox="0 0 12 12"><path d="M2 6l3 3 5-5"/></svg></div><span class="inc-name">Anti-freeze valves</span></div><svg class="inc-chevron" viewBox="0 0 16 16"><path d="M6 4l4 4-4 4"/></svg></div>
+        <div class="inc-item"><div class="inc-left"><div class="inc-check"><svg viewBox="0 0 12 12"><path d="M2 6l3 3 5-5"/></svg></div><span class="inc-name">Magnetic system filter</span></div><svg class="inc-chevron" viewBox="0 0 16 16"><path d="M6 4l4 4-4 4"/></svg></div>
+        <div class="inc-item"><div class="inc-left"><div class="inc-check"><svg viewBox="0 0 12 12"><path d="M2 6l3 3 5-5"/></svg></div><span class="inc-name">Smart thermostat controls</span></div><svg class="inc-chevron" viewBox="0 0 16 16"><path d="M6 4l4 4-4 4"/></svg></div>
+        <div class="inc-item"><div class="inc-left"><div class="inc-check"><svg viewBox="0 0 12 12"><path d="M2 6l3 3 5-5"/></svg></div><span class="inc-name">System flush and commissioning</span></div><svg class="inc-chevron" viewBox="0 0 16 16"><path d="M6 4l4 4-4 4"/></svg></div>
+        <div class="inc-item"><div class="inc-left"><div class="inc-check"><svg viewBox="0 0 12 12"><path d="M2 6l3 3 5-5"/></svg></div><span class="inc-name">Heat pump mains board</span></div><svg class="inc-chevron" viewBox="0 0 16 16"><path d="M6 4l4 4-4 4"/></svg></div>
+        <div class="inc-item"><div class="inc-left"><div class="inc-check"><svg viewBox="0 0 12 12"><path d="M2 6l3 3 5-5"/></svg></div><span class="inc-name">Flexible pipework connections</span></div><svg class="inc-chevron" viewBox="0 0 16 16"><path d="M6 4l4 4-4 4"/></svg></div>
+      </div>
+
+      <div class="included-section">
+        <div class="included-title">Also on us...</div>
+        <div class="inc-item"><div class="inc-left"><div class="inc-check"><svg viewBox="0 0 12 12"><path d="M2 6l3 3 5-5"/></svg></div><span class="inc-name">BUS grant paperwork</span></div><svg class="inc-chevron" viewBox="0 0 16 16"><path d="M6 4l4 4-4 4"/></svg></div>
+        <div class="inc-item"><div class="inc-left"><div class="inc-check"><svg viewBox="0 0 12 12"><path d="M2 6l3 3 5-5"/></svg></div><span class="inc-name">DNO notice and permission</span></div><svg class="inc-chevron" viewBox="0 0 16 16"><path d="M6 4l4 4-4 4"/></svg></div>
+        <div class="inc-item"><div class="inc-left"><div class="inc-check"><svg viewBox="0 0 12 12"><path d="M2 6l3 3 5-5"/></svg></div><span class="inc-name">Electrical work</span></div><svg class="inc-chevron" viewBox="0 0 16 16"><path d="M6 4l4 4-4 4"/></svg></div>
+        <div class="inc-item"><div class="inc-left"><div class="inc-check"><svg viewBox="0 0 12 12"><path d="M2 6l3 3 5-5"/></svg></div><span class="inc-name">MCS certification</span></div><svg class="inc-chevron" viewBox="0 0 16 16"><path d="M6 4l4 4-4 4"/></svg></div>
+        <div class="inc-item"><div class="inc-left"><div class="inc-check"><svg viewBox="0 0 12 12"><path d="M2 6l3 3 5-5"/></svg></div><span class="inc-name">Pipework installation and alterations</span></div><svg class="inc-chevron" viewBox="0 0 16 16"><path d="M6 4l4 4-4 4"/></svg></div>
+        <div class="inc-item"><div class="inc-left"><div class="inc-check"><svg viewBox="0 0 12 12"><path d="M2 6l3 3 5-5"/></svg></div><span class="inc-name">Product warranty registration and installation pack</span></div></div>
+      </div>
+    </div>
+
+    <div class="price-section">
+      <div class="price-lbl">Your fixed price including installation:</div>
+      <div class="price-boxes">
+        <div class="pbox"><div class="pbox-lbl">Pay today</div><div class="pbox-val">£4,799</div><div class="pbox-was">was £12,299</div></div>
+        <div class="pbox"><div class="pbox-lbl">Monthly from</div><div class="pbox-val">£61.70*</div><div class="pbox-was">was £97.50</div></div>
+      </div>
+      <div class="grant-line">
+        <div class="grant-line-left"><svg viewBox="0 0 18 18"><circle cx="9" cy="9" r="7"/><path d="M6 9l2 2 4-4"/></svg>Boiler Upgrade Scheme Grant</div>
+        <span class="grant-line-amount">-£7,500</span>
+      </div>
+      <a class="finance-link">View finance calculator</a>
+      <button class="choose-btn" onclick="pick('Daikin Altherma 8kW + 210L Cylinder','£4,799','£61.70')">Choose →</button>
+    </div>
+  </div>
+
+  <!-- Vaillant card -->
+  <div class="pcard">
+    <div class="pcard-img">
+      <div class="pcard-img-placeholder">
+        <svg width="220" height="160" viewBox="0 0 220 160" fill="none">
+          <rect x="10" y="20" width="50" height="130" rx="6" fill="white" stroke="#c8d2de" stroke-width="1.5"/>
+          <ellipse cx="35" cy="20" rx="25" ry="6" fill="#f4f6f9" stroke="#c8d2de" stroke-width="1.5"/>
+          <ellipse cx="35" cy="150" rx="25" ry="6" fill="#f4f6f9" stroke="#c8d2de" stroke-width="1.5"/>
+          <circle cx="35" cy="70" r="8" fill="#f4f6f9" stroke="#b8c4d0" stroke-width="1"/>
+          <line x1="60" y1="60" x2="75" y2="60" stroke="#c8d2de" stroke-width="2"/>
+          <line x1="60" y1="100" x2="75" y2="100" stroke="#c8d2de" stroke-width="2"/>
+          <rect x="90" y="15" width="120" height="130" rx="6" fill="white" stroke="#c8d2de" stroke-width="1.5"/>
+          <rect x="94" y="19" width="70" height="122" rx="4" fill="#f4f6f9" stroke="#dde4ec" stroke-width="1"/>
+          <line x1="94" y1="35" x2="164" y2="35" stroke="#c8d2de" stroke-width=".8"/>
+          <line x1="94" y1="55" x2="164" y2="55" stroke="#c8d2de" stroke-width=".8"/>
+          <line x1="94" y1="75" x2="164" y2="75" stroke="#c8d2de" stroke-width=".8"/>
+          <line x1="94" y1="95" x2="164" y2="95" stroke="#c8d2de" stroke-width=".8"/>
+          <line x1="94" y1="115" x2="164" y2="115" stroke="#c8d2de" stroke-width=".8"/>
+          <line x1="94" y1="135" x2="164" y2="135" stroke="#c8d2de" stroke-width=".8"/>
+          <circle cx="129" cy="80" r="26" fill="none" stroke="#b8c4d0" stroke-width="1" stroke-dasharray="4 3"/>
+          <circle cx="129" cy="80" r="8" fill="#e2e8ef" stroke="#b8c4d0" stroke-width="1"/>
+          <rect x="168" y="24" width="38" height="118" rx="4" fill="#eef1f6" stroke="#dde4ec" stroke-width="1"/>
+          <circle cx="187" cy="40" r="4" fill="#16a34a" opacity=".7"/>
+          <rect x="100" y="145" width="8" height="12" rx="2" fill="#e2e8ef" stroke="#b8c4d0" stroke-width="1"/>
+          <rect x="116" y="145" width="8" height="12" rx="2" fill="#e2e8ef" stroke="#b8c4d0" stroke-width="1"/>
+        </svg>
+      </div>
+    </div>
+    <div class="pcard-body">
+      <div class="pcard-name">Vaillant aroTHERM Plus 7kW Air Source Heat Pump + 210L Cylinder</div>
+      <div class="pcard-tagline">
+        <h4>Quiet, clever and efficient home comfort</h4>
+        <p>Award-winning, ultra-quiet heat pump with A+++ efficiency. Works down to -20°C. Includes Vaillant uniSTOR pre-plumbed cylinder.</p>
+        <a>See what's included ›</a>
+      </div>
+      <div class="spec-table">
+        <div class="spec-row"><span class="spec-label">Warranty</span><span class="spec-value">7 years<svg class="spec-icon" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6"/><path d="M5.5 8.5l2 2 3-4"/></svg></span></div>
+        <div class="spec-row"><span class="spec-label">Heating output</span><span class="spec-value">7 kW<svg class="spec-icon" viewBox="0 0 16 16"><rect x="2" y="2" width="12" height="12" rx="1"/></svg></span></div>
+        <div class="spec-row"><span class="spec-label">Efficiency rating</span><span class="spec-value">A+++<svg class="spec-icon" viewBox="0 0 16 16"><path d="M4 8h8"/></svg></span></div>
+        <div class="spec-row"><span class="spec-label">Solar PV compatible</span><span class="spec-value">Yes<svg class="spec-icon" viewBox="0 0 16 16"><circle cx="8" cy="8" r="3"/><path d="M8 2v1M8 13v1M2 8h1M13 8h1"/></svg></span></div>
+        <div class="spec-row"><span class="spec-label">Underfloor heating</span><span class="spec-value">Yes<svg class="spec-icon" viewBox="0 0 16 16"><path d="M2 12h12M4 12c0-5 2-7 3-9"/></svg></span></div>
+        <div class="spec-row"><span class="spec-label">Cylinder included</span><span class="spec-value">210L pre-plumbed<svg class="spec-icon" viewBox="0 0 16 16"><circle cx="8" cy="8" r="6"/><path d="M5.5 8.5l2 2 3-4"/></svg></span></div>
+      </div>
+    </div>
+    <div class="price-section">
+      <div class="price-lbl">Your fixed price including installation:</div>
+      <div class="price-boxes">
+        <div class="pbox"><div class="pbox-lbl">Pay today</div><div class="pbox-val">£4,999</div><div class="pbox-was">was £12,499</div></div>
+        <div class="pbox"><div class="pbox-lbl">Monthly from</div><div class="pbox-val">£64.25*</div><div class="pbox-was">was £99.75</div></div>
+      </div>
+      <div class="grant-line">
+        <div class="grant-line-left"><svg viewBox="0 0 18 18"><circle cx="9" cy="9" r="7"/><path d="M6 9l2 2 4-4"/></svg>Boiler Upgrade Scheme Grant</div>
+        <span class="grant-line-amount">-£7,500</span>
+      </div>
+      <a class="finance-link">View finance calculator</a>
+      <button class="choose-btn" onclick="pick('Vaillant aroTHERM Plus 7kW + 210L Cylinder','£4,999','£64.25')">Choose →</button>
+    </div>
+  </div>
+
+  <!-- System performance -->
+  <div class="perf-section">
+    <div class="perf-title">Your personalised system performance</div>
+    <div class="perf-sub">Based on your home's size, heating system and insulation level</div>
+    <div class="perf-row"><div class="perf-row-title">Energy required for your home</div><div class="perf-row-sub">Net energy required to heat your property (kWh)</div></div>
+    <div class="perf-row"><div class="perf-row-title">Consumption with your existing gas boiler</div><div class="perf-row-sub">Based on the age and type of your current system</div></div>
+    <div class="perf-row"><div class="perf-row-title">Consumption with a new heat pump</div><div class="perf-row-sub">At a 50°C flow temperature — typically 300% efficient</div></div>
+  </div>
+
+  <!-- FAQs -->
+  <div class="faq-section">
+    <div class="faq-title">Most frequently asked questions</div>
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q"><span>Do I need planning permission to install a heat pump?</span><svg viewBox="0 0 16 16"><path d="M8 4v8M4 8h8"/></svg></div>
+      <div class="faq-a">In most cases, no. Heat pumps are usually covered by permitted development rights in England and Wales, meaning you don't need planning permission — as long as the unit isn't placed on a wall or roof facing a highway and meets noise requirements. We'll confirm this for your specific property.</div>
+    </div>
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q"><span>How do heat pumps work?</span><svg viewBox="0 0 16 16"><path d="M8 4v8M4 8h8"/></svg></div>
+      <div class="faq-a">Heat pumps extract heat energy from the outside air — even in cold temperatures — and transfer it into your home via radiators or underfloor heating. They're typically 300% efficient, meaning for every 1 unit of electricity used, you get 3 units of heat.</div>
+    </div>
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q"><span>How efficient are heat pumps?</span><svg viewBox="0 0 16 16"><path d="M8 4v8M4 8h8"/></svg></div>
+      <div class="faq-a">Modern heat pumps achieve a Seasonal Coefficient of Performance (SCOP) of 3–4, meaning they produce 3–4 units of heat for every unit of electricity consumed. This makes them significantly more efficient than gas or oil boilers.</div>
+    </div>
+    <div class="faq-item" onclick="toggleFaq(this)">
+      <div class="faq-q"><span>What is the Boiler Upgrade Scheme?</span><svg viewBox="0 0 16 16"><path d="M8 4v8M4 8h8"/></svg></div>
+      <div class="faq-a">The Boiler Upgrade Scheme (BUS) is a government grant offering £7,500 towards the cost of installing an air source heat pump. We apply on your behalf — you don't need to do anything. The grant is automatically deducted from your price.</div>
+    </div>
+  </div>
+
+  <!-- Aftercare -->
+  <div class="aftercare-section">
+    <div class="aftercare-title">Ecco aftercare</div>
+    <div class="aftercare-text">After your installation, we'll register your warranty and provide all your documents including your MCS certificate and building control notification. You're also covered for 2 years under our workmanship guarantee.</div>
+  </div>
+
+</div>
+</div>
+
+<!-- S11: Details -->
+<div class="scr" id="s11">
+  <div class="fcard">
+    <h3>Your details</h3>
+    <div class="ff-2">
+      <div class="ff"><label>First name</label><input type="text" placeholder="Sarah"></div>
+      <div class="ff"><label>Last name</label><input type="text" placeholder="Miller"></div>
+    </div>
+    <div class="ff"><label>Email</label><input type="email" placeholder="you@example.com"></div>
+    <div class="ff"><label>Mobile</label><input type="tel" placeholder="07700 000000"></div>
+  </div>
+  <div class="fcard">
+    <h3>Payment</h3>
+    <div class="opts">
+      <div class="opt" id="pay-full" onclick="selPay('full')" style="border-color:var(--blue)"><div class="otext"><div class="oname">Pay in full today</div><div class="odesc">Secure payment, no interest</div></div></div>
+      <div class="opt" id="pay-fin" onclick="selPay('fin')"><div class="otext"><div class="oname">Monthly finance</div><div class="odesc">From £61.70/mo · apply at checkout</div></div></div>
+    </div>
+    <p style="font-size:11px;color:var(--muted);margin-top:12px;line-height:1.6;">Finance subject to status. Representative APR 9.9%. Ecco is a credit broker, not a lender.</p>
+  </div>
+</div>
+
+<!-- S12: Success -->
+<div class="scr" id="s12">
+  <div class="success-card">
+    <div class="suc-icon"><svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="17"/><path d="M13 20l5 5 9-10"/></svg></div>
+    <h2>Booking confirmed!</h2>
+    <p>An MCS engineer will run a full heat loss calculation for your home within 2 hours. We're also starting your BUS grant application.</p>
+    <div class="suc-table">
+      <div class="suc-row"><span class="suc-l">Product</span><span class="suc-v" id="conf-p">—</span></div>
+      <div class="suc-row"><span class="suc-l">Total after grant</span><span class="suc-v" id="conf-price">—</span></div>
+      <div class="suc-row"><span class="suc-l">BUS grant</span><span class="suc-v">£7,500 — we apply for you</span></div>
+      <div class="suc-row"><span class="suc-l">Cylinder</span><span class="suc-v">210L included in package</span></div>
+      <div class="suc-row"><span class="suc-l">MCS certificate</span><span class="suc-v">Issued on installation day</span></div>
+    </div>
+  </div>
+  <div class="eng">
+    <div class="eng-title"><svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="8"/><path d="M7 10l2 2 4-4"/></svg>What happens next</div>
+    <div class="eng-steps">
+      <div class="estep"><div class="estep-dot">✓</div><div><h4>Heat loss calculation</h4><p>An MCS engineer confirms the right sized heat pump within 2 hours.</p></div></div>
+      <div class="estep"><div class="estep-dot">✓</div><div><h4>BUS grant application</h4><p>We submit your £7,500 grant application. This is deducted before you pay anything.</p></div></div>
+      <div class="estep"><div class="estep-dot">✓</div><div><h4>Installation day</h4><p>MCS-certified engineers install your system. All certificates issued and stored in your Ecco account.</p></div></div>
+      <div class="estep"><div class="estep-dot">✓</div><div><h4>Warranty registered</h4><p>Manufacturer warranty registered automatically. 2-year workmanship guarantee starts.</p></div></div>
+    </div>
+  </div>
+</div>
+
+</div><!-- end .page -->
+
+<!-- Fixed bottom bar (results page) -->
+<div class="bottom-bar" id="bottom-bar" style="display:none;">
+  <div class="bottom-bar-inner">
+    <div class="bottom-price">
+      <span class="bottom-price-today">Pay today</span>
+      <span class="bottom-price-val" id="bar-price">£4,799</span>
+      <span class="bottom-price-save">Save £7,500</span>
+      <span class="bottom-price-mo" id="bar-mo">from £61.70/mo*</span>
+    </div>
+    <button class="bottom-choose" onclick="go(11)">Choose →</button>
+  </div>
+</div>
+
+<!-- CTA bar (details page) -->
+<div class="cta-bar" id="cta-bar">
+  <div class="cta-lhs"><span class="cta-from">After grant</span><span class="cta-amount" id="cta-amt">£4,799</span></div>
+  <button class="cta-btn" onclick="go(12)">Confirm &amp; pay</button>
+</div>
+
+<script>
+let step=1; const TOTAL=11;
+let chosenProduct='', chosenPrice='', chosenMo='';
+const meta={
+  1:['1 of 4','Your home'],2:['1 of 4','Your home'],3:['1 of 4','Your home'],
+  4:['1 of 4','Your home'],5:['1 of 4','Your home'],6:['1 of 4','Your home'],
+  7:['1 of 4','Your home'],8:['1 of 4','Your home'],9:['1 of 4','Your home'],
+  10:['2 of 4','Options'],11:['3 of 4','Your details'],12:['4 of 4','Confirmed']
+};
+
+function go(n) {
+  document.getElementById('s'+step).classList.remove('on');
+  step=n;
+  const el=document.getElementById('s'+n);
+  if(el){el.classList.add('on');window.scrollTo(0,0);}
+  document.getElementById('prog').style.width=Math.min(100,Math.round(n/TOTAL*100))+'%';
+  const m=meta[n]||['4 of 4','Confirmed'];
+  document.getElementById('hdr-step').textContent='Step '+m[0];
+  document.getElementById('hdr-name').textContent=m[1];
+  document.getElementById('hdr-back').classList.toggle('show',n>1);
+  document.getElementById('bottom-bar').style.display = n===10 ? 'block' : 'none';
+  document.getElementById('cta-bar').style.display = n===11 ? 'flex' : 'none';
+  if(n===11) document.getElementById('cta-amt').textContent=chosenPrice||'£4,799';
+}
+
+function goBack(){if(step>1)go(step-1);}
+
+function showGrant() {
+  // Fire confetti
+  const colours=['#16a34a','#0088bb','#f59e0b','#dc2626','#8b5cf6'];
+  for(let i=0;i<40;i++){
+    const el=document.createElement('div');
+    el.className='confetti-piece';
+    el.style.cssText=`left:${Math.random()*100}vw;background:${colours[Math.floor(Math.random()*colours.length)]};animation-delay:${Math.random()*.8}s;animation-duration:${1+Math.random()*.8}s;transform:rotate(${Math.random()*360}deg)`;
+    document.body.appendChild(el);
+    setTimeout(()=>el.remove(),2000);
+  }
+  document.getElementById('grant-popup').classList.add('show');
+}
+
+function closeGrant() {
+  document.getElementById('grant-popup').classList.remove('show');
+  go(10);
+}
+
+function pick(name,price,mo) {
+  chosenProduct=name; chosenPrice=price; chosenMo=mo;
+  document.getElementById('conf-p').textContent=name;
+  document.getElementById('conf-price').textContent=price;
+  document.getElementById('bar-price').textContent=price;
+  document.getElementById('bar-mo').textContent='from £'+mo+'/mo*';
+  go(11);
+}
+
+function selPay(t) {
+  document.getElementById('pay-full').style.borderColor=t==='full'?'var(--blue)':'var(--line)';
+  document.getElementById('pay-fin').style.borderColor=t==='fin'?'var(--blue)':'var(--line)';
+}
+
+function toggleFaq(el) {
+  el.classList.toggle('open');
+}
+
+go(1);
+</script>
+</body>
+</html>
