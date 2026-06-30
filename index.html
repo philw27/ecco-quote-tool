@@ -375,14 +375,17 @@ p, li { max-width: 62ch; }   /* ~readable line length */
   display: flex; flex-wrap: wrap; gap: 20px 32px;
   justify-content: center;
 }
-.accred { display: flex; flex-direction: column; align-items: center; gap: 6px; opacity: .55; transition: opacity .2s; }
-.accred:hover { opacity: 1; }
+.accred { display: flex; flex-direction: column; align-items: center; gap: 10px; opacity: .85; transition: opacity .2s, transform .2s; }
+.accred:hover { opacity: 1; transform: translateY(-2px); }
 .accred-ico {
-  width: 44px; height: 44px; border-radius: 8px;
-  background: var(--line); display: flex; align-items: center; justify-content: center;
-  font-size: 10px; font-weight: 800; color: var(--navy); letter-spacing: -.01em;
+  width: 56px; height: 56px; border-radius: 50%;
+  background: var(--blue-l); display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 2px 8px rgba(0,136,187,.12);
 }
-.accred-name { font-size: 9px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: var(--slate); }
+.accred-ico svg { width: 26px; height: 26px; stroke: var(--blue); fill: none; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.accred-label { display: flex; flex-direction: column; align-items: center; gap: 1px; }
+.accred-title { font-size: 12px; font-weight: 700; color: var(--navy); letter-spacing: -.01em; }
+.accred-name { font-size: 9px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
 
 /* ─── CTA BANNER ───────────────────────────────────── */
 .cta-banner { padding: 56px var(--px); background: var(--navy); text-align: center; }
@@ -767,11 +770,26 @@ footer { background: var(--navy); padding: 48px var(--px) 32px; }
   <div class="wrap">
     <div class="label" style="text-align:center;margin-bottom:20px;">Accreditations &amp; certifications</div>
     <div class="accreds-row">
-      <div class="accred"><div class="accred-ico">NICEIC</div><span class="accred-name">Electrical</span></div>
-      <div class="accred"><div class="accred-ico">Gas Safe</div><span class="accred-name">Registered</span></div>
-      <div class="accred"><div class="accred-ico">MCS</div><span class="accred-name">Certified</span></div>
-      <div class="accred"><div class="accred-ico">PAS 2030</div><span class="accred-name">Retrofit</span></div>
-      <div class="accred"><span class="accred-ico">💳</span><span class="accred-name">0% Finance</span></div>
+      <div class="accred">
+        <div class="accred-ico"><svg viewBox="0 0 24 24"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8z"/></svg></div>
+        <div class="accred-label"><span class="accred-title">NICEIC</span><span class="accred-name">Electrical</span></div>
+      </div>
+      <div class="accred">
+        <div class="accred-ico"><svg viewBox="0 0 24 24"><path d="M12 2c1 3-2 4-2 7a4 4 0 0 0 8 0c0-1.5-1-2.5-2-3.5.5 2-1 3-2 3-1.5 0-2-2-2-3.5C12 4 12.5 3 12 2z"/><path d="M9 14a5 5 0 0 0 10 0c0-1.5-1-3-2-4"/></svg></div>
+        <div class="accred-label"><span class="accred-title">Gas Safe</span><span class="accred-name">Registered</span></div>
+      </div>
+      <div class="accred">
+        <div class="accred-ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.2 4.2l1.4 1.4M18.4 18.4l1.4 1.4M2 12h2M20 12h2M4.2 19.8l1.4-1.4M18.4 5.6l1.4-1.4"/></svg></div>
+        <div class="accred-label"><span class="accred-title">MCS</span><span class="accred-name">Certified</span></div>
+      </div>
+      <div class="accred">
+        <div class="accred-ico"><svg viewBox="0 0 24 24"><path d="M5 21c0-7 3-12 9-17 1 6-1 9-3 11 3-1 5-1 7 1-2 6-7 6-9 5-2-1-4 0-4 0z"/></svg></div>
+        <div class="accred-label"><span class="accred-title">PAS 2030</span><span class="accred-name">Retrofit</span></div>
+      </div>
+      <div class="accred">
+        <div class="accred-ico"><svg viewBox="0 0 24 24"><rect x="2" y="6" width="20" height="13" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/><line x1="6" y1="14.5" x2="10" y2="14.5"/></svg></div>
+        <div class="accred-label"><span class="accred-title">0% Finance</span><span class="accred-name">Available</span></div>
+      </div>
     </div>
   </div>
 </div>
