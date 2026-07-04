@@ -605,7 +605,11 @@ function drawPanels(d){
     let w = wBase, h = hBase;
     // LANDSCAPE: long edge perpendicular to azimuth => swap
     if(p.orientation==='LANDSCAPE'){ const t=w; w=h; h=t; }
-    const halfW = (w*gap)/2, halfH = (h*gap)/2;
+    // Pitch foreshortening: viewed from directly overhead, the along-slope dimension
+    // (parallel to azimuth = h) appears compressed by cos(pitch). Across-slope (w) is unchanged.
+    const pitch = (p.pitch || 0) * Math.PI/180;
+    const hFore = h * Math.cos(pitch);
+    const halfW = (w*gap)/2, halfH = (hFore*gap)/2;
     const center = new google.maps.LatLng(p.lat, p.lng);
     const az = p.azimuth || 0;
     // build the four corners by offsetting from centre along the panel's own axes
