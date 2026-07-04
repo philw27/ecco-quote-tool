@@ -217,6 +217,14 @@ body::before { content:''; position:fixed; inset:0; background:#eef1f6; z-index:
 .addons-total{display:flex;justify-content:space-between;align-items:center;border-top:2px solid var(--line);margin-top:6px;padding-top:14px;}
 .addons-total-lbl{font-size:13px;color:var(--slate);}
 .addons-total-val{font-family:'DM Sans',sans-serif;font-weight:700;font-size:1.3rem;color:var(--navy);}
+/* Agreement tick */
+.agree-row { display:flex; gap:11px; align-items:flex-start; cursor:pointer; -webkit-tap-highlight-color:transparent; }
+.agree-chk { flex-shrink:0; width:22px; height:22px; margin:0; accent-color:var(--blue); cursor:pointer; }
+.agree-txt { font-size:13.5px; line-height:1.45; color:var(--slate); }
+.agree-txt a { color:var(--blue); font-weight:600; text-decoration:underline; }
+.agree-warn { display:none; margin-top:10px; font-size:12.5px; color:var(--red); font-weight:600; }
+.agree-warn.on { display:block; }
+
 /* Included modal */
 .inc-overlay { position:fixed; inset:0; z-index:500; background:rgba(11,30,56,.55); display:none; align-items:flex-end; justify-content:center; }
 .inc-overlay.on { display:flex; }
@@ -488,11 +496,12 @@ body::before { content:''; position:fixed; inset:0; background:#eef1f6; z-index:
     <div class="ff"><label>Mobile</label><input type="tel" placeholder="07700 000000"></div>
   </div>
   <div class="fcard">
-    <h3>Payment</h3>
-    <div class="opts">
-      <div class="opt" id="pay-full" onclick="selPay('full')" style="border-color:var(--blue)"><div class="otext"><div class="oname">Pay in full today</div><div class="odesc">Secure payment — no interest</div></div></div>
-      <div class="opt" id="pay-fin" onclick="selPay('fin')"><div class="otext"><div class="oname">Monthly finance</div><div class="odesc">From £51.40/mo · apply at checkout</div></div></div>
-    </div>
+    <h3>Before you book</h3>
+    <label class="agree-row" for="agree-chk">
+      <input type="checkbox" id="agree-chk" class="agree-chk" onchange="agreeChanged()">
+      <span class="agree-txt">I've read and agree to the <a href="/Ecco_Preparing_For_Your_Rewire.pdf" target="_blank" rel="noopener">Preparing for your rewire</a> pack, including access, clearing and floor-covering notes.</span>
+    </label>
+    <div class="agree-warn" id="agree-warn">Please confirm you've read the preparation pack to continue.</div>
   </div>
 </div>
 
@@ -538,7 +547,7 @@ body::before { content:''; position:fixed; inset:0; background:#eef1f6; z-index:
 
 <div class="cta" id="cta">
   <div class="cta-lhs"><span class="cta-from">Your fixed price</span><span class="cta-amount" id="cta-amt">£3,999</span></div>
-  <button class="cta-btn" onclick="go(9)">Confirm &amp; pay</button>
+  <button class="cta-btn" onclick="tryConfirm()">Confirm &amp; pay</button>
 </div>
 
 <!-- What's included modal -->
@@ -553,7 +562,7 @@ body::before { content:''; position:fixed; inset:0; background:#eef1f6; z-index:
     <div class="inc-sec-title">In your fixed price</div>
     <div class="inc-item"><svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="8"/><path d="M6.5 10.5l2.2 2.2 4.8-5"/></svg><div><div class="t">Full rewire to BS 7671 18th Edition</div><div class="d">All existing wiring replaced throughout — first fix, second fix, labour and cable.</div></div></div>
     <div class="inc-item"><svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="8"/><path d="M6.5 10.5l2.2 2.2 4.8-5"/></svg><div><div class="t">New 12-way RCBO consumer unit with SPD</div><div class="d">Individual RCBO protection per circuit plus surge protection device.</div></div></div>
-    <div class="inc-item"><svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="8"/><path d="M6.5 10.5l2.2 2.2 4.8-5"/></svg><div><div class="t">Sockets, switches &amp; light fittings</div><div class="d">All accessories on the day, wired and tested to your room layout.</div></div></div>
+    <div class="inc-item"><svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="8"/><path d="M6.5 10.5l2.2 2.2 4.8-5"/></svg><div><div class="t">Sockets, switches &amp; ceiling roses</div><div class="d">All accessories on the day — including a ceiling rose light point per room, wired and tested to your layout. Recessed spotlights are an optional add-on.</div></div></div>
     <div class="inc-item"><svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="8"/><path d="M6.5 10.5l2.2 2.2 4.8-5"/></svg><div><div class="t">Test &amp; inspection</div><div class="d">Full testing of every circuit before sign-off.</div></div></div>
     <div class="inc-item"><svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="8"/><path d="M6.5 10.5l2.2 2.2 4.8-5"/></svg><div><div class="t">Electrical Installation Certificate</div><div class="d">Your EIC issued on completion — always included, never an extra.</div></div></div>
     <div class="inc-item"><svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="8"/><path d="M6.5 10.5l2.2 2.2 4.8-5"/></svg><div><div class="t">NICEIC-approved workmanship</div><div class="d">Every job reviewed by a qualified engineer and fully guaranteed.</div></div></div>
@@ -571,6 +580,16 @@ body::before { content:''; position:fixed; inset:0; background:#eef1f6; z-index:
 let step=1; const TOTAL=9;
 function openIncluded(){ document.getElementById('inc-overlay').classList.add('on'); document.body.style.overflow='hidden'; }
 function closeIncluded(){ document.getElementById('inc-overlay').classList.remove('on'); document.body.style.overflow=''; }
+function agreeChanged(){ if(document.getElementById('agree-chk').checked){ document.getElementById('agree-warn').classList.remove('on'); } }
+function tryConfirm(){
+  var chk=document.getElementById('agree-chk');
+  if(!chk||!chk.checked){
+    var w=document.getElementById('agree-warn');
+    if(w){ w.classList.add('on'); w.scrollIntoView({behavior:'smooth',block:'center'}); }
+    return;
+  }
+  go(9);
+}
 let chosenProduct='', chosenPrice='';
 const meta={1:['1 of 4','Your home'],2:['1 of 4','Your home'],3:['1 of 4','Your home'],4:['1 of 4','Your home'],5:['1 of 4','Your home'],6:['1 of 4','Your home'],7:['2 of 4','Your options'],8:['3 of 4','Your details'],9:['4 of 4','Confirmed']};
 
