@@ -78,6 +78,23 @@ export default async function handler(req, res) {
     const sunshineHours = sp.maxSunshineHoursPerYear ? Math.round(sp.maxSunshineHoursPerYear) : null;
     const carbonOffsetKgPerMwh = sp.carbonOffsetFactorKgPerMwh || null;
 
+    // Panel geometry for drawing on the map.
+    // sp.solarPanels[] is ordered best-first; take the first `recommendedPanels`.
+    const panelW = sp.panelWidthMeters || 1.045;
+    const panelH = sp.panelHeightMeters || 1.879;
+    const allPanels = Array.isArray(sp.solarPanels) ? sp.solarPanels : [];
+    const segs = Array.isArray(sp.roofSegmentStats) ? sp.roofSegmentStats : [];
+    const panels = allPanels.slice(0, recommendedPanels).map(p => {
+      // orientation: PORTRAIT or LANDSCAPE. azimuth comes from the roof segment it sits on.
+      const seg = segs[p.segmentIndex || 0] || {};
+      return {
+        lat: p.center ? p.center.latitude : null,
+        lng: p.center ? p.center.longitude : null,
+        orientation: p.orientation || 'PORTRAIT',
+        azimuth: seg.azimuthDegrees != null ? seg.azimuthDegrees : 0
+      };
+    }).filter(p => p.lat != null);
+
     res.status(200).json({
       ok: true,
       covered: true,
@@ -86,13 +103,16 @@ export default async function handler(req, res) {
       imageryDate: data.imageryDate || null,
       center: data.center || { latitude: lat, longitude: lng },
       panelWatts,
+      panelWidthMeters: panelW,
+      panelHeightMeters: panelH,
       recommendedPanels,
       recommendedKw: +((recommendedPanels * panelWatts) / 1000).toFixed(2),
       yearlyEnergyKwh,
       maxPanels,
       maxRoofAreaM2: maxAreaM2,
       sunshineHoursPerYear: sunshineHours,
-      carbonOffsetKgPerMwh
+      carbonOffsetKgPerMwh,
+      panels
     });
   } catch (err) {
     res.status(500).json({ ok: false, error: 'Server error calling Solar API', detail: String(err).slice(0, 200) });
