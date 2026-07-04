@@ -69,7 +69,23 @@ export default async function handler(req, res) {
     // Roof-driven fit: use Google's LARGEST config = the real number of panels
     // that physically fit on the usable, sun-worthy roof segments.
     const rec = configs[configs.length - 1];
-    const roofFitPanels = rec.panelsCount;
+    const googleFitPanels = rec.panelsCount; // Google's own layout count (for reference)
+
+    // --- MCS-style area calc: usable slope area ÷ panel area ---
+    // LONGi Hi-MO 6 residential module: 1.722m x 1.133m = 1.951 m²
+    const PANEL_AREA_M2 = 1.722 * 1.133;   // ≈ 1.951
+    const USABLE_COVERAGE = 0.75;          // 75% usable after setbacks/exclusions (clean pitched roof)
+    const segsRaw = Array.isArray(sp.roofSegmentStats) ? sp.roofSegmentStats : [];
+    // sum panels that fit across roof segments (uses sloped areaMeters2, already pitch-correct)
+    let areaFitPanels = 0;
+    segsRaw.forEach(s => {
+      const area = (s.stats && s.stats.areaMeters2 != null) ? s.stats.areaMeters2
+                 : (s.areaMeters2 != null ? s.areaMeters2 : 0);
+      const usable = area * USABLE_COVERAGE;
+      areaFitPanels += Math.floor(usable / PANEL_AREA_M2);
+    });
+    // Roof fit = our area calc, but never more than Google actually laid out (sanity ceiling)
+    const roofFitPanels = Math.min(areaFitPanels || googleFitPanels, googleFitPanels || areaFitPanels);
     // Sensible domestic default (BOXT-style right-sizing), capped by what the roof fits.
     const DEFAULT_SYSTEM = 10;                 // standard ~4kW starting system
     const recommendedPanels = Math.min(DEFAULT_SYSTEM, roofFitPanels);
@@ -122,6 +138,8 @@ export default async function handler(req, res) {
       panelWidthMeters: panelW,
       panelHeightMeters: panelH,
       roofFitPanels,
+      areaFitPanels,
+      googleFitPanels,
       recommendedPanels,
       recommendedKw: +((recommendedPanels * panelWatts) / 1000).toFixed(2),
       yearlyEnergyKwh,
