@@ -565,16 +565,19 @@ function applyRoof(d){
   console.log('SOLAR API returned:', JSON.stringify(d));
   if(d && d.ok && d.covered && d.panelsPlaceable && d.recommendedPanels){
     // show insight card — recommended (sensible) panel count
-    document.getElementById('riPanels').textContent=d.recommendedPanels;
+    document.getElementById('riPanels').textContent=d.roofFitPanels||d.recommendedPanels;
     document.getElementById('riSun').textContent=d.sunshineHoursPerYear||'—';
     document.getElementById('riKwh').textContent=(d.yearlyEnergyKwh||0).toLocaleString('en-GB');
     insight.style.display=''; manual.style.display='none';
     // feed the visualiser
-    state.panels=Math.max(4,Math.min(20,d.recommendedPanels));
-    const sl=document.getElementById('panels'); if(sl) sl.value=state.panels;
-    document.getElementById('panelRec').style.display = state.panels===10?'':'none';
+    // Roof-driven: the slider max becomes what actually fits this roof.
+    const fit = d.roofFitPanels || d.recommendedPanels;
+    const sl=document.getElementById('panels');
+    if(sl){ sl.max=Math.max(4,fit); sl.value=Math.max(4,fit); }
+    state.panels=Math.max(4,fit);
+    document.getElementById('panelRec').style.display='none';
     GOOGLE_YEARLY_KWH = d.yearlyEnergyKwh || null;
-    GOOGLE_PANELS = d.recommendedPanels || null;
+    GOOGLE_PANELS = fit || null;
     drawPanels(d);        // draw the actual panels on the satellite roof
     render(); // reflect the new panel count immediately
   } else {
