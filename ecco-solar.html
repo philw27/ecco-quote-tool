@@ -591,42 +591,42 @@ function applyRoof(d){
 let panelOverlays=[];
 function clearPanels(){ panelOverlays.forEach(o=>o.setMap(null)); panelOverlays=[]; }
 
-// offset a lat/lng by (east, north) metres
-function offsetLatLng(lat, lng, dEast, dNorth){
-  const dLat = dNorth / 111320;
-  const dLng = dEast / (111320 * Math.cos(lat * Math.PI/180));
-  return { lat: lat + dLat, lng: lng + dLng };
-}
-
 function drawPanels(d){
   clearPanels();
   if(!gmap || !Array.isArray(d.panels) || !d.panels.length) return;
-  const wM = d.panelWidthMeters || 1.045;
-  const hM = d.panelHeightMeters || 1.879;
-  const gap = 0.86; // shrink each panel to 86% so neat gaps show between tiles
+  if(!(google.maps.geometry && google.maps.geometry.spherical)) return; // geometry lib not ready
+  const spherical = google.maps.geometry.spherical;
+  const gap = 0.90; // slight shrink so tiles show as individual panels
+  // panel dims are given in PORTRAIT orientation
+  const wBase = (d.panelWidthMeters  || 1.045);
+  const hBase = (d.panelHeightMeters || 1.879);
+
   d.panels.forEach(p=>{
-    let halfW, halfH;
-    if(p.orientation==='LANDSCAPE'){ halfW=(hM*gap)/2; halfH=(wM*gap)/2; } else { halfW=(wM*gap)/2; halfH=(hM*gap)/2; }
-    const az = (p.azimuth||0) * Math.PI/180;
-    const cos=Math.cos(az), sin=Math.sin(az);
-    const corners=[[-halfW,-halfH],[halfW,-halfH],[halfW,halfH],[-halfW,halfH]].map(([x,y])=>{
-      const ex = x*cos - y*sin;
-      const ny = x*sin + y*cos;
-      return offsetLatLng(p.lat, p.lng, ex, ny);
-    });
+    let w = wBase, h = hBase;
+    // LANDSCAPE: long edge perpendicular to azimuth => swap
+    if(p.orientation==='LANDSCAPE'){ const t=w; w=h; h=t; }
+    const halfW = (w*gap)/2, halfH = (h*gap)/2;
+    const center = new google.maps.LatLng(p.lat, p.lng);
+    const az = p.azimuth || 0;
+    // build the four corners by offsetting from centre along the panel's own axes
+    const topMid   = spherical.computeOffset(center, halfH, az);
+    const botMid   = spherical.computeOffset(center, halfH, az+180);
+    const topRight = spherical.computeOffset(topMid, halfW, az+90);
+    const topLeft  = spherical.computeOffset(topMid, halfW, az-90);
+    const botRight = spherical.computeOffset(botMid, halfW, az+90);
+    const botLeft  = spherical.computeOffset(botMid, halfW, az-90);
     const poly=new google.maps.Polygon({
-      paths:corners, map:gmap,
-      strokeColor:'#5ec5e8', strokeOpacity:0.9, strokeWeight:0.8,
+      paths:[topLeft, topRight, botRight, botLeft], map:gmap,
+      strokeColor:'#6fd0ef', strokeOpacity:0.95, strokeWeight:0.8,
       fillColor:'#0a0f18', fillOpacity:0.82, clickable:false, zIndex:5
     });
     panelOverlays.push(poly);
   });
-  // frame the array: centre and zoom so the roof fills the view
+  // frame the array
   const b=new google.maps.LatLngBounds();
   d.panels.forEach(p=>b.extend({lat:p.lat,lng:p.lng}));
   if(!b.isEmpty()){
     gmap.panTo(b.getCenter());
-    // gentle zoom-in for the reveal if we're not already close
     if(gmap.getZoom() < 21) gmap.setZoom(21);
   }
 }
@@ -641,7 +641,7 @@ render();
      as SOLAR_API_KEY in /api/solar.js.
      =================================================================== -->
 <script async
-  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCiPeFA3M6__5T8OElG2KzhnSp2XB--LdA&libraries=places&callback=initMap&loading=async">
+  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCiPeFA3M6__5T8OElG2KzhnSp2XB--LdA&libraries=places,geometry&callback=initMap&loading=async">
 </script>
 </body>
 </html>
