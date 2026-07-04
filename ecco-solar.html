@@ -474,12 +474,12 @@ function showStep(n){
 }
 async function next(){
   if(step===1 && !roofAnalysed){
-    // analyse the roof first, then advance
-    const btn=document.getElementById('ctaBtn'); const orig=btn.textContent;
-    btn.textContent='Analysing…'; btn.disabled=true;
+    // FIRST tap: analyse the roof and draw panels — stay on this screen to show the result
+    const btn=document.getElementById('ctaBtn'); btn.textContent='Analysing your roof…'; btn.disabled=true;
     await analyseRoof();
-    btn.disabled=false; btn.textContent=orig;
-    showStep(2); render();
+    btn.disabled=false;
+    // if we got a result, change the button to continue; otherwise let them proceed anyway
+    btn.textContent='Design your system →';
     return;
   }
   if(step<TOTAL) showStep(step+1);
@@ -575,12 +575,54 @@ function applyRoof(d){
     document.getElementById('panelRec').style.display = state.panels===10?'':'none';
     GOOGLE_YEARLY_KWH = d.yearlyEnergyKwh || null;
     GOOGLE_PANELS = d.recommendedPanels || null;
+    drawPanels(d);        // draw the actual panels on the satellite roof
     render(); // reflect the new panel count immediately
   } else {
     // roof not auto-assessable — show manual note, keep generic defaults
     insight.style.display='none'; manual.style.display='';
     GOOGLE_YEARLY_KWH=null; GOOGLE_PANELS=null;
   }
+}
+
+// ---- Draw solar panels on the satellite roof ----
+let panelOverlays=[];
+function clearPanels(){ panelOverlays.forEach(o=>o.setMap(null)); panelOverlays=[]; }
+
+// offset a lat/lng by (east, north) metres
+function offsetLatLng(lat, lng, dEast, dNorth){
+  const dLat = dNorth / 111320;
+  const dLng = dEast / (111320 * Math.cos(lat * Math.PI/180));
+  return { lat: lat + dLat, lng: lng + dLng };
+}
+
+function drawPanels(d){
+  clearPanels();
+  if(!gmap || !Array.isArray(d.panels) || !d.panels.length) return;
+  const wM = d.panelWidthMeters || 1.045;
+  const hM = d.panelHeightMeters || 1.879;
+  d.panels.forEach(p=>{
+    // panel half-dimensions depending on orientation
+    let halfW, halfH;
+    if(p.orientation==='LANDSCAPE'){ halfW=hM/2; halfH=wM/2; } else { halfW=wM/2; halfH=hM/2; }
+    // rotate rectangle corners by the roof-segment azimuth
+    const az = (p.azimuth||0) * Math.PI/180;
+    const cos=Math.cos(az), sin=Math.sin(az);
+    const corners=[[-halfW,-halfH],[halfW,-halfH],[halfW,halfH],[-halfW,halfH]].map(([x,y])=>{
+      const ex = x*cos - y*sin;   // rotated east offset
+      const ny = x*sin + y*cos;   // rotated north offset
+      return offsetLatLng(p.lat, p.lng, ex, ny);
+    });
+    const poly=new google.maps.Polygon({
+      paths:corners, map:gmap,
+      strokeColor:'#0088bb', strokeOpacity:0.9, strokeWeight:1,
+      fillColor:'#0b1e38', fillOpacity:0.55, clickable:false, zIndex:5
+    });
+    panelOverlays.push(poly);
+  });
+  // fit the map nicely around the roof
+  const b=new google.maps.LatLngBounds();
+  d.panels.forEach(p=>b.extend({lat:p.lat,lng:p.lng}));
+  if(!b.isEmpty()){ gmap.panTo(b.getCenter()); }
 }
 
 showStep(1);
