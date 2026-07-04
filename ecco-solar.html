@@ -562,8 +562,8 @@ async function analyseRoof(){
 function applyRoof(d){
   const insight=document.getElementById('roofInsight'), manual=document.getElementById('roofManual');
   if(d && d.ok && d.covered && d.panelsPlaceable){
-    // show insight card
-    document.getElementById('riPanels').textContent=d.maxPanels||d.recommendedPanels;
+    // show insight card — recommended (sensible) panel count, not the whole-roof max
+    document.getElementById('riPanels').textContent=d.recommendedPanels||d.maxPanels;
     document.getElementById('riSun').textContent=d.sunshineHoursPerYear||'—';
     document.getElementById('riKwh').textContent=(d.yearlyEnergyKwh||0).toLocaleString('en-GB');
     insight.style.display=''; manual.style.display='none';
@@ -575,6 +575,7 @@ function applyRoof(d){
     }
     GOOGLE_YEARLY_KWH = d.yearlyEnergyKwh || null;   // used by calc() to scale real production
     GOOGLE_PANELS = d.recommendedPanels || null;
+    render(); // reflect the new panel count immediately
   } else {
     // roof not auto-assessable — show manual note, keep generic defaults
     insight.style.display='none'; manual.style.display='';
