@@ -193,6 +193,30 @@ body::before { content:''; position:fixed; inset:0; background:#eef1f6; z-index:
 @keyframes charPopIn { from{opacity:0; transform:translateY(14px) scale(.9);} to{opacity:1; transform:translateY(0) scale(1);} }
 @keyframes charPopOut { from{opacity:1; transform:translateY(0) scale(1);} to{opacity:0; transform:translateY(14px) scale(.9);} }
 
+
+/* ── Checkout add-ons panel ── */
+.addons{background:var(--white);border:2px solid var(--line);border-radius:16px;padding:18px;margin-bottom:16px;}
+.addons-title{font-family:'DM Sans',sans-serif;font-weight:700;font-size:1.05rem;color:var(--navy);margin-bottom:4px;}
+.addons-sub{font-size:12.5px;color:var(--muted);margin-bottom:16px;}
+.addon-row{display:flex;align-items:center;gap:12px;padding:13px 0;border-top:1px solid var(--line);}
+.addon-row:first-of-type{border-top:none;}
+.addon-info{flex:1;}
+.addon-info h4{font-size:14px;color:var(--navy);margin-bottom:2px;font-weight:600;}
+.addon-info p{font-size:12px;color:var(--slate);line-height:1.4;margin:0;}
+.addon-qty{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.addon-btn{width:30px;height:30px;border-radius:8px;border:1.5px solid var(--line);background:var(--white);color:var(--navy);font-size:17px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;-webkit-tap-highlight-color:transparent;}
+.addon-btn:active{background:var(--bg);}
+.addon-num{min-width:22px;text-align:center;font-weight:700;font-size:15px;color:var(--navy);}
+.addon-grade{display:flex;gap:6px;flex-shrink:0;}
+.grade-pill{border:1.5px solid var(--line);border-radius:8px;background:var(--white);padding:7px 11px;font-family:'DM Sans',sans-serif;font-size:12.5px;font-weight:600;color:var(--slate);cursor:pointer;-webkit-tap-highlight-color:transparent;}
+.grade-pill.on{border-color:var(--blue);background:var(--blue-l);color:var(--blue);}
+.addon-toggle{width:46px;height:27px;border-radius:20px;background:var(--line);position:relative;cursor:pointer;flex-shrink:0;transition:background .15s;-webkit-tap-highlight-color:transparent;}
+.addon-toggle.on{background:var(--blue);}
+.addon-toggle::after{content:'';position:absolute;top:3px;left:3px;width:21px;height:21px;border-radius:50%;background:#fff;transition:transform .15s;}
+.addon-toggle.on::after{transform:translateX(19px);}
+.addons-total{display:flex;justify-content:space-between;align-items:center;border-top:2px solid var(--line);margin-top:6px;padding-top:14px;}
+.addons-total-lbl{font-size:13px;color:var(--slate);}
+.addons-total-val{font-family:'DM Sans',sans-serif;font-weight:700;font-size:1.3rem;color:var(--navy);}
 </style>
 </head>
 <body>
@@ -516,6 +540,49 @@ body::before { content:''; position:fixed; inset:0; background:#eef1f6; z-index:
     </div>
   </div>
 
+  <!-- Checkout add-ons -->
+  <div class="addons" id="addons-panel">
+    <div class="addons-title">Customise your quote</div>
+    <div class="addons-sub">Optional extras — your price updates as you add them.</div>
+
+    <div class="addon-row">
+      <div class="addon-info"><h4>Smoke &amp; heat alarm system</h4><p>Aico mains-interlinked. LD3 £199 · LD2 £349</p></div>
+      <div class="addon-grade">
+        <div class="grade-pill" id="grade-none" onclick="setSmoke('none')">None</div>
+        <div class="grade-pill" id="grade-ld3" onclick="setSmoke('ld3')">LD3</div>
+        <div class="grade-pill" id="grade-ld2" onclick="setSmoke('ld2')">LD2</div>
+      </div>
+    </div>
+
+    <div class="addon-row">
+      <div class="addon-info"><h4>Extractor fans</h4><p>Ventilation fan, supplied &amp; fitted — £220 each</p></div>
+      <div class="addon-qty">
+        <button class="addon-btn" onclick="addonQty('fans',-1)">–</button>
+        <span class="addon-num" id="qty-fans">0</span>
+        <button class="addon-btn" onclick="addonQty('fans',1)">+</button>
+      </div>
+    </div>
+
+    <div class="addon-row">
+      <div class="addon-info"><h4>Spotlights</h4><p>Recessed LED downlight — £18 each</p></div>
+      <div class="addon-qty">
+        <button class="addon-btn" onclick="addonQty('spotlights',-1)">–</button>
+        <span class="addon-num" id="qty-spotlights">0</span>
+        <button class="addon-btn" onclick="addonQty('spotlights',1)">+</button>
+      </div>
+    </div>
+
+    <div class="addon-row">
+      <div class="addon-info"><h4>7kW EV charger</h4><p>Smart home charger, installed — £799</p></div>
+      <div class="addon-toggle" id="toggle-ev" onclick="toggleEV()"></div>
+    </div>
+
+    <div class="addons-total">
+      <span class="addons-total-lbl">Add-ons subtotal</span>
+      <span class="addons-total-val" id="addons-total">£0</span>
+    </div>
+  </div>
+
   <div class="eng">
     <div class="eng-title"><svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="8"/><path d="M7 10l2 2 4-4"/></svg>Every quote reviewed by a qualified engineer</div>
     <div class="eng-steps">
@@ -808,7 +875,7 @@ function roomsSummary(){
   const names = Object.keys(roomData);
   const scopes = names.map(n => roomData[n].scope);
   const photoCount = names.filter(n => roomData[n].photo).length;
-  let totalSockets = 0, totalLights = 0, hasGasHob = false, hasElecCooker = false;
+  let totalSockets = 0, totalLights = 0, hasGasHob = false, hasElecCooker = false, totalFans = 0;
   names.forEach(n => {
     const f = roomData[n].fields;
     if(roomData[n].scope === 'skip') return;
@@ -817,12 +884,13 @@ function roomsSummary(){
     if(f.lights) totalLights += f.lights;
     if(f.hob) hasGasHob = true;
     if(f.cooker) hasElecCooker = true;
+    if(f.fan) totalFans += 1;
   });
   let label = 'Consumer unit only';
   if(scopes.includes('full')) label = 'Full rewire';
   else if(scopes.includes('partial')) label = 'Partial rewire';
   return {
-    bedroomCount, roomCount: names.length, photoCount, label, totalSockets, totalLights, hasGasHob, hasElecCooker
+    bedroomCount, roomCount: names.length, photoCount, label, totalSockets, totalLights, hasGasHob, hasElecCooker, totalFans
   };
 }
 
@@ -844,6 +912,24 @@ function getSelectedExtras(){
   document.querySelectorAll('.extra-opt.extra-selected').forEach(el => sel.push(el.getAttribute('data-val')));
   return sel;
 }
+
+// ── CHECKOUT ADD-ON STATE ──────────────────────────────
+let addonState = {
+  smokeGrade: 'none',   // 'none' | 'ld3' | 'ld2'
+  fans: 0,              // qty (auto-filled from flow, editable)
+  spotlights: 0,        // qty
+  ev: false,
+};
+function addonsTotal(){
+  let t = 0;
+  if(addonState.smokeGrade === 'ld3') t += REWIRE_PRICE.smokeLD3;
+  if(addonState.smokeGrade === 'ld2') t += REWIRE_PRICE.smokeLD2;
+  t += addonState.fans * REWIRE_PRICE.fanNewHole;
+  t += addonState.spotlights * REWIRE_PRICE.spotlight;
+  if(addonState.ev) t += REWIRE_PRICE.ev;
+  return t;
+}
+
 function calcRewirePrice(){
   const s = roomsSummary();
   const points = (s.totalSockets || 0) + (s.totalLights || 0);
@@ -952,10 +1038,48 @@ function toggleExtra(el){
   document.getElementById('extras-continue').style.display = anySelected ? 'block' : 'none';
 }
 
+
+function setSmoke(g){
+  addonState.smokeGrade = g;
+  ['none','ld3','ld2'].forEach(x=>document.getElementById('grade-'+x).classList.toggle('on', x===g));
+  refreshTotals();
+}
+function addonQty(key, delta){
+  addonState[key] = Math.max(0, (addonState[key]||0) + delta);
+  document.getElementById('qty-'+key).textContent = addonState[key];
+  refreshTotals();
+}
+function toggleEV(){
+  addonState.ev = !addonState.ev;
+  document.getElementById('toggle-ev').classList.toggle('on', addonState.ev);
+  refreshTotals();
+}
+function refreshTotals(){
+  const addons = addonsTotal();
+  const el = document.getElementById('addons-total');
+  if(el) el.textContent = fmt(addons);
+  // update the featured card price = base rewire + addons
+  const p = calcRewirePrice();
+  const featTotal = p.base + addons;
+  const ft = document.getElementById('feat-today');
+  const fm = document.getElementById('feat-mo');
+  const fpc = document.getElementById('feat-pc');
+  if(ft){ ft.textContent = fmt(featTotal); fm.textContent = monthly(featTotal); fpc.setAttribute('data-price', fmt(featTotal)); }
+}
+
 function renderRewirePrices(){
+  const s = roomsSummary();
+  // prefill fans qty from flow toggles (default new-hole price)
+  addonState.fans = s.totalFans || 0;
+  const qf = document.getElementById('qty-fans'); if(qf) qf.textContent = addonState.fans;
+  // prefill smoke/ev from the extras screen selections
+  const preExtras = getSelectedExtras();
+  if(preExtras.includes('smoke') && addonState.smokeGrade==='none') setSmoke('ld2');
+  if(preExtras.includes('ev')) { addonState.ev = true; document.getElementById('toggle-ev').classList.add('on'); }
+  else { ['none','ld3','ld2'].forEach(x=>document.getElementById('grade-'+x) && document.getElementById('grade-'+x).classList.toggle('on', ('none'===x)===(addonState.smokeGrade==='none') && x===addonState.smokeGrade)); }
   const p = calcRewirePrice();
   const extras = getSelectedExtras();
-  const hasEV = extras.includes('ev');
+  const hasEV = addonState.ev;
   // Featured card = rewire + extras (if any), else just rewire
   const featPrice = p.withExtras;
   const rewireOnly = p.base;
@@ -965,15 +1089,12 @@ function renderRewirePrices(){
   const featName = document.getElementById('feat-name');
   const featPickBtn = document.getElementById('feat-pc');
   if(featToday){
-    featToday.textContent = fmt(featPrice);
-    featMo.textContent = monthly(featPrice);
     let nm = 'Full Rewire + New Consumer Unit';
-    if(hasEV) nm += ' + 7kW EV Charger';
-    featName.textContent = nm + ' — ' + roomsSummary().bedroomCount + '-bed property';
+    featName.textContent = nm + ' — ' + s.bedroomCount + '-bed property';
     featPickBtn.setAttribute('data-name', nm);
-    featPickBtn.setAttribute('data-price', fmt(featPrice));
   }
   // update second (rewire only) card
+  refreshTotals();
   const s2today = document.getElementById('ro-today');
   const s2mo = document.getElementById('ro-mo');
   if(s2today){
