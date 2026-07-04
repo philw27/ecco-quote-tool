@@ -217,6 +217,24 @@ body::before { content:''; position:fixed; inset:0; background:#eef1f6; z-index:
 .addons-total{display:flex;justify-content:space-between;align-items:center;border-top:2px solid var(--line);margin-top:6px;padding-top:14px;}
 .addons-total-lbl{font-size:13px;color:var(--slate);}
 .addons-total-val{font-family:'DM Sans',sans-serif;font-weight:700;font-size:1.3rem;color:var(--navy);}
+/* Included modal */
+.inc-overlay { position:fixed; inset:0; z-index:500; background:rgba(11,30,56,.55); display:none; align-items:flex-end; justify-content:center; }
+.inc-overlay.on { display:flex; }
+.inc-modal { background:white; width:100%; max-width:var(--max); max-height:88vh; overflow-y:auto; border-radius:18px 18px 0 0; padding:22px 20px 32px; box-shadow:0 -8px 40px rgba(0,0,0,.2); }
+@media(min-width:700px){ .inc-overlay{ align-items:center; } .inc-modal{ border-radius:18px; max-height:82vh; } }
+.inc-head { display:flex; align-items:flex-start; justify-content:space-between; gap:14px; margin-bottom:6px; }
+.inc-head h3 { font-family:'Syne',sans-serif; font-weight:800; font-size:20px; color:var(--navy); margin:0; }
+.inc-x { flex-shrink:0; width:34px; height:34px; border-radius:50%; border:1px solid var(--line); background:var(--bg); color:var(--slate); font-size:20px; line-height:1; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+.inc-sub { font-size:13px; color:var(--muted); margin:0 0 18px; }
+.inc-sec-title { font-family:'Syne',sans-serif; font-weight:800; font-size:14px; color:var(--navy); text-transform:uppercase; letter-spacing:.4px; margin:20px 0 10px; }
+.inc-item { display:flex; gap:10px; align-items:flex-start; padding:8px 0; border-bottom:1px solid var(--line); }
+.inc-item svg { flex-shrink:0; width:18px; height:18px; margin-top:1px; fill:none; stroke:var(--blue); stroke-width:1.6; }
+.inc-item .t { font-size:14px; color:var(--navy); font-weight:600; }
+.inc-item .d { font-size:12.5px; color:var(--slate); margin-top:1px; }
+.inc-acc { display:flex; justify-content:space-between; align-items:baseline; gap:12px; padding:9px 0; border-bottom:1px solid var(--line); }
+.inc-acc .n { font-size:14px; color:var(--navy); font-weight:600; }
+.inc-acc .n span { display:block; font-size:12px; color:var(--muted); font-weight:400; margin-top:1px; }
+.inc-acc .p { font-size:13px; color:var(--blue); font-weight:700; white-space:nowrap; }
 </style>
 </head>
 <body>
@@ -340,7 +358,7 @@ body::before { content:''; position:fixed; inset:0; background:#eef1f6; z-index:
 <div class="scr" id="s7">
   <div class="filter-bar">
     <svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="7"/><path d="M8 7v4M8 5v.5"/></svg>
-    <span class="filter-txt" id="filter-txt">3-bed semi-detached · Full rewire · EV charger</span>
+    <span class="filter-txt" id="filter-txt">3-bed semi-detached · Full rewire</span>
     <span class="filter-edit">Edit</span>
   </div>
 
@@ -388,11 +406,10 @@ body::before { content:''; position:fixed; inset:0; background:#eef1f6; z-index:
       </div>
       <div class="pc-feats">
         <div class="feat"><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6"/><path d="M5.5 8.5l2 2 3-4"/></svg>Full rewire to BS7671 18th Edition</div>
-        <div class="feat"><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6"/><path d="M5.5 8.5l2 2 3-4"/></svg>New dual RCD consumer unit included</div>
-        <div class="feat"><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6"/><path d="M5.5 8.5l2 2 3-4"/></svg>7kW EV charger with smart app control</div>
-        <div class="feat-plain"><svg viewBox="0 0 16 16" stroke-linecap="round"><rect x="2" y="3" width="12" height="10" rx="1"/></svg>Electrical Installation Certificate issued same day</div>
+        <div class="feat"><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6"/><path d="M5.5 8.5l2 2 3-4"/></svg>New 12-way RCBO consumer unit with SPD</div>
+        <div class="feat"><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6"/><path d="M5.5 8.5l2 2 3-4"/></svg>Electrical Installation Certificate included</div>
       </div>
-      <div class="pc-included">See what's included ›</div>
+      <div class="pc-included" onclick="openIncluded()">See what's included ›</div>
     </div>
     <div class="pc-price">
       <div class="pc-price-lbl">Your fixed price including installation:</div>
@@ -400,54 +417,6 @@ body::before { content:''; position:fixed; inset:0; background:#eef1f6; z-index:
         <div class="pc-price-today" id="feat-today">£3,999</div>
         <div class="pc-price-divider"></div>
         <div class="pc-price-monthly"><div class="pc-price-monthly-val" id="feat-mo">£51.40/mo*</div><div class="pc-price-monthly-lbl">0% finance available</div></div>
-      </div>
-      <a class="pc-finance">View finance calculator</a>
-      <button class="pc-btn">Select this quote →</button>
-    </div>
-  </div>
-
-  <!-- Rewire only -->
-  <div class="pc" id="ro-pc" data-name="Full Rewire — rewire only" data-price="£2,995" onclick="pickDyn(this)">
-    <div class="pc-img">
-      <div class="pc-brand"><div class="pc-brand-name">NICEIC<br>Approved</div></div>
-      <svg width="110" height="110" viewBox="0 0 100 100" fill="none" style="flex-shrink:0;filter:drop-shadow(2px 4px 8px rgba(0,0,0,.1))">
-        <rect x="8" y="12" width="84" height="76" rx="5" fill="white" stroke="#c8d2de" stroke-width="1"/>
-        <rect x="8" y="12" width="84" height="14" rx="5" fill="#f4f6f9" stroke="#c8d2de" stroke-width="1"/>
-        <rect x="14" y="32" width="18" height="48" rx="3" fill="#eef1f6" stroke="#b8c4d0" stroke-width="1"/>
-        <rect x="18" y="38" width="10" height="20" rx="2" fill="#0b1e38" opacity=".15"/>
-        <rect x="18" y="38" width="10" height="8" rx="2" fill="#0b1e38" opacity=".4"/>
-        <rect x="36" y="32" width="10" height="22" rx="2" fill="#eef1f6" stroke="#b8c4d0" stroke-width="1"/>
-        <rect x="38" y="35" width="6" height="10" rx="1" fill="#0088bb" opacity=".6"/>
-        <rect x="48" y="32" width="10" height="22" rx="2" fill="#eef1f6" stroke="#b8c4d0" stroke-width="1"/>
-        <rect x="50" y="35" width="6" height="10" rx="1" fill="#0088bb" opacity=".6"/>
-        <rect x="60" y="32" width="10" height="22" rx="2" fill="#eef1f6" stroke="#b8c4d0" stroke-width="1"/>
-        <rect x="62" y="35" width="6" height="10" rx="1" fill="#0088bb" opacity=".6"/>
-        <rect x="36" y="58" width="10" height="22" rx="2" fill="#eef1f6" stroke="#b8c4d0" stroke-width="1"/>
-        <rect x="38" y="61" width="6" height="10" rx="1" fill="#16a34a" opacity=".6"/>
-        <rect x="48" y="58" width="10" height="22" rx="2" fill="#eef1f6" stroke="#b8c4d0" stroke-width="1"/>
-        <rect x="50" y="61" width="6" height="10" rx="1" fill="#16a34a" opacity=".6"/>
-      </svg>
-    </div>
-    <div class="pc-body">
-      <div class="pc-name">Full Rewire + New Consumer Unit — 3-bed semi-detached</div>
-      <div class="pc-pills">
-        <span class="pill pill-red">⚡ NICEIC approved</span>
-        <span class="pill pill-blue">0% finance</span>
-        <span class="pill pill-grey">EV charger add-on available</span>
-      </div>
-      <div class="pc-feats">
-        <div class="feat"><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6"/><path d="M5.5 8.5l2 2 3-4"/></svg>Full rewire to BS7671 18th Edition</div>
-        <div class="feat"><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6"/><path d="M5.5 8.5l2 2 3-4"/></svg>New dual RCD consumer unit included</div>
-        <div class="feat-plain"><svg viewBox="0 0 16 16" stroke-linecap="round"><rect x="2" y="3" width="12" height="10" rx="1"/></svg>EV charger can be added at checkout — from £799</div>
-      </div>
-      <div class="pc-included">See what's included ›</div>
-    </div>
-    <div class="pc-price">
-      <div class="pc-price-lbl">Your fixed price including installation:</div>
-      <div class="pc-price-main">
-        <div class="pc-price-today" id="ro-today">£2,995</div>
-        <div class="pc-price-divider"></div>
-        <div class="pc-price-monthly"><div class="pc-price-monthly-val" id="ro-mo">£38.50/mo*</div><div class="pc-price-monthly-lbl">0% finance available</div></div>
       </div>
       <a class="pc-finance">View finance calculator</a>
       <button class="pc-btn">Select this quote →</button>
@@ -572,8 +541,36 @@ body::before { content:''; position:fixed; inset:0; background:#eef1f6; z-index:
   <button class="cta-btn" onclick="go(9)">Confirm &amp; pay</button>
 </div>
 
+<!-- What's included modal -->
+<div class="inc-overlay" id="inc-overlay" onclick="if(event.target===this)closeIncluded()">
+  <div class="inc-modal">
+    <div class="inc-head">
+      <h3>What's included</h3>
+      <button class="inc-x" onclick="closeIncluded()" aria-label="Close">&times;</button>
+    </div>
+    <p class="inc-sub">Full Rewire + New Consumer Unit — everything below is part of your fixed price.</p>
+
+    <div class="inc-sec-title">In your fixed price</div>
+    <div class="inc-item"><svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="8"/><path d="M6.5 10.5l2.2 2.2 4.8-5"/></svg><div><div class="t">Full rewire to BS 7671 18th Edition</div><div class="d">All existing wiring replaced throughout — first fix, second fix, labour and cable.</div></div></div>
+    <div class="inc-item"><svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="8"/><path d="M6.5 10.5l2.2 2.2 4.8-5"/></svg><div><div class="t">New 12-way RCBO consumer unit with SPD</div><div class="d">Individual RCBO protection per circuit plus surge protection device.</div></div></div>
+    <div class="inc-item"><svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="8"/><path d="M6.5 10.5l2.2 2.2 4.8-5"/></svg><div><div class="t">Sockets, switches &amp; light fittings</div><div class="d">All accessories on the day, wired and tested to your room layout.</div></div></div>
+    <div class="inc-item"><svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="8"/><path d="M6.5 10.5l2.2 2.2 4.8-5"/></svg><div><div class="t">Test &amp; inspection</div><div class="d">Full testing of every circuit before sign-off.</div></div></div>
+    <div class="inc-item"><svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="8"/><path d="M6.5 10.5l2.2 2.2 4.8-5"/></svg><div><div class="t">Electrical Installation Certificate</div><div class="d">Your EIC issued on completion — always included, never an extra.</div></div></div>
+    <div class="inc-item"><svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="8"/><path d="M6.5 10.5l2.2 2.2 4.8-5"/></svg><div><div class="t">NICEIC-approved workmanship</div><div class="d">Every job reviewed by a qualified engineer and fully guaranteed.</div></div></div>
+
+    <div class="inc-sec-title">Accessories you can add</div>
+    <div class="inc-acc"><div class="n">Smoke &amp; heat alarm system<span>Aico mains-interlinked, LD3 or LD2 grade</span></div><div class="p">£199 · £349</div></div>
+    <div class="inc-acc"><div class="n">Extractor fans<span>Ventilation fan, supplied &amp; fitted</span></div><div class="p">£220 each</div></div>
+    <div class="inc-acc"><div class="n">Spotlights<span>Recessed LED downlight</span></div><div class="p">£18 each</div></div>
+    <div class="inc-acc"><div class="n">7kW EV charger<span>Smart home charger, installed</span></div><div class="p">£799</div></div>
+    <p class="inc-sub" style="margin-top:16px">Add any of these in the "Customise your quote" panel — your fixed price updates instantly.</p>
+  </div>
+</div>
+
 <script>
 let step=1; const TOTAL=9;
+function openIncluded(){ document.getElementById('inc-overlay').classList.add('on'); document.body.style.overflow='hidden'; }
+function closeIncluded(){ document.getElementById('inc-overlay').classList.remove('on'); document.body.style.overflow=''; }
 let chosenProduct='', chosenPrice='';
 const meta={1:['1 of 4','Your home'],2:['1 of 4','Your home'],3:['1 of 4','Your home'],4:['1 of 4','Your home'],5:['1 of 4','Your home'],6:['1 of 4','Your home'],7:['2 of 4','Your options'],8:['3 of 4','Your details'],9:['4 of 4','Confirmed']};
 
@@ -993,15 +990,7 @@ function renderRewirePrices(){
     featName.textContent = nm + ' — ' + s.bedroomCount + '-bed property';
     featPickBtn.setAttribute('data-name', nm);
   }
-  // update second (rewire only) card
   refreshTotals();
-  const s2today = document.getElementById('ro-today');
-  const s2mo = document.getElementById('ro-mo');
-  if(s2today){
-    s2today.textContent = fmt(rewireOnly);
-    s2mo.textContent = monthly(rewireOnly);
-    document.getElementById('ro-pc').setAttribute('data-price', fmt(rewireOnly));
-  }
 }
 
 buildRooms();
