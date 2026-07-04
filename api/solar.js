@@ -77,21 +77,31 @@ export default async function handler(req, res) {
     const carbonOffsetKgPerMwh = sp.carbonOffsetFactorKgPerMwh || null;
 
     // Panel geometry for drawing on the map.
-    // sp.solarPanels[] is ordered best-first; take the first `recommendedPanels`.
     const panelW = sp.panelWidthMeters || 1.045;
     const panelH = sp.panelHeightMeters || 1.879;
     const allPanels = Array.isArray(sp.solarPanels) ? sp.solarPanels : [];
     const segs = Array.isArray(sp.roofSegmentStats) ? sp.roofSegmentStats : [];
     const panels = allPanels.slice(0, roofFitPanels).map(p => {
-      // orientation: PORTRAIT or LANDSCAPE. azimuth comes from the roof segment it sits on.
-      const seg = segs[p.segmentIndex || 0] || {};
+      // segmentIndex can be 0 (valid) — coerce carefully, don't treat 0 as missing
+      let si = (p.segmentIndex != null) ? p.segmentIndex
+             : (p._segment_index != null) ? p._segment_index : 0;
+      const seg = segs[si] || {};
       return {
         lat: p.center ? p.center.latitude : null,
         lng: p.center ? p.center.longitude : null,
         orientation: p.orientation || 'PORTRAIT',
-        azimuth: seg.azimuthDegrees != null ? seg.azimuthDegrees : 0
+        segmentIndex: si,
+        azimuth: (seg.azimuthDegrees != null) ? seg.azimuthDegrees : 0,
+        pitch: (seg.pitchDegrees != null) ? seg.pitchDegrees : 0
       };
     }).filter(p => p.lat != null);
+
+    // Also return the segment azimuths so the client can group/verify
+    const segments = segs.map((s,i)=>({
+      index:i,
+      azimuth: s.azimuthDegrees != null ? s.azimuthDegrees : 0,
+      pitch: s.pitchDegrees != null ? s.pitchDegrees : 0
+    }));
 
     res.status(200).json({
       ok: true,
@@ -111,7 +121,8 @@ export default async function handler(req, res) {
       maxRoofAreaM2: maxAreaM2,
       sunshineHoursPerYear: sunshineHours,
       carbonOffsetKgPerMwh,
-      panels
+      panels,
+      segments
     });
   } catch (err) {
     res.status(500).json({ ok: false, error: 'Server error calling Solar API', detail: String(err).slice(0, 200) });
