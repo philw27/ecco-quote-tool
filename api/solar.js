@@ -66,12 +66,10 @@ export default async function handler(req, res) {
     const configs = sp.solarPanelConfigs;
     const panelWatts = sp.panelCapacityWatts || 400;   // Google default assumption
     // Recommend the largest config that still fits, capped to a reasonable domestic size (~20 panels).
-    let rec = configs[configs.length - 1];
-    for (const c of configs) {
-      if (c.panelsCount <= 20) rec = c; else break;
-    }
-
-    const recommendedPanels = rec.panelsCount;
+    // Roof-driven fit: use Google's LARGEST config = the real number of panels
+    // that physically fit on the usable, sun-worthy roof segments.
+    const rec = configs[configs.length - 1];
+    const roofFitPanels = rec.panelsCount;
     const yearlyEnergyKwh = Math.round(rec.yearlyEnergyDcKwh || 0);
     const maxPanels = sp.maxArrayPanelsCount || null;
     const maxAreaM2 = sp.maxArrayAreaMeters2 ? Math.round(sp.maxArrayAreaMeters2) : null;
@@ -84,7 +82,7 @@ export default async function handler(req, res) {
     const panelH = sp.panelHeightMeters || 1.879;
     const allPanels = Array.isArray(sp.solarPanels) ? sp.solarPanels : [];
     const segs = Array.isArray(sp.roofSegmentStats) ? sp.roofSegmentStats : [];
-    const panels = allPanels.slice(0, recommendedPanels).map(p => {
+    const panels = allPanels.slice(0, roofFitPanels).map(p => {
       // orientation: PORTRAIT or LANDSCAPE. azimuth comes from the roof segment it sits on.
       const seg = segs[p.segmentIndex || 0] || {};
       return {
@@ -105,8 +103,9 @@ export default async function handler(req, res) {
       panelWatts,
       panelWidthMeters: panelW,
       panelHeightMeters: panelH,
-      recommendedPanels,
-      recommendedKw: +((recommendedPanels * panelWatts) / 1000).toFixed(2),
+      roofFitPanels,
+      recommendedPanels: roofFitPanels,
+      recommendedKw: +((roofFitPanels * panelWatts) / 1000).toFixed(2),
       yearlyEnergyKwh,
       maxPanels,
       maxRoofAreaM2: maxAreaM2,
