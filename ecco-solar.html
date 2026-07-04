@@ -518,7 +518,7 @@ window.initMap = function(){
   // Address autocomplete
   const input=document.getElementById('addrInput');
   const ac=new google.maps.places.Autocomplete(input,{
-    componentRestrictions:{country:'gb'}, fields:['geometry','formatted_address'], types:['address']
+    componentRestrictions:{country:'gb'}, fields:['geometry','formatted_address'], types:['geocode']
   });
   ac.addListener('place_changed',()=>{
     const p=ac.getPlace();
