@@ -309,121 +309,35 @@ body::before { content:''; position:fixed; inset:0; background:#eef1f6; z-index:
 </div>
 </div>
 
-<!-- S5: Current consumer unit -->
+<!-- S5: Current wiring age -->
 <div class="scr" id="s5">
-<div class="qcard">
-  <h1 class="qtitle">What type of <span class="hl">consumer unit</span> do you currently have?</h1>
-  <div class="qhelper"><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="7"/><path d="M8 7v4M8 5v.5"/></svg>How to find out</div>
-  <div class="opts">
-    <div class="opt" onclick="go(6)">
-      <div class="oico">
-        <svg width="44" height="44" viewBox="0 0 44 44" fill="none" stroke="#0b1e38" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="4" y="8" width="36" height="28" rx="2"/>
-          <rect x="8" y="14" width="8" height="16" rx="1"/>
-          <rect x="18" y="14" width="4" height="8" rx="1"/>
-          <rect x="24" y="14" width="4" height="8" rx="1"/>
-          <rect x="30" y="14" width="6" height="16" rx="1"/>
-        </svg>
-      </div>
-      <div class="otext"><div class="oname">Modern consumer unit (MCBs)</div><div class="odesc">Plastic box with row of switches — post-2000</div></div>
-      <div class="odiv"></div><div class="oinfo">i</div>
-    </div>
-    <div class="opt" onclick="go(6)">
-      <div class="oico">
-        <svg width="44" height="44" viewBox="0 0 44 44" fill="none" stroke="#0b1e38" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="4" y="8" width="36" height="28" rx="2"/>
-          <circle cx="14" cy="22" r="5"/>
-          <circle cx="22" cy="22" r="5"/>
-          <circle cx="30" cy="22" r="5"/>
-        </svg>
-      </div>
-      <div class="otext"><div class="oname">Old fuse box (rewirable fuses)</div><div class="odesc">Older metal box with ceramic fuses</div></div>
-      <div class="odiv"></div><div class="oinfo">i</div>
-    </div>
-    <div class="opt" onclick="go(6)">
-      <div class="otext"><div class="oname">I'm not sure</div></div>
-    </div>
-  </div>
-</div>
-</div>
-
-<!-- S6: Extras -->
-<div class="scr" id="s6">
-<div class="qcard">
-  <h1 class="qtitle">Would you like to add any <span class="hl">extras</span>?</h1>
-  <p class="qsub">Select all that apply. You can adjust at checkout.</p>
-  <div class="opts" style="margin-top:4px;" id="extras-opts">
-    <div class="opt extra-opt" data-val="ev" onclick="toggleExtra(this)">
-      <div class="oico">
-        <svg width="44" height="36" viewBox="0 0 44 36" fill="none" stroke="#0b1e38" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="2" y="10" width="36" height="18" rx="4"/>
-          <circle cx="10" cy="28" r="4"/>
-          <circle cx="30" cy="28" r="4"/>
-          <path d="M38 20h4v-6l-4-4"/>
-          <path d="M14 10V6h10l4 4"/>
-        </svg>
-      </div>
-      <div class="otext"><div class="oname">EV charger installation</div><div class="odesc">7kW home EV charger — £799</div></div>
-    </div>
-    <div class="opt extra-opt" data-val="smoke" onclick="toggleExtra(this)">
-      <div class="oico">
-        <svg width="40" height="40" viewBox="0 0 40 40" fill="none" stroke="#0b1e38" stroke-width="1.3" stroke-linecap="round">
-          <circle cx="20" cy="18" r="12"/>
-          <path d="M14 26c-2 4-2 8 0 10h12c2-2 2-6 0-10"/>
-          <line x1="16" y1="14" x2="24" y2="22"/>
-          <line x1="24" y1="14" x2="16" y2="22"/>
-        </svg>
-      </div>
-      <div class="otext"><div class="oname">Smoke &amp; heat alarm system (Aico)</div><div class="odesc">LD3 (hall, landing + kitchen heat) £199 · LD2 enhanced whole-home £349</div></div>
-    </div>
-    <div class="opt extra-opt" data-val="sockets" onclick="toggleExtra(this)">
-      <div class="oico">
-        <svg width="40" height="40" viewBox="0 0 40 40" fill="none" stroke="#0b1e38" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="6" y="6" width="28" height="28" rx="3"/>
-          <circle cx="15" cy="18" r="3"/>
-          <circle cx="25" cy="18" r="3"/>
-          <rect x="14" y="24" width="12" height="5" rx="1"/>
-        </svg>
-      </div>
-      <div class="otext"><div class="oname">Extra sockets &amp; USB outlets</div><div class="odesc">Additional sockets in any rooms — from £149</div></div>
-    </div>
-    <div class="opt" onclick="go(7)" style="border-color:var(--line)">
-      <div class="otext"><div class="oname">No extras — rewire only</div></div>
-    </div>
-  </div>
-  <button id="extras-continue" onclick="go(7)" style="display:none;width:100%;margin-top:14px;background:var(--navy);color:white;font-family:'DM Sans',sans-serif;font-size:15px;font-weight:600;border:none;border-radius:10px;padding:16px;cursor:pointer;">Continue →</button>
-</div>
-</div>
-
-<!-- S7: Current wiring age -->
-<div class="scr" id="s7">
 <div class="qcard">
   <h1 class="qtitle">Roughly how <span class="hl">old</span> is your current wiring?</h1>
   <p class="qsub note">This won't change your fixed price — it helps our engineers plan the job.</p>
   <div class="opts">
-    <div class="opt" onclick="go(8)"><div class="otext"><div class="oname">Under 10 years</div></div></div>
-    <div class="opt" onclick="go(8)"><div class="otext"><div class="oname">10–25 years</div></div></div>
-    <div class="opt" onclick="go(8)"><div class="otext"><div class="oname">25–40 years</div></div></div>
-    <div class="opt" onclick="go(8)"><div class="otext"><div class="oname">Over 40 years</div></div></div>
-    <div class="opt" onclick="go(8)"><div class="otext"><div class="oname">I don't know</div></div></div>
+    <div class="opt" onclick="go(6)"><div class="otext"><div class="oname">Under 10 years</div></div></div>
+    <div class="opt" onclick="go(6)"><div class="otext"><div class="oname">10–25 years</div></div></div>
+    <div class="opt" onclick="go(6)"><div class="otext"><div class="oname">25–40 years</div></div></div>
+    <div class="opt" onclick="go(6)"><div class="otext"><div class="oname">Over 40 years</div></div></div>
+    <div class="opt" onclick="go(6)"><div class="otext"><div class="oname">I don't know</div></div></div>
   </div>
 </div>
 </div>
 
-<!-- S8: Postcode -->
-<div class="scr" id="s8">
+<!-- S6: Postcode -->
+<div class="scr" id="s6">
 <div class="qcard">
   <h1 class="qtitle">What's the <span class="hl">postcode</span> of the property?</h1>
   <p class="qsub">We need this to check local engineer availability and confirm your installation date.</p>
   <div class="pc-row">
     <input class="pc-input" type="text" placeholder="Enter postcode" autocomplete="postal-code">
-    <button class="pc-go" onclick="go(9)">Show results</button>
+    <button class="pc-go" onclick="go(7)">Show results</button>
   </div>
 </div>
 </div>
 
-<!-- S9: Results -->
-<div class="scr" id="s9">
+<!-- S7: Results -->
+<div class="scr" id="s7">
   <div class="filter-bar">
     <svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="7"/><path d="M8 7v4M8 5v.5"/></svg>
     <span class="filter-txt" id="filter-txt">3-bed semi-detached · Full rewire · EV charger</span>
@@ -593,8 +507,8 @@ body::before { content:''; position:fixed; inset:0; background:#eef1f6; z-index:
   </div>
 </div>
 
-<!-- S10: Details -->
-<div class="scr" id="s10">
+<!-- S8: Details -->
+<div class="scr" id="s8">
   <div class="fcard">
     <h3>Your details</h3>
     <div class="ff-2">
@@ -613,8 +527,8 @@ body::before { content:''; position:fixed; inset:0; background:#eef1f6; z-index:
   </div>
 </div>
 
-<!-- S11: Success -->
-<div class="scr" id="s11">
+<!-- S9: Success -->
+<div class="scr" id="s9">
   <div class="success-card">
     <div class="suc-icon"><svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="17"/><path d="M13 20l5 5 9-10"/></svg></div>
     <h2>Booking confirmed!</h2>
@@ -655,13 +569,13 @@ body::before { content:''; position:fixed; inset:0; background:#eef1f6; z-index:
 
 <div class="cta" id="cta">
   <div class="cta-lhs"><span class="cta-from">Your fixed price</span><span class="cta-amount" id="cta-amt">£3,999</span></div>
-  <button class="cta-btn" onclick="go(11)">Confirm &amp; pay</button>
+  <button class="cta-btn" onclick="go(9)">Confirm &amp; pay</button>
 </div>
 
 <script>
-let step=1; const TOTAL=10;
+let step=1; const TOTAL=9;
 let chosenProduct='', chosenPrice='';
-const meta={1:['1 of 4','Your home'],2:['1 of 4','Your home'],3:['1 of 4','Your home'],4:['1 of 4','Your home'],5:['1 of 4','Your home'],6:['1 of 4','Your home'],7:['1 of 4','Your home'],8:['1 of 4','Your home'],9:['2 of 4','Your options'],10:['3 of 4','Your details'],11:['4 of 4','Confirmed']};
+const meta={1:['1 of 4','Your home'],2:['1 of 4','Your home'],3:['1 of 4','Your home'],4:['1 of 4','Your home'],5:['1 of 4','Your home'],6:['1 of 4','Your home'],7:['2 of 4','Your options'],8:['3 of 4','Your details'],9:['4 of 4','Confirmed']};
 
 // ── Room-by-room state ──
 let bedroomCount = 3;
@@ -783,11 +697,6 @@ function buildRoomCard(name, removable){
       <div class="room-name">${name}</div>
       ${removable ? '<button class="room-remove" type="button" onclick="removeRoom(this)">✕</button>' : ''}
     </div>
-    <div class="room-scope">
-      <button type="button" class="scope-pill active" data-scope="full" onclick="setRoomScope(this,'full')">Full rewire</button>
-      <button type="button" class="scope-pill" data-scope="partial" onclick="setRoomScope(this,'partial')">Partial</button>
-      <button type="button" class="scope-pill" data-scope="skip" onclick="setRoomScope(this,'skip')">Skip</button>
-    </div>
     <div class="room-fields">${fields}</div>
     <label class="room-photo" for="${safeId}">
       <input type="file" accept="image/*" capture="environment" id="${safeId}" style="display:none" onchange="handlePhoto(event,this)">
@@ -888,9 +797,7 @@ function roomsSummary(){
     if(f.cooker) hasElecCooker = true;
     if(f.fan) totalFans += 1;
   });
-  let label = 'Consumer unit only';
-  if(scopes.includes('full')) label = 'Full rewire';
-  else if(scopes.includes('partial')) label = 'Partial rewire';
+  let label = 'Full rewire';
   return {
     bedroomCount, roomCount: names.length, photoCount, label, totalSockets, totalLights, hasGasHob, hasElecCooker, totalFans
   };
@@ -909,7 +816,8 @@ const REWIRE_PRICE = {
   fanExisting: 160, // extractor fan using existing hole
   spotlight: 18,    // per spotlight
 };
-function getSelectedExtras(){
+function getSelectedExtras(){ return []; }
+function _unusedGetExtras(){
   const sel = [];
   document.querySelectorAll('.extra-opt.extra-selected').forEach(el => sel.push(el.getAttribute('data-val')));
   return sel;
@@ -1007,9 +915,9 @@ function go(n){
   document.getElementById('hdr-step').textContent='Step '+m[0];
   document.getElementById('hdr-name').textContent=m[1];
   document.getElementById('hdr-back').classList.toggle('show',n>1);
-  document.getElementById('cta').style.display=n===10?'flex':'none';
-  if(n===10) document.getElementById('cta-amt').textContent=chosenPrice||'£3,999';
-  if(n===9){
+  document.getElementById('cta').style.display=n===8?'flex':'none';
+  if(n===8) document.getElementById('cta-amt').textContent=chosenPrice||'£3,999';
+  if(n===7){
     const s = roomsSummary();
     const ft = document.getElementById('filter-txt');
     if(ft) ft.textContent = s.bedroomCount + '-bed property · ' + s.label + ' · ' + (s.totalSockets + s.totalLights) + ' points';
@@ -1022,7 +930,7 @@ function pick(name,price){
   chosenProduct=name; chosenPrice=price;
   document.getElementById('conf-p').textContent=name;
   document.getElementById('conf-price').textContent=price;
-  go(10);
+  go(8);
 }
 function selPay(t){
   document.getElementById('pay-full').style.borderColor=t==='full'?'var(--blue)':'var(--line)';
@@ -1032,13 +940,7 @@ function selPay(t){
 function pickDyn(el){
   pick(el.getAttribute('data-name'), el.getAttribute('data-price'));
 }
-function toggleExtra(el){
-  el.classList.toggle('extra-selected');
-  el.style.borderColor = el.classList.contains('extra-selected') ? 'var(--red)' : 'var(--line)';
-  el.style.background  = el.classList.contains('extra-selected') ? 'var(--red-l)' : 'var(--white)';
-  const anySelected = document.querySelectorAll('.extra-selected').length > 0;
-  document.getElementById('extras-continue').style.display = anySelected ? 'block' : 'none';
-}
+// (extras screen removed)
 
 
 function setSmoke(g){
@@ -1074,11 +976,7 @@ function renderRewirePrices(){
   // prefill fans qty from flow toggles (default new-hole price)
   addonState.fans = s.totalFans || 0;
   const qf = document.getElementById('qty-fans'); if(qf) qf.textContent = addonState.fans;
-  // prefill smoke/ev from the extras screen selections
-  const preExtras = getSelectedExtras();
-  if(preExtras.includes('smoke') && addonState.smokeGrade==='none') setSmoke('ld2');
-  if(preExtras.includes('ev')) { addonState.ev = true; document.getElementById('toggle-ev').classList.add('on'); }
-  else { ['none','ld3','ld2'].forEach(x=>document.getElementById('grade-'+x) && document.getElementById('grade-'+x).classList.toggle('on', ('none'===x)===(addonState.smokeGrade==='none') && x===addonState.smokeGrade)); }
+  // add-ons default to none; customer selects in the panel below
   const p = calcRewirePrice();
   const extras = getSelectedExtras();
   const hasEV = addonState.ev;
