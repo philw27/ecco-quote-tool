@@ -70,7 +70,15 @@ export default async function handler(req, res) {
     // that physically fit on the usable, sun-worthy roof segments.
     const rec = configs[configs.length - 1];
     const roofFitPanels = rec.panelsCount;
-    const yearlyEnergyKwh = Math.round(rec.yearlyEnergyDcKwh || 0);
+    // Sensible domestic default (BOXT-style right-sizing), capped by what the roof fits.
+    const DEFAULT_SYSTEM = 10;                 // standard ~4kW starting system
+    const recommendedPanels = Math.min(DEFAULT_SYSTEM, roofFitPanels);
+    // Find the Google config closest to our recommended panel count for accurate production.
+    let recConfig = configs[0];
+    for (const c of configs) {
+      if (c.panelsCount <= recommendedPanels) recConfig = c; else break;
+    }
+    const yearlyEnergyKwh = Math.round(recConfig.yearlyEnergyDcKwh || rec.yearlyEnergyDcKwh || 0);
     const maxPanels = sp.maxArrayPanelsCount || null;
     const maxAreaM2 = sp.maxArrayAreaMeters2 ? Math.round(sp.maxArrayAreaMeters2) : null;
     const sunshineHours = sp.maxSunshineHoursPerYear ? Math.round(sp.maxSunshineHoursPerYear) : null;
@@ -81,7 +89,7 @@ export default async function handler(req, res) {
     const panelH = sp.panelHeightMeters || 1.879;
     const allPanels = Array.isArray(sp.solarPanels) ? sp.solarPanels : [];
     const segs = Array.isArray(sp.roofSegmentStats) ? sp.roofSegmentStats : [];
-    const panels = allPanels.slice(0, roofFitPanels).map(p => {
+    const panels = allPanels.slice(0, recommendedPanels).map(p => {
       // segmentIndex can be 0 (valid) — coerce carefully, don't treat 0 as missing
       let si = (p.segmentIndex != null) ? p.segmentIndex
              : (p._segment_index != null) ? p._segment_index : 0;
@@ -114,8 +122,8 @@ export default async function handler(req, res) {
       panelWidthMeters: panelW,
       panelHeightMeters: panelH,
       roofFitPanels,
-      recommendedPanels: roofFitPanels,
-      recommendedKw: +((roofFitPanels * panelWatts) / 1000).toFixed(2),
+      recommendedPanels,
+      recommendedKw: +((recommendedPanels * panelWatts) / 1000).toFixed(2),
       yearlyEnergyKwh,
       maxPanels,
       maxRoofAreaM2: maxAreaM2,
