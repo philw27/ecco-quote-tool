@@ -600,29 +600,32 @@ function drawPanels(d){
   if(!gmap || !Array.isArray(d.panels) || !d.panels.length) return;
   const wM = d.panelWidthMeters || 1.045;
   const hM = d.panelHeightMeters || 1.879;
+  const gap = 0.86; // shrink each panel to 86% so neat gaps show between tiles
   d.panels.forEach(p=>{
-    // panel half-dimensions depending on orientation
     let halfW, halfH;
-    if(p.orientation==='LANDSCAPE'){ halfW=hM/2; halfH=wM/2; } else { halfW=wM/2; halfH=hM/2; }
-    // rotate rectangle corners by the roof-segment azimuth
+    if(p.orientation==='LANDSCAPE'){ halfW=(hM*gap)/2; halfH=(wM*gap)/2; } else { halfW=(wM*gap)/2; halfH=(hM*gap)/2; }
     const az = (p.azimuth||0) * Math.PI/180;
     const cos=Math.cos(az), sin=Math.sin(az);
     const corners=[[-halfW,-halfH],[halfW,-halfH],[halfW,halfH],[-halfW,halfH]].map(([x,y])=>{
-      const ex = x*cos - y*sin;   // rotated east offset
-      const ny = x*sin + y*cos;   // rotated north offset
+      const ex = x*cos - y*sin;
+      const ny = x*sin + y*cos;
       return offsetLatLng(p.lat, p.lng, ex, ny);
     });
     const poly=new google.maps.Polygon({
       paths:corners, map:gmap,
-      strokeColor:'#0088bb', strokeOpacity:0.9, strokeWeight:1,
-      fillColor:'#0b1e38', fillOpacity:0.55, clickable:false, zIndex:5
+      strokeColor:'#5ec5e8', strokeOpacity:0.9, strokeWeight:0.8,
+      fillColor:'#0a0f18', fillOpacity:0.82, clickable:false, zIndex:5
     });
     panelOverlays.push(poly);
   });
-  // fit the map nicely around the roof
+  // frame the array: centre and zoom so the roof fills the view
   const b=new google.maps.LatLngBounds();
   d.panels.forEach(p=>b.extend({lat:p.lat,lng:p.lng}));
-  if(!b.isEmpty()){ gmap.panTo(b.getCenter()); }
+  if(!b.isEmpty()){
+    gmap.panTo(b.getCenter());
+    // gentle zoom-in for the reveal if we're not already close
+    if(gmap.getZoom() < 21) gmap.setZoom(21);
+  }
 }
 
 showStep(1);
