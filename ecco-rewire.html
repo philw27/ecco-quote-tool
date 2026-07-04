@@ -690,32 +690,33 @@ function iconFor(name){ return ROOM_ICONS[categoryFor(name)]; }
 // Field config per room category — mix of numeric counters and on/off toggles
 const ROOM_FIELDS = {
   kitchen: [
-    {key:'sockets', label:'Sockets', type:'counter', def:8},
-    {key:'cooker',  label:'Electric cooker point', type:'counter', def:1},
+    {key:'sockets', label:'Double sockets', type:'counter', def:4},
+    {key:'appliances', label:'Appliance switches (fused spurs)', type:'counter', def:3},
+    {key:'cooker',  label:'Cooker point', type:'counter', def:1},
     {key:'hob',     label:'Gas hob spark lead', type:'toggle', def:false},
-    {key:'fan',     label:'Extractor fan', type:'toggle', def:true},
-    {key:'lights',  label:'Light points', type:'counter', def:3}
+    {key:'fan',     label:'Extractor fan', type:'toggle', def:false},
+    {key:'lights',  label:'Light points', type:'counter', def:1}
   ],
   living: [
-    {key:'sockets', label:'Sockets', type:'counter', def:6},
-    {key:'tv',      label:'TV / aerial point', type:'toggle', def:true},
-    {key:'lights',  label:'Light points', type:'counter', def:2}
+    {key:'sockets', label:'Double sockets', type:'counter', def:4},
+    {key:'tv',      label:'TV / aerial point', type:'toggle', def:false},
+    {key:'lights',  label:'Light points', type:'counter', def:1}
   ],
   hall: [
-    {key:'sockets', label:'Sockets', type:'counter', def:2},
-    {key:'lights',  label:'Light points', type:'counter', def:2}
+    {key:'sockets', label:'Double sockets', type:'counter', def:1},
+    {key:'lights',  label:'Light points', type:'counter', def:1}
   ],
   bath: [
-    {key:'fan',     label:'Extractor fan', type:'toggle', def:true},
-    {key:'shaver',  label:'Shaver socket', type:'toggle', def:true},
-    {key:'lights',  label:'Light points', type:'counter', def:2}
+    {key:'fan',     label:'Extractor fan', type:'toggle', def:false},
+    {key:'shaver',  label:'Shaver socket', type:'toggle', def:false},
+    {key:'lights',  label:'Light points', type:'counter', def:1}
   ],
   bed: [
-    {key:'sockets', label:'Sockets', type:'counter', def:4},
+    {key:'sockets', label:'Double sockets', type:'counter', def:2},
     {key:'lights',  label:'Light points', type:'counter', def:1}
   ],
   default: [
-    {key:'sockets', label:'Sockets', type:'counter', def:4},
+    {key:'sockets', label:'Double sockets', type:'counter', def:2},
     {key:'lights',  label:'Light points', type:'counter', def:1}
   ]
 };
@@ -880,7 +881,8 @@ function roomsSummary(){
     const f = roomData[n].fields;
     if(roomData[n].scope === 'skip') return;
     if(f.sockets) totalSockets += f.sockets;
-    if(f.cooker) totalSockets += f.cooker; // cooker point counted separately but included in total points
+    if(f.appliances) totalSockets += f.appliances; // fused spurs = points
+    if(f.cooker) totalSockets += f.cooker;
     if(f.lights) totalLights += f.lights;
     if(f.hob) hasGasHob = true;
     if(f.cooker) hasElecCooker = true;
