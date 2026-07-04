@@ -228,7 +228,7 @@ input[type=range]::-moz-range-thumb{width:26px;height:26px;border-radius:50%;bac
   <div class="roof-insight" id="roofInsight" style="display:none">
     <div class="ri-head"><span class="ri-dot"></span> Roof analysed with Google Solar</div>
     <div class="ri-grid">
-      <div class="ri-box"><div class="ri-v" id="riPanels">—</div><div class="ri-l">panels fit</div></div>
+      <div class="ri-box"><div class="ri-v" id="riPanels">—</div><div class="ri-l">panels</div></div>
       <div class="ri-box"><div class="ri-v" id="riSun">—</div><div class="ri-l">sun hrs/yr</div></div>
       <div class="ri-box"><div class="ri-v" id="riKwh">—</div><div class="ri-l">kWh/yr</div></div>
     </div>
@@ -565,19 +565,21 @@ function applyRoof(d){
   console.log('SOLAR API returned:', JSON.stringify(d));
   if(d && d.ok && d.covered && d.panelsPlaceable && d.recommendedPanels){
     // show insight card — recommended (sensible) panel count
-    document.getElementById('riPanels').textContent=d.roofFitPanels||d.recommendedPanels;
+    document.getElementById('riPanels').textContent=d.recommendedPanels||d.roofFitPanels;
     document.getElementById('riSun').textContent=d.sunshineHoursPerYear||'—';
     document.getElementById('riKwh').textContent=(d.yearlyEnergyKwh||0).toLocaleString('en-GB');
     insight.style.display=''; manual.style.display='none';
     // feed the visualiser
     // Roof-driven: the slider max becomes what actually fits this roof.
+    // Roof fit = ceiling; recommended = sensible default we start on.
     const fit = d.roofFitPanels || d.recommendedPanels;
+    const rec = d.recommendedPanels || Math.min(10, fit);
     const sl=document.getElementById('panels');
-    if(sl){ sl.max=Math.max(4,fit); sl.value=Math.max(4,fit); }
-    state.panels=Math.max(4,fit);
+    if(sl){ sl.max=Math.max(4,fit); sl.value=Math.max(4,rec); }
+    state.panels=Math.max(4,rec);
     document.getElementById('panelRec').style.display='none';
     GOOGLE_YEARLY_KWH = d.yearlyEnergyKwh || null;
-    GOOGLE_PANELS = fit || null;
+    GOOGLE_PANELS = rec || null;
     drawPanels(d);        // draw the actual panels on the satellite roof
     render(); // reflect the new panel count immediately
   } else {
