@@ -339,7 +339,7 @@ body::before { content:''; position:fixed; inset:0; background:#eef1f6; z-index:
           <path d="M14 10V6h10l4 4"/>
         </svg>
       </div>
-      <div class="otext"><div class="oname">EV charger installation</div><div class="odesc">7kW home EV charger — from £799</div></div>
+      <div class="otext"><div class="oname">EV charger installation</div><div class="odesc">7kW home EV charger — £799</div></div>
     </div>
     <div class="opt extra-opt" data-val="smoke" onclick="toggleExtra(this)">
       <div class="oico">
@@ -350,7 +350,7 @@ body::before { content:''; position:fixed; inset:0; background:#eef1f6; z-index:
           <line x1="24" y1="14" x2="16" y2="22"/>
         </svg>
       </div>
-      <div class="otext"><div class="oname">Smoke &amp; CO alarm installation</div><div class="odesc">Wired interlinked alarms throughout — from £299</div></div>
+      <div class="otext"><div class="oname">Smoke &amp; heat alarm system (Aico)</div><div class="odesc">LD3 (hall, landing + kitchen heat) £199 · LD2 enhanced whole-home £349</div></div>
     </div>
     <div class="opt extra-opt" data-val="sockets" onclick="toggleExtra(this)">
       <div class="oico">
@@ -831,9 +831,13 @@ function roomsSummary(){
 const REWIRE_PRICE = {
   base: 550,        // testing & inspection
   board: 650,       // up to 12-way RCBO board with SPD
-  perPoint: 98,     // each socket, light, switch, cooker point
+  perPoint: 98,     // each socket, light, cooker point
   ev: 799,          // EV charger add-on
-  smoke: 299,       // smoke & CO alarm install
+  smokeLD3: 199,    // Aico LD3 escape-route system (hall + landing)
+  smokeLD2: 349,    // Aico LD2 enhanced whole-home system
+  fanNewHole: 220,  // extractor fan incl. new core hole
+  fanExisting: 160, // extractor fan using existing hole
+  spotlight: 18,    // per spotlight
 };
 function getSelectedExtras(){
   const sel = [];
@@ -847,7 +851,7 @@ function calcRewirePrice(){
   const extras = getSelectedExtras();
   let evAdd = 0, smokeAdd = 0;
   if(extras.includes('ev')) evAdd = REWIRE_PRICE.ev;
-  if(extras.includes('smoke')) smokeAdd = REWIRE_PRICE.smoke;
+  if(extras.includes('smoke')) smokeAdd = REWIRE_PRICE.smokeLD2; // default to enhanced LD2; exact grade confirmed at checkout
   return { points, base: price, ev: evAdd, smoke: smokeAdd, withExtras: price + evAdd + smokeAdd };
 }
 function fmt(n){ return '£' + n.toLocaleString('en-GB'); }
