@@ -148,6 +148,26 @@ p, li { max-width: 62ch; }   /* ~readable line length */
   text-decoration: none; border-radius: 6px; transition: background .12s, color .12s;
 }
 .nav-links a:hover { background: var(--bg); color: var(--navy); }
+.nav-dropdown { position: relative; }
+.nav-dropdown > .nav-more {
+  display: block; padding: 6px 12px; font-size: 14px; font-weight: 500; color: var(--slate);
+  background: none; border: none; cursor: pointer; border-radius: 6px; font-family: inherit;
+  transition: background .12s, color .12s;
+}
+.nav-dropdown > .nav-more:hover, .nav-dropdown:hover > .nav-more { background: var(--bg); color: var(--navy); }
+.nav-more .caret { font-size: 10px; margin-left: 3px; }
+.nav-dropdown-menu {
+  position: absolute; top: 100%; right: 0; min-width: 210px;
+  background: #fff; border: 1px solid var(--line); border-radius: 10px;
+  box-shadow: 0 12px 32px -8px rgba(11,30,56,.22); padding: 6px;
+  opacity: 0; visibility: hidden; transform: translateY(6px); transition: opacity .16s, transform .16s, visibility .16s; z-index: 200;
+}
+.nav-dropdown:hover .nav-dropdown-menu, .nav-dropdown.open .nav-dropdown-menu { opacity: 1; visibility: visible; transform: translateY(0); }
+.nav-dropdown-menu a {
+  display: block; padding: 9px 12px; font-size: 14px; font-weight: 500; color: var(--slate);
+  text-decoration: none; border-radius: 7px; transition: background .12s, color .12s;
+}
+.nav-dropdown-menu a:hover { background: var(--bg); color: var(--navy); }
 .nav-right { display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
 .nav-phone {
   font-size: 13px; font-weight: 600; color: var(--navy);
@@ -579,6 +599,17 @@ footer { background: var(--navy); padding: 48px var(--px) 32px; }
       <li><a href="how-it-works.html">How it works</a></li>
       <li><a href="why-ecco.html">Why Ecco</a></li>
       <li><a href="#reviews">Reviews</a></li>
+      <li class="nav-dropdown" id="nav-dropdown">
+        <button class="nav-more" aria-haspopup="true" aria-expanded="false" onclick="toggleNavDropdown(event)">More<span class="caret">▾</span></button>
+        <div class="nav-dropdown-menu">
+          <a href="technologies.html">Technologies</a>
+          <a href="ecco-care.html">Ecco Care</a>
+          <a href="our-standards.html">Our Standards</a>
+          <a href="finance.html">Finance</a>
+          <a href="installers.html">Approved Installers</a>
+          <a href="faqs.html">FAQs</a>
+        </div>
+      </li>
     </ul>
     <div class="nav-right">
       <a href="tel:08001234567" class="nav-phone">0800 123 4567</a>
@@ -991,6 +1022,19 @@ function toggleMobileMenu() {
   document.getElementById('nav-burger').classList.toggle('open');
   document.getElementById('mobile-menu').classList.toggle('open');
 }
+function toggleNavDropdown(e) {
+  e.stopPropagation();
+  var d = document.getElementById('nav-dropdown');
+  var open = d.classList.toggle('open');
+  d.querySelector('.nav-more').setAttribute('aria-expanded', open ? 'true' : 'false');
+}
+document.addEventListener('click', function(e) {
+  var d = document.getElementById('nav-dropdown');
+  if (d && !d.contains(e.target)) {
+    d.classList.remove('open');
+    var m = d.querySelector('.nav-more'); if (m) m.setAttribute('aria-expanded', 'false');
+  }
+});
 </script>
 </body>
 </html>
