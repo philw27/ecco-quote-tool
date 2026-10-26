@@ -657,8 +657,22 @@ footer { background: var(--navy); padding: 48px var(--px) 32px; }
       <div class="summary-price" id="sum-price" style="display:none;">£0<small>/mo</small></div>
       <div class="summary-empty" id="sum-empty">Select a system to start</div>
     </div>
-    <a href="contact.html" class="btn btn-blue" id="sum-btn" style="display:none;">Get started →</a>
+    <a href="#care-lead" class="btn btn-blue" id="sum-btn" style="display:none;" onclick="openCareLead(event)">Get started →</a>
   </div>
+</div>
+
+<div class="care-lead" id="care-lead" style="display:none;max-width:640px;margin:32px auto;padding:24px;background:#fff;border:1px solid var(--line,#e3e8ef);border-radius:16px;">
+  <h2 style="margin:0 0 6px;">Register your interest</h2>
+  <p style="color:var(--muted);font-size:14px;margin:0 0 16px;line-height:1.5;">Leave your details and a local engineer will be in touch about your plan. It's free to ask and there's no obligation.</p>
+  <div id="care-lead-details" style="display:grid;gap:10px;">
+    <input type="text" placeholder="Sarah" aria-label="First name" style="padding:12px;border:1px solid var(--line,#e3e8ef);border-radius:10px;font:inherit;">
+    <input type="text" placeholder="Miller" aria-label="Last name" style="padding:12px;border:1px solid var(--line,#e3e8ef);border-radius:10px;font:inherit;">
+    <input type="email" placeholder="you@example.com" aria-label="Email" style="padding:12px;border:1px solid var(--line,#e3e8ef);border-radius:10px;font:inherit;">
+    <input type="tel" placeholder="07700 000000" aria-label="Mobile" style="padding:12px;border:1px solid var(--line,#e3e8ef);border-radius:10px;font:inherit;">
+    <input type="text" name="postcode" placeholder="Postcode" aria-label="Postcode" style="padding:12px;border:1px solid var(--line,#e3e8ef);border-radius:10px;font:inherit;">
+  </div>
+  <button class="btn btn-blue" style="margin-top:16px;border:0;cursor:pointer;" onclick="sendCareLead(this)">Send my request →</button>
+  <div id="care-lead-done" style="display:none;margin-top:16px;font-weight:600;">Thanks! We've got your request. A local engineer will be in touch soon.</div>
 </div>
 
 <div class="care-benefits">
@@ -753,6 +767,7 @@ footer { background: var(--navy); padding: 48px var(--px) 32px; }
     </div>
   </div>
 </footer>
+<script src="js/ecco-leads.js"></script>
 <script>
 function toggleMobileMenu(){document.getElementById('nav-burger').classList.toggle('open');document.getElementById('mobile-menu').classList.toggle('open');}
 
@@ -804,6 +819,14 @@ function updateSummary(){
   priceEl.innerHTML=`£${total}<small>/mo</small>`;}
 }
 setMode('homeowner');
+EccoLeads.addConsent(document.getElementById('care-lead-details'));
+function openCareLead(e){e.preventDefault();var c=document.getElementById('care-lead');c.style.display='block';c.scrollIntoView({behavior:'smooth',block:'start'});}
+function sendCareLead(btn){
+ var plans=PLANS[mode].filter(function(m){return selected.has(m.id);});
+ EccoLeads.submit({flow:'Ecco Care',contact:document.getElementById('care-lead-details'),button:btn,
+  extra:{customer_type:mode,plan_items:plans.map(function(m){return m.name+' (£'+m.price+'/mo)';}).join(', '),guide_monthly_total:document.getElementById('sum-price').textContent},
+  onSuccess:function(){btn.style.display='none';document.getElementById('care-lead-done').style.display='block';}});
+}
 </script>
 </body>
 </html>

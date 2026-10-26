@@ -931,7 +931,6 @@ body::before {
     <div class="pc-body">
       <div class="pc-name">Worcester Bosch Greenstar 4000 25kW</div>
       <div class="pc-pills">
-        <span class="pill pill-blue">0% finance</span>
         <span class="pill pill-amber">⭐ Popular model</span>
       </div>
       <div class="pc-feats">
@@ -955,16 +954,10 @@ body::before {
       <div class="pc-included">See what's included ›</div>
     </div>
     <div class="pc-price">
-      <div class="pc-price-lbl">Your fixed price including installation:</div>
+      <div class="pc-price-lbl">Guide price including installation:</div>
       <div class="pc-price-main">
         <div class="pc-price-today">£2,495</div>
-        <div class="pc-price-divider"></div>
-        <div class="pc-price-monthly">
-          <div class="pc-price-monthly-val">£32.18/mo*</div>
-          <div class="pc-price-monthly-lbl">0% finance available</div>
-        </div>
       </div>
-      <a class="pc-finance">View finance calculator</a>
       <button class="pc-btn">Select this boiler →</button>
     </div>
   </div>
@@ -995,7 +988,6 @@ body::before {
     <div class="pc-body">
       <div class="pc-name">Vaillant ecoFIT Pure 825 25kW</div>
       <div class="pc-pills">
-        <span class="pill pill-blue">0% finance</span>
         <span class="pill pill-amber">⭐ Popular model</span>
         <span class="pill pill-grey">Compact model</span>
       </div>
@@ -1008,16 +1000,10 @@ body::before {
       <div class="pc-included">See what's included ›</div>
     </div>
     <div class="pc-price">
-      <div class="pc-price-lbl">Your fixed price including installation:</div>
+      <div class="pc-price-lbl">Guide price including installation:</div>
       <div class="pc-price-main">
         <div class="pc-price-today">£2,295</div>
-        <div class="pc-price-divider"></div>
-        <div class="pc-price-monthly">
-          <div class="pc-price-monthly-val">£29.68/mo*</div>
-          <div class="pc-price-monthly-lbl">0% finance available</div>
-        </div>
       </div>
-      <a class="pc-finance">View finance calculator</a>
       <button class="pc-btn">Select this boiler →</button>
     </div>
   </div>
@@ -1026,28 +1012,28 @@ body::before {
   <div class="eng">
     <div class="eng-title">
       <svg viewBox="0 0 20 20"><path d="M10 17l-4-4m4 4l4-4m-4 4V9m-6-2V4a1 1 0 011-1h10a1 1 0 011 1v3M4 7h12a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V9a2 2 0 012-2z"/></svg>
-      Every quote reviewed by a qualified engineer
+      Every request checked by a local installer
     </div>
     <div class="eng-steps">
       <div class="estep">
         <div class="estep-dot">1</div>
         <div>
           <h4>You submit your answers</h4>
-          <p>Your property details are sent to our team straight away.</p>
+          <p>Your property details are sent to Ecco straight away.</p>
         </div>
       </div>
       <div class="estep">
         <div class="estep-dot">2</div>
         <div>
-          <h4>A Gas Safe engineer reviews your quote</h4>
-          <p>A qualified engineer confirms the right product for your home — before installation day. No surprises.</p>
+          <h4>A Gas Safe registered installer reviews it</h4>
+          <p>They check the right product for your home and confirm your price. No surprises.</p>
         </div>
       </div>
       <div class="estep">
         <div class="estep-dot">3</div>
         <div>
-          <h4>You're confirmed within 2 hours</h4>
-          <p>We contact you to confirm everything is perfect and your engineer is booked.</p>
+          <h4>They get in touch</h4>
+          <p>Your installer contacts you to talk it through. No obligation.</p>
         </div>
       </div>
     </div>
@@ -1057,7 +1043,7 @@ body::before {
 
 <!-- ══ S15: Details ══ -->
 <div class="scr" id="s15">
-  <div class="fcard">
+  <div class="fcard" id="lead-details">
     <h3>Your details</h3>
     <div class="ff-2">
       <div class="ff"><label>First name</label><input type="text" placeholder="Sarah"></div>
@@ -1067,24 +1053,6 @@ body::before {
     <div class="ff"><label>Mobile</label><input type="tel" placeholder="07700 000000"></div>
     <div class="ff"><label>Installation postcode</label><input type="text" placeholder="BL1 2AB"></div>
   </div>
-  <div class="fcard">
-    <h3>Payment</h3>
-    <div class="opts">
-      <div class="opt" id="pay-full" onclick="selPay('full')" style="border-color:var(--blue)">
-        <div class="oico">
-          <svg width="36" height="36" viewBox="0 0 36 36" fill="none" stroke="#0b1e38" stroke-width="1.4" stroke-linecap="round"><rect x="3" y="8" width="30" height="20" rx="2"/><line x1="3" y1="14" x2="33" y2="14"/><line x1="8" y1="22" x2="14" y2="22"/></svg>
-        </div>
-        <div class="otext"><div class="oname">Pay in full today</div><div class="odesc">Secure payment — no interest</div></div>
-      </div>
-      <div class="opt" id="pay-fin" onclick="selPay('fin')">
-        <div class="oico">
-          <svg width="36" height="36" viewBox="0 0 36 36" fill="none" stroke="#0b1e38" stroke-width="1.4" stroke-linecap="round"><circle cx="18" cy="18" r="14"/><path d="M18 10v8l5 5"/></svg>
-        </div>
-        <div class="otext"><div class="oname">Monthly finance</div><div class="odesc">From £32.18/mo · apply at checkout</div></div>
-      </div>
-    </div>
-    <p style="font-size:11px;color:var(--muted);margin-top:12px;line-height:1.6;">Finance subject to status. Ecco is a credit broker, not a lender. Representative APR 9.9%.</p>
-  </div>
 </div>
 
 <!-- ══ S16: Success ══ -->
@@ -1093,13 +1061,12 @@ body::before {
     <div class="suc-icon">
       <svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="17"/><path d="M13 20l5 5 9-10"/></svg>
     </div>
-    <h2>Booking confirmed!</h2>
-    <p>We're sending a confirmation to your email. A Gas Safe engineer will review your quote within 2 hours.</p>
+    <h2>Thanks! We've got your request.</h2>
+    <p>A local installer will be in touch soon to talk it through and confirm your price.</p>
     <div class="suc-table">
       <div class="suc-row"><span class="suc-l">Product</span><span class="suc-v" id="conf-p">—</span></div>
-      <div class="suc-row"><span class="suc-l">Install date</span><span class="suc-v">Thu 15 May, Morning</span></div>
-      <div class="suc-row"><span class="suc-l">Total</span><span class="suc-v" id="conf-price">—</span></div>
-      <div class="suc-row"><span class="suc-l">Warranty</span><span class="suc-v">10 years parts &amp; labour</span></div>
+      <div class="suc-row"><span class="suc-l">Guide price</span><span class="suc-v" id="conf-price">—</span></div>
+      <div class="suc-row"><span class="suc-l">Warranty</span><span class="suc-v">Manufacturer warranty, confirmed by your installer</span></div>
     </div>
   </div>
   <div class="eng">
@@ -1108,10 +1075,9 @@ body::before {
       What happens next
     </div>
     <div class="eng-steps">
-      <div class="estep"><div class="estep-dot">✓</div><div><h4>Engineer review</h4><p>A Gas Safe engineer checks your quote within 2 hours.</p></div></div>
-      <div class="estep"><div class="estep-dot">✓</div><div><h4>Engineer assigned</h4><p>Your local vetted engineer is confirmed and you'll get their details.</p></div></div>
-      <div class="estep"><div class="estep-dot">✓</div><div><h4>Installation day</h4><p>Engineer arrives, installs, removes all waste. Certificates in your Ecco account same day.</p></div></div>
-      <div class="estep"><div class="estep-dot">✓</div><div><h4>Warranty registered</h4><p>Manufacturer warranty registered automatically. Annual service reminders set up.</p></div></div>
+      <div class="estep"><div class="estep-dot">✓</div><div><h4>We pass on your request</h4><p>We match you with a trusted local installer and share your answers so they can quote.</p></div></div>
+      <div class="estep"><div class="estep-dot">✓</div><div><h4>Your installer gets in touch</h4><p>They'll check the details with you and confirm your final price. No surprises.</p></div></div>
+      <div class="estep"><div class="estep-dot">✓</div><div><h4>You decide</h4><p>Ecco is free to use and there's no obligation to go ahead.</p></div></div>
     </div>
   </div>
 </div>
@@ -1119,7 +1085,7 @@ body::before {
 
 <!-- JOURNEY SCENE -->
 <div class="journey" id="journey">
-  <div class="journey-pct" id="journey-pct">On the way to your fixed price</div>
+  <div class="journey-pct" id="journey-pct">On the way to your guide price</div>
   <div class="journey-road">
     <div class="journey-van-wrap" id="journey-van-wrap">
       <img class="journey-van" src="data:image/webp;base64,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" alt="Ecco van">
@@ -1136,12 +1102,13 @@ body::before {
 <!-- Bottom CTA (only on details screen) -->
 <div class="cta" id="cta">
   <div class="cta-lhs">
-    <span class="cta-from">Your fixed price</span>
+    <span class="cta-from">Your guide price</span>
     <span class="cta-amount" id="cta-amt">£2,495</span>
   </div>
-  <button class="cta-btn" onclick="go(16)">Confirm &amp; pay</button>
+  <button class="cta-btn" onclick="sendLead(this)">Send my request</button>
 </div>
 
+<script src="js/ecco-leads.js"></script>
 <script>
 let step = 1;
 const TOTAL = 15;
@@ -1156,7 +1123,7 @@ const meta = {
   9:  ['1 of 4','Your home'],   10: ['1 of 4','Your home'],
   11: ['1 of 4','Your home'],   12: ['1 of 4','Your home'],
   13: ['1 of 4','Your home'],   14: ['2 of 4','Options'],
-  15: ['3 of 4','Your details'],16: ['4 of 4','Confirmed'],
+  15: ['3 of 4','Your details'],16: ['4 of 4','Sent'],
 };
 
 const JOURNEY_LAST_QSTEP = 13; // last "question" step before results
@@ -1170,7 +1137,7 @@ const JOURNEY_TIPS = [
   { char:'rico',  text:"<b>Rico:</b> \"The more I know about your home, the more accurate your fixed price.\"" },
   { char:'rico',  text:"<b>Rico</b> is comparing boiler sizes that suit your household." },
   { char:'atlas', text:"<b>Atlas</b> is checking everything meets UK safety standards." },
-  { char:'atlas', text:"<b>Atlas:</b> \"Every Ecco engineer is Gas Safe registered — I make sure of it.\"" },
+  { char:'atlas', text:"<b>Atlas:</b> \"We only pass your request to properly registered installers.\"" },
   { char:'atlas', text:"<b>Atlas</b> is confirming your installation will be fully compliant." },
   { char:'dash',  text:"<b>Dash</b> is checking engineer availability in your area." },
   { char:'dash',  text:"<b>Dash:</b> \"Almost there — your fixed price is on its way.\"" },
@@ -1222,7 +1189,7 @@ function go(n) {
   document.getElementById('prog').style.width = Math.min(100, Math.round(n / TOTAL * 100)) + '%';
 
   // Header
-  const m = meta[n] || ['4 of 4','Confirmed'];
+  const m = meta[n] || ['4 of 4','Sent'];
   document.getElementById('hdr-step').textContent = 'Step ' + m[0];
   document.getElementById('hdr-name').textContent = m[1];
   document.getElementById('hdr-back').classList.toggle('show', n > 1);
@@ -1245,6 +1212,13 @@ function pick(name, price, monthly) {
   document.getElementById('conf-price').textContent = price;
   go(15);
 }
+
+function sendLead(btn) {
+  EccoLeads.submit({ flow: 'Boiler', contact: document.getElementById('lead-details'), button: btn,
+    extra: { chosen_product: chosenProduct, guide_price: chosenPrice },
+    onSuccess: function () { go(16); } });
+}
+EccoLeads.addConsent(document.getElementById('lead-details'));
 
 function selPay(type) {
   document.getElementById('pay-full').style.borderColor = type === 'full' ? 'var(--blue)' : 'var(--line)';
