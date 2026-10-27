@@ -339,7 +339,7 @@ body::before { content:''; position:fixed; inset:0; background:#eef1f6; z-index:
 <div class="scr" id="s5">
 <div class="qcard">
   <h1 class="qtitle">Roughly how <span class="hl">old</span> is your current wiring?</h1>
-  <p class="qsub note">This won't change your fixed price — it helps our engineers plan the job.</p>
+  <p class="qsub note">This helps your installer plan the job.</p>
   <div class="opts">
     <div class="opt" onclick="go(6)"><div class="otext"><div class="oname">Under 10 years</div></div></div>
     <div class="opt" onclick="go(6)"><div class="otext"><div class="oname">10–25 years</div></div></div>
@@ -413,7 +413,7 @@ body::before { content:''; position:fixed; inset:0; background:#eef1f6; z-index:
         <span class="pill pill-green">EIC certificate included</span>
       </div>
       <div class="pc-feats">
-        <div class="feat"><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6"/><path d="M5.5 8.5l2 2 3-4"/></svg>Completed in a single day — first &amp; second fix</div>
+        <div class="feat"><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6"/><path d="M5.5 8.5l2 2 3-4"/></svg>Often completed in a day or two — first &amp; second fix</div>
         <div class="feat"><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6"/><path d="M5.5 8.5l2 2 3-4"/></svg>Full rewire to BS7671 18th Edition</div>
         <div class="feat"><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6"/><path d="M5.5 8.5l2 2 3-4"/></svg>New 12-way RCBO consumer unit with SPD</div>
         <div class="feat"><svg viewBox="0 0 16 16"><circle cx="8" cy="8" r="6"/><path d="M5.5 8.5l2 2 3-4"/></svg>Electrical Installation Certificate included</div>
@@ -512,7 +512,7 @@ body::before { content:''; position:fixed; inset:0; background:#eef1f6; z-index:
     <div class="suc-table">
       <div class="suc-row"><span class="suc-l">Work</span><span class="suc-v" id="conf-p">—</span></div>
       <div class="suc-row"><span class="suc-l">Guide price</span><span class="suc-v" id="conf-price">—</span></div>
-      <div class="suc-row"><span class="suc-l">Certificate</span><span class="suc-v">EIC issued same day</span></div>
+      <div class="suc-row"><span class="suc-l">Certificate</span><span class="suc-v">Your electrician will issue your certificate on completion</span></div>
       <div class="suc-row"><span class="suc-l">Standard</span><span class="suc-v">BS7671 18th Edition</span></div>
     </div>
   </div>
@@ -557,10 +557,10 @@ body::before { content:''; position:fixed; inset:0; background:#eef1f6; z-index:
       <h3>What's included</h3>
       <button class="inc-x" onclick="closeIncluded()" aria-label="Close">&times;</button>
     </div>
-    <p class="inc-sub">Full Rewire + New Consumer Unit — everything below is part of your fixed price.</p>
+    <p class="inc-sub">Full Rewire + New Consumer Unit — everything below is part of your guide price.</p>
 
-    <div class="inc-sec-title">In your fixed price</div>
-    <div class="inc-item"><svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="8"/><path d="M6.5 10.5l2.2 2.2 4.8-5"/></svg><div><div class="t">Completed in a single day</div><div class="d">First fix and second fix carried out together on the same day — no first-fix then returning weeks later.</div></div></div>
+    <div class="inc-sec-title">In your guide price</div>
+    <div class="inc-item"><svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="8"/><path d="M6.5 10.5l2.2 2.2 4.8-5"/></svg><div><div class="t">Often completed in a day or two</div><div class="d">Many installers carry out first and second fix in one visit — your installer will confirm timings for your home.</div></div></div>
     <div class="inc-item"><svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="8"/><path d="M6.5 10.5l2.2 2.2 4.8-5"/></svg><div><div class="t">Full rewire to BS 7671 18th Edition</div><div class="d">All existing wiring replaced throughout — first fix, second fix, labour and cable.</div></div></div>
     <div class="inc-item"><svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="8"/><path d="M6.5 10.5l2.2 2.2 4.8-5"/></svg><div><div class="t">New 12-way RCBO consumer unit with SPD</div><div class="d">Individual RCBO protection per circuit plus surge protection device.</div></div></div>
     <div class="inc-item"><svg viewBox="0 0 20 20"><circle cx="10" cy="10" r="8"/><path d="M6.5 10.5l2.2 2.2 4.8-5"/></svg><div><div class="t">Sockets, switches &amp; ceiling roses</div><div class="d">All accessories on the day — including a ceiling rose light point per room, wired and tested to your layout. Recessed spotlights are an optional add-on.</div></div></div>
@@ -573,7 +573,7 @@ body::before { content:''; position:fixed; inset:0; background:#eef1f6; z-index:
     <div class="inc-acc"><div class="n">Extractor fans<span>Ventilation fan, supplied &amp; fitted</span></div><div class="p">£220 each</div></div>
     <div class="inc-acc"><div class="n">Spotlights<span>Recessed LED downlight</span></div><div class="p">£18 each</div></div>
     <div class="inc-acc"><div class="n">7kW EV charger<span>Smart home charger, installed</span></div><div class="p">£799</div></div>
-    <p class="inc-sub" style="margin-top:16px">Add any of these in the "Customise your quote" panel — your fixed price updates instantly.</p>
+    <p class="inc-sub" style="margin-top:16px">Add any of these in the "Customise your quote" panel — your guide price updates instantly.</p>
   </div>
 </div>
 
@@ -885,13 +885,13 @@ const JOURNEY_CHARS = {
 };
 const JOURNEY_TIPS = [
   { char:'rico',  text:"<b>Rico</b> is reviewing your answers to find the best options." },
-  { char:'rico',  text:"<b>Rico:</b> \"The more I know about your home, the more accurate your fixed price.\"" },
+  { char:'rico',  text:"<b>Rico:</b> \"The more I know about your home, the more accurate your guide price.\"" },
   { char:'rico',  text:"<b>Rico</b> is comparing boiler sizes that suit your household." },
   { char:'atlas', text:"<b>Atlas</b> is checking everything meets UK safety standards." },
   { char:'atlas', text:"<b>Atlas:</b> \"We only pass your request to properly registered installers.\"" },
   { char:'atlas', text:"<b>Atlas</b> is confirming your installation will be fully compliant." },
   { char:'dash',  text:"<b>Dash</b> is checking engineer availability in your area." },
-  { char:'dash',  text:"<b>Dash:</b> \"Almost there — your fixed price is on its way.\"" },
+  { char:'dash',  text:"<b>Dash:</b> \"Almost there — your guide price is on its way.\"" },
   { char:'dash',  text:"<b>Dash</b> is lining up next-day installation slots near you." }
 ];
 
@@ -906,7 +906,7 @@ function updateJourney(n) {
 
   const tip = JOURNEY_TIPS[(n-1) % JOURNEY_TIPS.length];
   const charData = JOURNEY_CHARS[tip.char];
-  document.getElementById('journey-pct').textContent = pct + '% of the way to your fixed price';
+  document.getElementById('journey-pct').textContent = pct + '% of the way to your guide price';
 
   const charPop = document.getElementById('journey-char-pop');
   const charImg = document.getElementById('journey-char-img');

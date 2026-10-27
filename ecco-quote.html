@@ -571,7 +571,7 @@ body::before {
 <div class="scr" id="s3">
 <div class="qcard">
   <h1 class="qtitle">How would you describe your <span class="hl">current boiler</span>?</h1>
-  <p class="qsub note">This won't change your fixed price.</p>
+  <p class="qsub note">This helps your installer confirm your price.</p>
   <div class="opts">
     <div class="opt" onclick="go(4)">
       <div class="oico">
@@ -1136,13 +1136,13 @@ const JOURNEY_CHARS = {
 };
 const JOURNEY_TIPS = [
   { char:'rico',  text:"<b>Rico</b> is reviewing your answers to find the best options." },
-  { char:'rico',  text:"<b>Rico:</b> \"The more I know about your home, the more accurate your fixed price.\"" },
+  { char:'rico',  text:"<b>Rico:</b> \"The more I know about your home, the more accurate your guide price.\"" },
   { char:'rico',  text:"<b>Rico</b> is comparing boiler sizes that suit your household." },
   { char:'atlas', text:"<b>Atlas</b> is checking everything meets UK safety standards." },
   { char:'atlas', text:"<b>Atlas:</b> \"We only pass your request to properly registered installers.\"" },
   { char:'atlas', text:"<b>Atlas</b> is confirming your installation will be fully compliant." },
   { char:'dash',  text:"<b>Dash</b> is checking engineer availability in your area." },
-  { char:'dash',  text:"<b>Dash:</b> \"Almost there — your fixed price is on its way.\"" },
+  { char:'dash',  text:"<b>Dash:</b> \"Almost there — your guide price is on its way.\"" },
   { char:'dash',  text:"<b>Dash</b> is lining up next-day installation slots near you." }
 ];
 
@@ -1157,7 +1157,7 @@ function updateJourney(n) {
 
   const tip = JOURNEY_TIPS[(n-1) % JOURNEY_TIPS.length];
   const charData = JOURNEY_CHARS[tip.char];
-  document.getElementById('journey-pct').textContent = pct + '% of the way to your fixed price';
+  document.getElementById('journey-pct').textContent = pct + '% of the way to your guide price';
 
   const charPop = document.getElementById('journey-char-pop');
   const charImg = document.getElementById('journey-char-img');

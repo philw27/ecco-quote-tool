@@ -273,7 +273,7 @@ body::before { content:''; position:fixed; inset:0; background:#eef1f6; z-index:
       </svg>
     </div>
     <h3>You should be eligible for a £7,500 grant towards your heat pump</h3>
-    <p>We'll complete final checks on your eligibility and take care of all the paperwork for you. The £7,500 grant has been automatically deducted from your fixed price.</p>
+    <p>We'll complete final checks on your eligibility and take care of all the paperwork for you. Guide prices shown assume the £7,500 grant, if you're eligible.</p>
     <button class="popup-btn" onclick="closeGrant()">Next</button>
   </div>
 </div>
@@ -408,7 +408,7 @@ body::before { content:''; position:fixed; inset:0; background:#eef1f6; z-index:
 <div class="scr" id="s7">
 <div class="qcard">
   <h1 class="qtitle">How well <span class="hl">insulated</span> is your home?</h1>
-  <p class="qsub note">This won't change your fixed price — it helps our engineers size the system correctly.</p>
+  <p class="qsub note">This helps your installer size the system correctly.</p>
   <div class="opts">
     <div class="opt" onclick="go(8)">
       <div class="oico"><svg width="40" height="40" viewBox="0 0 40 40" fill="none" stroke="#0b1e38" stroke-width="1.4" stroke-linecap="round"><rect x="6" y="10" width="28" height="24" rx="2"/><path d="M6 18h28M6 26h28"/><path d="M14 10v4M20 10v4M26 10v4"/></svg></div>
@@ -648,8 +648,8 @@ body::before { content:''; position:fixed; inset:0; background:#eef1f6; z-index:
 
   <!-- Aftercare -->
   <div class="aftercare-section">
-    <div class="aftercare-title">Ecco aftercare</div>
-    <div class="aftercare-text">After your installation, we'll register your warranty and provide all your documents including your MCS certificate and building control notification. You're also covered for 2 years under our workmanship guarantee.</div>
+    <div class="aftercare-title">Aftercare</div>
+    <div class="aftercare-text">Your installer will explain their guarantee and aftercare, and should provide your documents, including your MCS certificate and building control notification.</div>
   </div>
 
 </div>
@@ -749,13 +749,13 @@ const JOURNEY_CHARS = {
 };
 const JOURNEY_TIPS = [
   { char:'rico',  text:"<b>Rico</b> is reviewing your answers to find the best options." },
-  { char:'rico',  text:"<b>Rico:</b> \"The more I know about your home, the more accurate your fixed price.\"" },
+  { char:'rico',  text:"<b>Rico:</b> \"The more I know about your home, the more accurate your guide price.\"" },
   { char:'rico',  text:"<b>Rico</b> is comparing boiler sizes that suit your household." },
   { char:'atlas', text:"<b>Atlas</b> is checking everything meets UK safety standards." },
   { char:'atlas', text:"<b>Atlas:</b> \"We only pass your request to properly registered installers.\"" },
   { char:'atlas', text:"<b>Atlas</b> is confirming your installation will be fully compliant." },
   { char:'dash',  text:"<b>Dash</b> is checking engineer availability in your area." },
-  { char:'dash',  text:"<b>Dash:</b> \"Almost there — your fixed price is on its way.\"" },
+  { char:'dash',  text:"<b>Dash:</b> \"Almost there — your guide price is on its way.\"" },
   { char:'dash',  text:"<b>Dash</b> is lining up next-day installation slots near you." }
 ];
 
@@ -770,7 +770,7 @@ function updateJourney(n) {
 
   const tip = JOURNEY_TIPS[(n-1) % JOURNEY_TIPS.length];
   const charData = JOURNEY_CHARS[tip.char];
-  document.getElementById('journey-pct').textContent = pct + '% of the way to your fixed price';
+  document.getElementById('journey-pct').textContent = pct + '% of the way to your guide price';
 
   const charPop = document.getElementById('journey-char-pop');
   const charImg = document.getElementById('journey-char-img');
