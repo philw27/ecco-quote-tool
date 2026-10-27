@@ -1,12 +1,12 @@
 /* Ecco lead delivery — shared by every quote flow and the privacy request form.
  *
  * GO-LIVE: Philip creates a free access key at https://web3forms.com using his
- * lead email address, then pastes the key below in place of 'REPLACE_ME'.
+ * lead email address, then pastes the key below in place of '24f8ecbd-34aa-45b7-b074-ab73d2764552'.
  * The email address itself never goes in this repo; Web3Forms maps key -> inbox.
- * While the key is 'REPLACE_ME', submissions are NOT sent: a console warning is
+ * While the key is '24f8ecbd-34aa-45b7-b074-ab73d2764552', submissions are NOT sent: a console warning is
  * logged and the success screen is still shown so the site can be previewed.
  */
-var LEAD_FORM_ACCESS_KEY = 'REPLACE_ME';
+var LEAD_FORM_ACCESS_KEY = '24f8ecbd-34aa-45b7-b074-ab73d2764552';
 var LEAD_FORM_ENDPOINT = 'https://api.web3forms.com/submit';
 
 (function () {
